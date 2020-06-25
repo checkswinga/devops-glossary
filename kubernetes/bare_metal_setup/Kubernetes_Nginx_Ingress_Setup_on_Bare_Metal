@@ -19,7 +19,7 @@ High Level Setup (see kubernetes_cluster_setup_bare_metal.png for diagram):
 	- service pod: defined as type ClusterIP
 	- ingress resource: contains rules for routing
 	- worker node 1
-		- ingress controller
+		- ingress controller   # see ingress_controller_setup diagram
 		- deployment/app pod
 	- worker node 2
 		- ingress controller
@@ -75,7 +75,49 @@ On a separate node,
 B) Create Ingress Controller
 ----------------------------
 
-Repo reference: https://github.com/nginxinc/kubernetes-ingress
+Source repo reference: https://github.com/nginxinc/kubernetes-ingress
 
-1) Create namespace, SA (service account), default secret and customization config map
+On your K8s master node,
 
+1) Create namespace, SA (service account), default secret and customization config map (see https://github.com/checkswinga/linux/tree/master/kubernetes/bare_metal_setup for yamls)
+
+	kubectl apply -f ns-and-sa.yaml
+	kubectl apply -f default-server-secret.yaml
+	kubectl apply -f nginx-config.yaml
+	kubectl get ns
+
+2) Configure RBAC
+
+	kubectl apply -f rbac.yaml
+
+
+3) Deploy the Ingress Controller
+
+	kubectl apply -f nginx-ingress.yaml    # creates the deployment of nginx-ingress as a daemonset
+	kubectl get all -n nginx-ingress
+
+
+
+# Source repo reference: https://github.com/justmeandopensource/kubernetes/tree/master/yamls/ingress-demo
+
+4) Deploy the nginx app
+
+	kubectl create -f nginx-deploy-main.yaml
+	kubectl get all
+
+
+5) Create the service
+
+	kubectl expose deploy nginx-deploy-main --port 80
+	kubectl get all
+
+
+6) Create ingress resource
+
+	kubectl create -f ingress-resource-1.yaml
+	kubectl get ing
+
+
+7) Create DNS entry
+
+	vi /etc/hosts on your local machine    # Add IP of haproxy
