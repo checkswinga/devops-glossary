@@ -1,0 +1,113 @@
+Centos 8 toolchain installation
+-------------------------------
+March 6th, 2020
+
+Using CentOS8 - had to rebuild the image to use an earlier version of Kubernetes with Jenkins X (which as of March 6th, 2020, doesn't run on K8s version 1.17.1 and up)
+
+1) install yum-config-manager
+	> yum install yum-utils
+
+2) enable CentOS extras repo
+	> yum-config-manager --enable extras
+
+3) add Docker repo
+	> yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+4) install containerd.io (this is a Docker dependency - for some reason, Redhat has blocked installing containerd.io > v1.2.0, and you need at least 1.2.2 for latest docker ce 3:19.03.7-3.el7)
+	> dnf install https://download.docker.com/linux/centos/7/x86_64/stable/Packages/containerd.io-1.2.6-3.3.el7.x86_64.rpm
+
+5) install docker-ce
+	> dnf install docker-ce
+
+6) SKIPPED: disable firewalld (for DNS resolution to work inside docker containers)
+	> systemctl disable firewalld
+	> systemctl stop firewalld (if its running)
+
+7) Add Kubernetes repo
+	> cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+	  [kubernetes]
+	  name=Kubernetes
+	  baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+	  enabled=1
+	  gpgcheck=1
+	  repo_gpgcheck=1
+	  gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+	  EOF
+
+8) install Kubernetes
+	> dnf install --disableexcludes=all -y kubelet-1.16.0-0.x86_64 kubeadm-1.16.0-0.x86_64 kubectl-1.16.0-0.x86_64 kubernetes-cni socat
+
+9) install terraform
+	> dnf install git
+	> dnf install wget unzip
+	> wget https://releases.hashicorp.com/terraform/0.12.2/terraform_0.12.2_linux_amd64.zip
+	> unzip -d /usr/local/bin terraform_0.12.2_linux_amd64.zip
+	> terraform -v
+
+10) install Azure CLI (ref: https://docs.microsoft.com/bs-cyrl-ba/cli/azure/install-azure-cli-yum?view=azure-cli-latest)
+
+  - import Microsoft repo key
+	> rpm --import https://packages.microsoft.com/keys/microsoft.asc
+
+  - Create local azure-cli repository information.
+	> sh -c 'echo -e "[azure-cli]
+	name=Azure CLI
+	baseurl=https://packages.microsoft.com/yumrepos/azure-cli
+	enabled=1
+	gpgcheck=1
+	gpgkey=https://packages.microsoft.com/keys/microsoft.asc" > /etc/yum.repos.d/azure-cli.repo'
+
+  - install Azure CLI
+  	> yum install azure-cli
+
+11) install Jenkins X
+
+  - install jq (json command-line processor)
+  	> yum install jq
+
+  - download and install jx command line binary
+  	> curl -L "https://github.com/jenkins-x/jx/releases/download/$(curl --silent https://api.github.com/repos/jenkins-x/jx/releases/latest | jq -r '.tag_name')/jx-linux-amd64.tar.gz" | tar xzv "jx"
+  	> mv jx /usr/local/bin
+  	> jx --version
+
+12) Initialize Kubernetes cluster
+
+  - disable swap
+	> swapoff -a
+
+  - IP tables enable for Kubernetes
+	> sysctl -w net.bridge.bridge-nf-call-iptables=1 >> /etc/sysctl.d/50-kubelet.conf
+	> sysctl -w net.bridge.bridge-nf-call-ip6tables=1 >> /etc/sysctl.d/50-kubelet.conf
+
+  - install traffic control
+  	> yum install tc
+  
+  - initalize kubeadm
+  	> kubeadm init --pod-network-cidr=192.168.0.0/16
+	> export KUBECONFIG=/etc/kubernetes/admin.conf
+	> kubectl cluster-info
+	> kubectl get pod -l tier=control-plane -n kube-system
+
+  - tear down kubeadm (if you need to start over)
+	> kubeadm reset 
+
+
+13) Install Calico (applying Kubernetes cluster networking):
+	> kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+14) Boot Jenkins X
+	> cd /root/jenkins-x-boot-config/jenkins-x-boot-config/
+	> update jenkins-x.yml (change provider from gke, which is default, to kubernetes)
+	> cd jenkins-x-boot-config (in my case under /root)
+	> jx boot (which installs helm automatically if you don't have it)
+
+
+In-flight notes:
+---------------------------------------------------------------------------------------------------------
+jx install --provider=kubernetes   --skip-ingress   --external-ip=172.105.15.188   --domain=172.105.15.188.nip.io
+vi /etc/kubernetes/manifests/kube-apiserver.yaml
+Add - --runtime-config=apps/v1beta1=true,extensions/v1beta1/deployments=true command at:
+spec: -> containers: -> - command:
+
+- my github api token for checkswinga (fa93af27415c6dbbe926f72300351ac4c56b0e81)
+--------------------------------------------------------------------------------------

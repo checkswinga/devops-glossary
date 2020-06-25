@@ -1,0 +1,176 @@
+------------------------------
+Fail2ban - for blocking access
+------------------------------
+
+- Source article: https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-centos-7
+
+yum install epel-release
+yum install fail2ban
+systemctl enable fail2ban
+
+- Edit /etc/fail2ban/jail.local (see file on disk for details)
+
+systemctl restart fail2ban
+fail2ban-client status
+fail2ban-client status sshd
+
+
+
+----------------
+Filesystem types
+----------------
+auto - this is a special one. It will try to guess the fs type when you use this.
+
+ext4 - this is probably the most common Linux fs type of the last few years
+
+ext3 - this is the most common Linux fs type from a couple years back
+
+ntfs - this is the most common Windows fs type or larger external hard drives
+
+vfat - this is the most common fs type used for smaller external hard drives
+
+exfat - is also a file system option commonly found on USB flash drives and other external drives
+
+glusterfs - for Gluster
+
+zfs - an advanced fs fype that pools disk storage
+	# source article: https://itsfoss.com/what-is-zfs/
+
+
+
+--------------------------------------
+git - install newer version on CentOS7
+--------------------------------------
+
+yum -y install https://packages.endpoint.com/rhel/7/os/x86_64/endpoint-repo-1.7-1.x86_64.rpm
+yum install git
+
+
+--------
+IPTables
+--------
+
+# To block 116.10.191.* addresses:
+sudo iptables -A INPUT -s 116.10.191.0/24 -j DROP
+
+# To block 116.10.*.* addresses:
+sudo iptables -A INPUT -s 116.10.0.0/16 -j DROP
+
+# To block 116.*.*.* addresses:
+sudo iptables -A INPUT -s 116.0.0.0/8 -j DROP
+
+# Open a port (RHEL6)
+iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 5667 -j ACCEPT
+service iptables save
+
+
+
+-------
+kubectl
+-------
+
+kubectl expose deploy <pod> --port <port> --dry-run -o yaml     # Expose a deployment as a service
+
+
+----------------------------
+localtime - change time zone
+----------------------------
+
+rm -f /etc/localtime
+ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
+date
+
+
+----
+lsof
+----
+
+lsof <filename>       # check which processes have this file open
+lsof -p <PID>         # check specific pid's open files (could be multiple)
+lsof -u <userid>      # check list of open files for specific user
+lsof -i <port>        # check which processes are listening on specific port
+lsof -i <protocol>    # check which processes are listening on specific protocol (i.e. tcp)co
+
+
+
+
+-----------------
+Mounting a Volume
+-----------------
+
+Source article: https://www.linode.com/docs/platform/block-storage/how-to-use-block-storage-with-your-linode/#add-a-volume-from-the-linode-detail-page
+
+# One-time step for defining the FS type of the volume
+mkfs.ext4 $volume_path   # check the file system path of the volume in your cloud console, it will show you the device drive location
+
+# Steps for mounting the volume
+mkdir /mnt/my-volume
+mount $volume_path /mnt/my-volume
+df -h
+
+# Create entry in /etc/fstab:
+FILE_SYSTEM_PATH /mnt/my-volume ext4 defaults,noatime,nofail 0 2
+
+* noatime - This will save space and time by preventing writes made to the filesystem for data being read on the volume.
+* nofail - If the volume is not attached, this will allow your server to boot/reboot normally without hanging at dependency failures if the volume is not attached.
+
+
+
+# if you need to unmount it or reboot your Linode without affecting the volume
+umount /mnt/my-volume
+Remove /etc/fstab entry
+
+
+
+-------
+netstat
+-------
+
+netstat -tupln   # display network connections, tcp and udp, show which processes are using which sockets (need root for p option), -l is for listening sockets, -n is for active tcp connectionsm 
+
+
+
+
+-----
+Regex
+-----
+
+^[0-9]{3}-[0-9]{3}-[0-9]{4}$     # match any phone number
+^[0-9]{3}-?[0-9]{3}-?[0-9]{4}$   # match three numbers before first dash, matching second and third sets are optional 
+^[a-zA-Z0-9._]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$	 # one or more of the first set, followed by @, followed by one or more letters or numbers
+^[\w\d._]+@[\w\d]+\.[\w]{2,3}$   # alternative to above, will match foreign letters and numbers as well because of \w and \d
+
+Legend:
+
+	Assertions/Quantifiers
+		$		matches end of line
+		^		matches beginning of line
+		*		0 or more
+		?		0 or 1
+		+		1 or more
+		{n}		exactly n
+		{n,}	n or more
+		{n,m}	between n and m
+
+
+	Characters
+		.		any exxcept newline
+		[abc]	a, b, or c
+		[a-z]	a, b, ...., z
+		[^abc]	anything but a, b, c
+		\d      digit
+		\s      status
+		\w      word character
+
+
+	Special
+		\n      newline
+		\t      tab
+
+
+
+---------------
+Shell scripting
+---------------
+
+read -ps    # -p is for prompt, -s is for secret text

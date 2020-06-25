@@ -1,0 +1,81 @@
+Kubernetes Nginx Ingress Setup on Bare Metal
+============================================
+
+Source video: https://www.youtube.com/watch?v=chwofyGr80c
+
+
+Pre-requisites:
+- a couple of nodes, one k8s master and two worker nodes
+
+
+Notes:
+- you would create the load balancing k8s service as ClusterIP, not NodePort
+
+
+High Level Setup (see kubernetes_cluster_setup_bare_metal.png for diagram):
+- DNS entries: create the addresses to resolve requests
+- HA Proxy load balancer: set up to take in requests
+- K8s cluster:
+	- service pod: defined as type ClusterIP
+	- ingress resource: contains rules for routing
+	- worker node 1
+		- ingress controller
+		- deployment/app pod
+	- worker node 2
+		- ingress controller
+		- deployment/app pod
+
+
+-----------------
+A) HA Proxy setup
+-----------------
+
+Source article: https://hub.docker.com/_/haproxy
+
+
+On a separate node,
+
+1) Create a Dockerfile for building the HA proxy container (mine's under /mnt/volume1/aleem/docker/haproxy/) or see copy from my machine
+
+
+2) Create an haproxy.cfg file (see copy under the above path - the global and defaults section are the typical default settings, and the frontend/backend configs are custom for this setup)
+
+
+3) Build the image:
+	docker build -t <name-of-ha-proxy-image> .
+
+
+4) Test the config file:
+	docker run -it --rm --name haproxy-syntax-check my-haproxy haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+
+
+5) Run the container:
+
+	docker run -d --name my-running-haproxy <name-of-ha-proxy-image>
+
+	## OR you can bind mount the location of your proxy config:
+
+	docker run -d --name my-running-haproxy -v /path/to/etc/haproxy:/usr/local/etc/haproxy:ro haproxy:1.7
+
+
+6) Reload config if you made any changes to haproxy.cfg:
+	
+	docker kill -s HUP <name-of-ha-proxy-image>
+
+
+7) Enable haproxy service within the container:
+
+	systemctl enable haproxy
+	systemctl start haproxy
+	systemctl status haproxy
+
+
+
+----------------------------
+B) Create Ingress Controller
+----------------------------
+
+Repo reference: https://github.com/nginxinc/kubernetes-ingress
+
+1) Create namespace, SA (service account), default secret and customization config map
+

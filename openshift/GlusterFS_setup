@@ -1,0 +1,56 @@
+GlusterFS setup
+===============
+
+# Source article: https://www.linode.com/docs/websites/host-a-website-with-high-availability/#configure-glusterfs
+
+# Edit /etc/hosts file:
+# Main linode
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 gluster1 gluster1.aleem.com
+192.168.133.104 li1983-247.members.linode.com gluster2
+
+# Second linode
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4 gluster2 gluster2.aleem.com
+192.168.133.103 li2142-164.members.linode.com gluster1
+
+
+# Install
+yum install -y epel-release
+yum install -y centos-release-gluster
+yum install glusterfs-server
+
+# Start GlusterFS
+systemctl start glusterd
+
+# Add firewall rules
+firewall-cmd --zone=internal --add-service=glusterfs --permanent
+firewall-cmd --permanent --add-port 24007/tcp
+firewall-cmd --zone=internal --add-source=192.168.133.103/32 --permanent
+firewall-cmd --zone=internal --add-source=192.168.133.104/32 --permanent
+firewall-cmd --reload
+
+# Enable the firewalld and glusterd services to have them start automatically on boot
+systemctl enable firewalld glusterd
+
+# Add gluster peers (on main server only)
+gluster peer probe li1983-247.members.linode.com
+gluster peer status
+
+# Add directory on each server for gluster volume's storage location
+mkdir -p /data/gluster-vol
+
+# Create Gluster volume (on main server only)
+gluster volume create gluster-volume replica 2 li2142-164.members.linode.com:/data/gluster-vol li1983-247.members.linode.com:/data/gluster-vol force
+gluster volume start gluster-volume
+gluster volume info
+gluster volume status gluster-volume
+
+
+# Mount Gluster file system
+mount -t glusterfs gluster1:/gluster-volume /mnt
+
+# Test it out (don't write directly to the gluster volume dir)
+touch /mnt/test
+ls -altr /data/gluster-vol  # do this on both servers, you will see test file was created/replicated from the mount
+
+
+oc patch storageclass glusterfs-storage -p '{"metadata": {"annotations": {"storageclass.kubernetes.io/is-default-class": "true"}}}'
