@@ -1,3 +1,160 @@
+---
+AWS
+---
+
+#### Top 50 List of Services ####
+
+# Robots and Large Scale
+- Robomaker - simulate and test your robots at scale (e.g. robot vacuums)
+- IOT core - collect data from those robots, update their software, manage them remotely
+- Ground Station - control satellite communications, process data and scale operations from satellites orbiting Earth
+- Bracket - software used to interact with a quantum computer (i.e. to learn about the future of computing)
+
+# Compute
+- EC2 (Elastic Compute Cloud) - create a virtual computer in the cloud (OS, memory, computing power), for rent
+- elastic load balancing - distribute traffic to multiple instances automatically
+- Cloud Watch - collect logs and metrics from each individual instance
+- Auto Scaling - create or scale down instances based on the metrics collected from Cloud Watch
+- Elastic Beanstalk (PaaS) - interface for easily deploying code to AWS (including scaling, load balancing, etc.)
+- Lightsail - even easier deployment tool for AWS, don[t have to worry at all about the underlying infrastructure
+- Lambda (FaaS) - serverless, upload your code, decide when it should run (traffic, scaling, networking all work in background). Pay only when the app is used.
+- Serverless Repo - if you dont like writing your own code, find pre-built functions to deploy with a click
+- Outposts - Run AWS APIs on your own infrastructure (without tossing out your old servers)
+- Snow - mini data centers that work without internet in hostile envs (e.g. the Arctic)
+
+# Containers and Container Orchestration
+- Container Registry - upload/store container images
+- Elastic Container Service - run a container stored in the registry (Elastic Container Service (ECS) is the service for stopping, starting and allocating virtual machines for your containers
+															and connect them to other products such as load balancers)
+- EKS - Amazons Kubernetes service
+- Fargate - make your containers behave like serverless functions (automatic resources)
+- App Runner (2021) - deployment tool for AWS (choose your images to run, it takes care of running in AWS, including resource allocation)
+
+# File Storage
+- S3 (Simple Storage Service) - store any type of file or object
+- Glacier - higher latency, lower cost storage (more for archiving, when access rate is low)
+- Elastic Block Storage - fass, handle bigger throughput (more configuration required)
+- Elastic File System - high performance, fully manager, much higher cost
+
+# Database
+- Simple DB - general purpose no SQL database
+- Dynamo DB - document database easy to scale horizontally (cheap, scales easy, fast, but no joins and limited queries, not good at modelling relational data)
+- Document DB - controversial: not mongoDB, but exactly like it to get around licensing
+- Elastic Search - good for search
+- Amazon RDS (Relational Database Service) - supports a variety of SQL flavours, fully manage backups, scale and caching
+- Aurora - Amazons own proprietary version of SQL (compatible with Postgres/mySQL, better performance at a lower cost, easy to scale with new serverless option, only pay when in use)
+- Neptune - graph database, high performance on highly connected data sets (e.g. social graph, recommendation engine)
+- Elastic Cache - ultra fast database, fully managed version of Redis (in=memory database)
+- Timestream - time series database
+- Quantum Ledger - cryptographically signed transactions
+
+# Analyitcs
+- Redshift - data warehouse (shift away from Oracle)
+- Lake Formation - tool for creating data lakes or repos that store a large amount of unstructured data (can be used in addition to DWs to query a larger variety of data sources)
+- Kinesis - capture real time streams, view the captured data in a business intelligence tool
+- Apache Spark (Elastic Map Reduce) - stream data from multiple platforms to a business intelligence tool for analysis
+- MSK - AWS fully managed service version of Apache Kafka
+- Glue - Auto ETL (Extract, Transform, Load), can connect to different kinds of databases
+
+# Machine Learning
+- Data Exchange - purchase/exchange data from third party sources for analysis
+- Sagemaker - connect to data exchange, build machine learning models
+- Rekognition - identify/classify images
+- Lex - chatbot
+- Deep Racer - actual miniature race car driven remotely with machine learning code
+
+# Developer Essentials
+- IAM - identity and access management, roles
+- Cognito - enable to login with different auth methods
+- Simple Notification Service (SNS)
+- Simple Email Services (SES)
+- Cloud Formation - templates based on infrastructure in yaml/json format (I assume like Terraform/Ansible)
+- Amplify - provide SDKs to connect to infrastructure from front end apps
+
+# Bonus
+- AWS cost explorer - budgeting
+
+
+
+-------
+backups
+-------
+
+Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=o-83E6levzM&list=WL&index=3
+
+- fault tolerance - the prevention of data loss if a component fails
+- disaster recovery - the process of rebuilding an organizations data after a disaster
+
+
+Comparison             Data thats backed up           Restore Procedure
+
+- full                 All data (longest)							Full backup only (fastest)
+
+- incremental          Data thats been changed				Full and incremetals (in the correct order) (longest)
+											 since last full or incr.
+											 backup (fastest)
+
+- differential				 Data thats been changed				Full and last differential (medium)
+											 since the last full backup
+											 (medium)
+
+
+
+------
+base64
+------
+
+# Encrypt a plaintext password
+
+echo -n "password123" | base64 -i -     # Output: cFSzf3skacQrIrR=
+
+
+------
+cables
+------
+
+
+# Ethernet Cables
+Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=_NX99ad2FUA
+
+- unshielded twisted pair
+	- most common type of ethernet cable (used more in homes)
+	- 4 pairs of colour-coded wires twisted around each other to prevent electromagnetic interference (crosstalk)
+
+- shielded twisted pair
+	- same as UTP except has a foil shield that covers the wires (more protection against interference)
+	- both use RJ-45 connector
+
+- types of twisted pairs
+	- straight (patch) cable
+		- if both ends of a cable are using the same standard
+		- allows signals to pass through from end-to-end
+		- to connect computers to dissimilar devices together (e.g. from a PC to a modem)
+		- most commonly used
+	- crossover cable
+		- if both ends of a cable are using 2 different standards
+		- to connect to similar devices together
+
+- wiring standards
+	- 568A
+		- order of wires: white-green, green, white-orange, blue, white-blue, orange, white-brown, brown
+	- 568B (more commonly used)
+		- order of wires: white-orange, orange, white-green, blue, white-blue, green, white-brown, brown
+	
+
+- categories
+	- the difference being the max speed they can handle without interference/crosstalk
+	- the numbers represent the tightness of the twist that are applied to the wires
+		- CAT3 - 10 Mbps - obsolete
+		- CAT5 - 100 Mbps - obsolete
+		- CAT5e - 1 Gbps - Enhanced
+		- CAT6 - 1 Gbps  - 10 Gbps (cable length under 100 meters)
+		- CAT6a - 10 Gbps - Augmented
+		- CAT7 - 10 Gbps - Added shielding to the wires (shielded twisted pair version of CAT6a)
+		- CAT8 - 40 Gbps - ultimate copper cable, shielded (4 times faster than CA6a/CAT7)
+
+
+
 ------------
 certificates
 ------------
@@ -51,9 +208,393 @@ Group 8: For the love of God, do not use these: (Do Not Include. This is deviati
 
 
 
+-------------------------------
+CompTIA A+ Certifcation 220-801
+-------------------------------
+
+# Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=pgJEhzIRfMY
+
+# 1) Storage device types
+
+- floppy drive - a magnetic storage device used to read/store data using a floppy disk
+- floppy disk - a data storage medium made up of a thin magnstic disk enclosed in plastic (obsolete, replaced by networking/CD/DVD-roms)
+
+- hard drive (magnetic)
+		- secondary memory is permanent, which is the hard disk drive [HDD]
+			- the sealed case that contains disks where the actual data is stored on
+			- these disk rotate at high speeds/RPMs
+			- actuator arm either reads or writes data from the disks
+			- non-volatile (stores data even power turned off)
+
+- types of hard drives
+		- PATA [Parallel ATA] or EIDE [older standard hard drive]
+				- 40 pin ribbon cable as its connector
+				- PATA cable can support 2 devices per cable [could be 2 hdds, 2 cd-rom drives, combination]
+					- the master drive [the connector at end of the cable]
+					- the other the slave [the connector in the middle]
+				- older motherboards had two interfaces, supporting up to 4 drives
+				- latest standard is called ATA133 [obsolete, replaced by SATA]
+					- 133MBps transfer speed
+
+		- SATA [Serial ATA]
+			- faster than PATA
+			- data travels in serial path instead of parallel
+			- up to 6GBps transfer speeds
+			- hot swappable [meaning can be replaced without stopping, shutting down or rebooting the system]
+			- smaller cables
+
+		- Solid State [SSD]
+			- latest standard
+			- no moving parts
+			- uses memory chips to store data
+			- data transfer is very fast
+
+- tape drive
+ 		- inexpensive method of backing up data from your hard drive
+ 		- attaches to a computer usually via USB
+ 		- data is backed up sequentially to tape
+ 		- to restore, has to be in same order as when you backed up the data
+
+- CD-ROM drive
+		- previously a standard component in PCs (stopped in the last 4 years or so)
+		- stores permanent data
+		- reads data from a CD-ROM
+		- read-only memory, which means data can only be read and not changed or written to
+
+- CD-RW drive
+		- can change or write data to CD
+		- moving laser assembly write or "burns" data onto the CD
+		- CD-R: can only be written to once
+		- CR-RW: allows data to be re-written multiple times
+		- a CD can hold 700MB of data
+
+- DVD-ROM drive
+		- reads DVD disks
+		- has largely replaced CD-ROM drives
+		- large storage capacity (approx. 4.7GB of data)
+
+- DVD-RW drive
+		- change or write data to a DVD
+		- writes to DVD-Rs, re-writes to DVD-RWs
+		- DVD can store approx. 4.7GB of data
+		- dual layer DVD-RW drives can burn dual layer DVD-RWs
+			- can hold approx. 8.5GB of data
+
+- Blu-Ray drive
+		- latest optical drive to date that released in 2006
+		- will eventually replaced DVD because of high capacity
+		- can hold 25GB of data, 5 times more than a DVD
+
+- SD [secure digital] cards
+		- flash memory [popular]
+		- primarily used in digital cameras for storing photos and videos
+		  - can then be easily transferred to a computer with an SD card reader
+		- comes in from 2GB to 64GB
+
+- Thumb drive
+		- solid state disk
+		- uses memory chips to store data
+		- miniature storage device with a USB interface
+		- fast and convenient storage
+
+- External hard drive
+		- enclosed in a case
+		- can be externally attached to any computer typically using a USB or firewire interface
+		- primarily used to backup data from a computers hard drive for safe keeping
+
+
+- External CD-RW drive
+		- portable CD burner that can be attached to a computer
+		- typically connects to a computer via USB or firewire
+
+
+
+# 2) Power Supply
+
+- supplies power to the computer
+= square metal box emerging from one end, fits inside computer case at the top or bottom at the back
+- converts 110V AC current into specific voltages the computer needs
+- ATX - most common form factor a power supply comes in
+
+- connectors
+		- P1 - main power connector
+				 - connects directly to the motherboard to provide it with power
+				 - 20 or 24 pins
+
+		- P4 - 4 pin connector
+				 - connects to the motherboard
+				 - provides power to the CPU
+				 - used in modern motherboards
+
+		- MOLEX - 4 pin connector
+						- connecting hard drives and optical drives
+
+		- SATA - 15 pin connector
+					 - used to connect disk drives that have a SATA plug
+
+		- 4 PIN BERG [mini connector] - floppy drive connector
+
+		- 6 PIN - used to supply power to certain PCI-E video cards
+
+
+# 3) Motherboard form factor
+
+- motherboard - the main component of a computer
+							- a large circuit board where all the computer components connect to
+
+- motherboard parts
+		- processor socket
+		- memory [RAM] slots
+		- bus slots (for video cards, sound cards, network cards, etc)
+
+- form factor - different shapes and sizes of a motherboard
+
+ - types:
+
+	 - most common: ATX [Advanced Technology Extended]
+			- created in 1995 by Intel
+			- defacto standard today
+			- 12 inches x 9.6 inches in size
+
+	 - prior standard: AT
+	 		- used in 1980s
+	 		- developed by IBM
+	 		- 12 x 13.8 inches
+	 		- no longer in development
+
+	 - micro ATX
+	 		- smaller than ATX: 9.6 x 9.6 inches
+	 		- designed to fit in smaller cases
+	 		- cheaper
+	 		- consume less power
+	 		- have less features
+
+	 	- BTX
+	 		- designed by Intel, further improvements on ATX
+	 			- more inline airflow to better cool the motherboard
+	 			- structured design: flexibility to work in small and large cases
+
+	 	- ITX
+	 		- came out in 2001 [starting with mini-ITX]
+	 		- developed by VIA Technlogies
+	 		- designed for smaller, space-saving computers
+	 		- consume less power and are only cooled by use of heat sinks [no fans]
+	 		- 4 sizes
+	 			- mini
+	 			- nano
+	 				 - came out in 2005
+	 				 - designed for devices such as digital video recorders, media centers, and cars
+	 			- pico
+	 				 - came out in 2007
+	 			- mobile
+	 				 - 6cm x 6cm
+	 				 - provide developers with a standardized and ultra-compact specification for building new computer-based products
+
+	 	- NLX
+	 		- created by Intel
+	 		- designed for low-end, low profile computers
+	 		- use a Riser card [expansion cards can plug in parallel with the motherboard]
+	 		- found in slim-line computer cases
+
+
+
+# 4) I/O Interfaces
+
+- motherboards are built with several I/O interfaces
+- largely located on rear i/O panel of motherboard
+
+- types
+
+	- PS/2
+		- 6 pin, multi-din connector [typically two of them]
+		- one for mouse [green]
+		- one for keyboard [purple]
+		- older and being phased out [replaced bu USB]
+
+	- USB [Universal Serial Bus]
+		- typically several ports, different locations
+		- also supplies electric power to the specific peripheral connected to it
+		
+		- types
+			- USB 1.0 [1996] - 1.5 Mbps
+			- USB 1.1 [1998] - 12 Mbps
+			- USB 2.0 [2001] - 480 Mbps
+			- USB 3.0 [2010] - up to 5 Gbps
+
+	- Serial port
+		- serial = sending data one bit at a time
+		- older technology rarely seen on motherboards today
+		- mainly used for connecting terminals and modems to computers [replaced by USB]
+		- most common: RS-232 standard
+			- uses common D connector such as DB-9
+
+	- Parallel port
+		- mainly used for connecting printers [being replaced by USB]
+		- wide D-sub connector know as DB-25
+		- sends data over several parallel channels at the same time
+
+	- Video adapter
+		- some computers have them, some dont
+		- "integrated video" - adapter and motherboard essentially one unit
+		- generates images to your monitor
+		- most common: VGA [video graphics array]
+			- carries analog data
+			- 15 pins, divided into 3 rows, blue colour
+			- not very powerful, for light apps
+
+  - IEEE 1394 [Firewire]
+  	- recognized by its "D" shape, similar to a USB port [not as popular]
+  	- cmommonly used by attaching cameras and printers
+  	- 400 Mbps transfer speed
+
+  - Network Interface Card [NIC]
+  	- used for networking purposes
+  	- designed for an ethernet cable with an RJ-45 connector
+  	- has its own unique identifier called a "MAC Address"
+  	- 10-1000 Mbps transfer speed
+
+  - Sound card
+  	- can be built-in/integrated [much like integrated video adapter]
+  	- processes audio through computers speakers
+  	- basic sound card will have a port for speakers and a port for a microphone [more sophisticated ones will have extra]
+
+  - eSATA port
+  	- attaching external SATA drives [such as a hard drive]
+  	- functions similar to USB and Firewire ports
+  	- transfers speeds are faster, but requires a separate power plug
+  	- eSATAp port combines data transfer and power all in one port
+
+
+
+# 5) Adapter/Expansion Cards
+
+- circuit boards that can be installed into the expansion slots of the motherboard
+- designed to increase the functionality of the computer
+- eg. video cards, audio cards, storage cards, etc.
+
+- types:
+	
+	- video card [aka graphics cards]
+		- generates images from the computer to monitor
+		- printed circuit board that directly attaches to the motherboard
+		- has memory, GPU, bus type, video ports
+
+		- types of video ports
+
+			- S-Video [aka separate video, aka super video]
+				- analog transmitter
+					- 2 signals over one cable
+						- one for colour, one for brightness
+				- round in shape, usually black in colour
+			
+			- VGA [video graphics array]
+				- older tech from 1987
+				- 15 pins in 3 rows
+				- analog
+				- port is blue in colour 
+
+			- DVI [Digital Visual Interface]
+				- succeeded VGA, newer tech [1999]
+				- designed to deliver uncompressed high quality video to LCD monitors
+
+			- HDMI [High Definition Multimedia Interface]
+				- developed in 2002
+				- designed to deliver uncompressed audio and video data through a single cable
+				- de facto standard for crystal clear video/audio
+
+
+	- sound card
+		- processes audio through the computers speakers
+		- audio output port for attaching speakers [green]
+		- input for microphone [purple]
+		- extra [orange, blue, etc] for extra sound devices
+
+	- Firewire card
+		- adapter card with firewire ports
+		- adds/expands firewire capability to a computer
+
+	- USB card
+		- add extra USB ports to a computer
+
+	- RAID card
+		- for creating a hardware RAID array
+		- used for data redundancy
+		- the OS is not aware of RAID implementation [more on this later]
+
+	- eSATA card
+		- used for adding external SATA ports
+		- adds capability of adding extra SATA hard drives
+		- adding extra hard drives is primarily used for backing up and storing data
+
+	- NIC [netowrk interface card]
+		- used to connect a computer to a network using an ethernet cable
+		- converts serial data into parallel data
+		- provides a constant dedicated connection to a network
+		- each NIC has its own MAC address [unique identifier]
+
+	- Wireless NIC
+		- connects to a network wirelessly
+		- built-in antenna
+		- convenient
+
+	- PCMCIA card
+		- PC card, which is an expasion card for laptops
+		- originally called PCMCIA or "Personal Computer Memory Card International Association" card, the form factor for a peripheral designed for laptops
+		- slides into the external slot [e.g. a modem card, network card, wifi card]
+
+
+# 6) RAM Slots
+
+
+
+
 -------
 crontab
 -------
+
+# Sources:
+- https://crontab.guru - translate any cron entry and tells you what its timing interval is
+- https://www.youtube.com/watch?v=QEdHAwHfGPc - Engineer Mans cron video
+
+# Of the 5 stars:
+- 1st - minute (0 - 59)
+- 2nd - hour (0 - 23)
+- 3rd - day of the month (1 - 31)
+- 4th - month (1 - 12)
+- 5th - day of the week (0 - 6) (Sunday to Saturday; 7 is also Sunday on some systems)
+
+# Format
+* * * * * [user] [command]
+
+# Quick examples
+
+# every minute
+* * * * * /path/to/script
+
+# every minute as user tim
+* * * * * tim /path/to/script
+
+# every hour at the top of the hour
+0 * * * * /path/to/script
+
+# nightly at 11pm
+0 23 * * * /path/to/script
+
+# first of the month at 3pm, every month
+0 15 1 * * /path/to/script
+
+# every day at 8am, 10am, 12pm and 2pm
+0 8,10,12,14 * * * /path/to/script
+
+# every half hour
+*/30 * * * * /path/to/script
+
+# every tuesday at 8am
+0 8 * * 2 /path/to/scropt
+
+# first wednesday of each month
+0 23 1-7 * 3 /path/to/script
+
 
 # Edit crontab
 crontab -e
@@ -84,6 +625,17 @@ wget --no-parent -r http://WEBSITE.com/DIRECTORY
 echo insecure >> $HOME/.curlrc
 
 
+
+----
+deno
+----
+
+- What is it? A secure runtime for javascript and typescript
+
+***to be continued***
+
+
+
 ------
 docker
 ------
@@ -100,7 +652,7 @@ docker service create --mode=global --name socat \
 --entrypoint "socat TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock" \
 bobrik/socat
 
-# docker login troubleshootin
+# docker login troubleshooting
 	- docker login not working (user interaction not allowed msg)
    		- remove credsStore from config.json
    		- if above doesn't work, uncheck 'Securely store Docker logins in macOS keychain'
@@ -139,11 +691,11 @@ docker run --restart always --name cntlm \
   robertdebock/docker-cntlm
 
 
-# Building an image with multi-stage (cut down the size) - example Dockerfile
+# Building an image with multi-stage (cut down the size) - example Dockerfile  (2021/04/08)
 
 #### First stage
 
-FROM ubuntu:18.04 as builder
+FROM ubuntu:18.04 as builder					 # notice the 'as builder' in the first stage
 RUN apt-get update
 RUN apt-get install -y make yasm nasm as31 binutils
 COPY . .
@@ -152,8 +704,8 @@ RUN make release
 
 #### Second stage
 
-FROM scratch            # can use alpine here if scratch is too empty
-COPY --from=builder /asttpd /asmttpd         # this is where the executable produced from stage 1 gets copied over to the second stage
+FROM scratch            					     # can use alpine here if scratch is too empty
+COPY --from=builder /asttpd /asmttpd             # this is where the executable produced from stage 1 gets copied over to the second stage
 COPY /web_root/index.html /web_root/index.html
 
 CMD ["/asmttpd", "/web_root", "8080"]
@@ -287,7 +839,8 @@ firewall-cmd --runtime-to-permanent
 Fortify
 -------
 
-- upload command: ./fortifyclient -url https://fortify_url.com/ssc -authtoken xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx uploadFPR -file ../something.fpr -project "project_name" -version "latest"
+# upload command:
+./fortifyclient -url https://fortify_url.com/ssc -authtoken xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx uploadFPR -file ../something.fpr -project "project_name" -version "latest"
 
 
 ---
@@ -309,6 +862,15 @@ git push --mirror  https://github.cibcdevops.com/<new-repo>
 git config --global credential.helper store
 
 
+# use .gitattributes within a repo to define file behaviours/attributes. Eg below of contents within a .gitattributes file:
+
+*               text=auto
+*.txt		text
+*.vcproj	text eol=crlf
+*.sh		text eol=lf
+*.jpg		-text
+
+
 ------
 Github
 ------
@@ -316,6 +878,93 @@ Github
 - sudo reboot - reboot Github instance
 - sudo systemctl start elasticsearch - restart search service
 - sudo systemctl status elasticsearch - check search services status
+
+
+
+----
+helm
+----
+
+Definition: a package manager for kubernetes, defines package specifications in the form of custom YAMLs called 'charts'
+
+Directory structure:
+
+folder/
+	Chart.yaml     			# contains info about the chart
+	LICENSE 			 			# OPTIONAL: license for the chart
+	README.md 		 			# OPTIONAL: human readable readme
+	values.yaml    			# Default config values for the chart
+	values.schema.json  # OPTIONAL: impose a structure on the values file with a JSON schema
+	charts/           	# A directory containing any charts upon which this chart depends
+	crds/								# Custom Resource Definitions
+	templates/					# A dir of templates when combined with values generate valid K8s manifest files
+	templates/NOTES.txt # OPTIONAL: plan text file containing short usage notes  
+
+
+------
+httpie
+------
+
+# Sources
+- https://pypi.org/project/httpie/ - homepage, lots of examples
+
+# on Ubuntu, the httpie CLI utility for interacting with websites via CLI
+apt-get install python3-pip
+pip3 install --upgrade httpie
+http <website_URL>
+
+
+### Examples ###
+
+# Custom HTTP method, HTTP headers and JSON data:
+
+http PUT pie.dev/put X-API-Token:123 name=John
+
+
+# Submitting forms:
+
+http -f POST pie.dev/post hello=World
+
+
+# See the request that is being sent using one of the output options:
+
+http -v pie.dev/get
+
+
+# Build and print a request without sending it using offline mode:
+
+http --offline pie.dev/post hello=offline
+
+
+# Use GitHub API to post a comment on an issue with authentication:
+
+http -a USERNAME POST https://api.github.com/repos/httpie/httpie/issues/83/comments body='HTTPie is awesome! :heart:'
+
+
+# Upload a file using redirected input:
+
+http pie.dev/post < files/data.json
+
+
+# Download a file and save it via redirected output:
+
+http pie.dev/image/png > image.png
+
+
+# Download a file wget style:
+
+http --download pie.dev/image/png
+
+
+-------
+ingress
+-------
+
+# Responsible for
+	- accept/deny incoming requests
+	- SSL termination
+	- routing
+	- load balancing
 
 
 --------
@@ -418,13 +1067,91 @@ Jenkins
 	- Start Jenkins
 
 
+
+
+------------------------------------------------------------------------
+kind a software for running kubernetes clusters within docker containers
+------------------------------------------------------------------------
+
+# Sources
+- https://www.youtube.com/watch?v=m-IlbCgSzkc&list=WL&index=1
+
+# Prerequisites
+- docker
+- go (1.11+)
+- kubectl
+
+# Install kind
+- can download binary from Github, place in any PATH (e.g. /usr/local/bin/kind)
+
+# Create kind kubernetescluster
+kind create cluster --name <cluster_name>
+	- this will pull the kind docker image to spin up for creating a single master node cluster
+
+kind get clusters
+	- show running clusters
+
+kind delete cluster
+	- to remove the created cluster
+
+# Check running nodes
+kubectl get nodes
+
+# set kubeconfig to point to your new cluster (can run more than once to add clusters)
+export KUBECONFIG="$(kind get kubeconfig-path --name="<cluster_name>"
+
+
+# Multi-node cluster - its possible to create a kind cluster with worker nodes added
+
+- create a yaml with the following def
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+
+
+- create cluster with this yaml definition
+
+kind create cluster --config /path/to/kind.yam
+
+
+- verify
+
+kind get clusters
+docker ps 					                   # will show running kind containers, one which is your master/control plane as in the first example, and one or more as your worker nodes
+kubectl cluster-info                   # show info about cluster, including the URL to hit it
+kubectl get nodes -o wide  					   # see the nodes not as docker containers but as kind nodes
+
+docker exec -ti <container_ID> bash    # log into any of the kind containers
+which ctr 														 # container runtime binary similar to docker command line
+ctr namespaces list  									 # can see namespaces within the cluster
+ctr namespace k8s.io containers list   # can see all the containers that make up the cluster
+
+
+
 -------
 kubectl
 -------
 
-kubectl expose deploy <pod> --port <port> --dry-run -o yaml     # Expose a deployment as a service
+kubectl expose deploy <pod> --port <port> --dry-run -o yaml     # Expose a deployment as a service, dry run to check yaml definition
+kubectl -n <namespace> port-forward <pod_name> <port> 			# Port forward to expose an app as a service
 
 
+
+--------------------
+kubernetes - general
+--------------------
+
+- control nodes and control plane - the administrative node[s] of a cluster which instruct and manage the worker nodes which run workloads
+
+	- kube-api server - main component which communicates instructions to/from all cluster components, and validates/configures data for api objects such as pods, services, RCs, etc.
+	- etcd - key/value store for a cluster
+	- scheduler - responsible for telling api server where a pod needs to be scheduled and when
+	- kubelet - the agent which sits on the worker node and communicates with the api server
+	- kube-proxy - intercommunication mechanism in a cluster between nodes
+	- controller-manager - responsible for telling the api server to match the desired state with the actual state of pods within a cluster
 
 ---
 ldd
@@ -458,10 +1185,10 @@ lsof
 ----
 
 lsof <filename>       # check which processes have this file open
-lsof -p <PID>         # check specific pid's open files (could be multiple)
+lsof -p <PID>         # check a specific pids open files [could be multiple]
 lsof -u <userid>      # check list of open files for specific user
 lsof -i <port>        # check which processes are listening on specific port
-lsof -i <protocol>    # check which processes are listening on specific protocol (i.e. tcp)co
+lsof -i <protocol>    # check which processes are listening on specific protocol [i.e. tcp]
 
 
 
@@ -469,39 +1196,45 @@ lsof -i <protocol>    # check which processes are listening on specific protocol
 Mac OS X
 ---------
 
-   - check RAM:
+   # check RAM:
    		system_profiler SPHardwareDataType | grep "Memory:"
-   - check # of CPU cores:
+
+   # check # of CPU cores:
    		sysctl -a | grep cpu.core_count
-   - check GPU:
+
+   # check GPU:
 		system_profiler SPDisplaysDataType
-   - stop and start Jenkins
+
+   # stop and start Jenkins
    		sudo launchctl unload /Library/LaunchDaemons/org.jenkins-ci.plist
 		sudo launchctl load /Library/LaunchDaemons/org.jenkins-ci.plist
-   - update URL
+
+   # update URL
    	    sudo defaults write /Library/Preferences/org.jenkins-ci httpPort 8082
    	    sudo defaults write /Library/Preferences/org.jenkins-ci prefix /jenkins
-   	    for brew:
+   	    # for brew:
    	       /usr/local/Cellar/jenkins/2.x.x/homebrew.mxcl.jenkins.plist
    	       		update:
    	       			  <string>--httpPort=8082</string>
   					  <string>--prefix=/jenkins</string>
    	       brew services restart jenkins-lts
-   - update heap size/permGen
+
+   # update heap size/permGen
         sudo defaults write /Library/Preferences/org.jenkins-ci minPermGen 512m
   		sudo defaults write /Library/Preferences/org.jenkins-ci permGen 2048m
   		sudo defaults write /Library/Preferences/org.jenkins-ci minHeapSize 512m
   		sudo defaults write /Library/Preferences/org.jenkins-ci heapSize 2048m
 
 
-   - check installed java versions:
+   # check installed java versions:
    		/usr/libexec/java_home -V
+
 
 -----------------
 Mounting a Volume
 -----------------
 
-Source article: https://www.linode.com/docs/platform/block-storage/how-to-use-block-storage-with-your-linode/#add-a-volume-from-the-linode-detail-page
+# Source article: https://www.linode.com/docs/platform/block-storage/how-to-use-block-storage-with-your-linode/#add-a-volume-from-the-linode-detail-page
 
 # One-time step for defining the FS type of the volume
 mkfs.ext4 $volume_path   # check the file system path of the volume in your cloud console, it will show you the device drive location
@@ -553,7 +1286,7 @@ nc -l -p 1234
 
 # get more info from remote server (eg. for connectivity issues)
 
-nc -v localhost 1234 (or nc -vv)
+nc -v localhost 1234  [or nc -vv]
 
 
 # port scanning (eg. on localhost, from ports 1-30)
@@ -568,7 +1301,7 @@ cat access.log | nc -vv -l -p 4567
 # and then
 
 nc -vv localhost 4567 > fileToGet
-^C (to close the connection)
+^C [to close the connection]
 
 
 # turn a process into a server (when client connects, nc will execute /bin/bash, to give shell access to machine)
@@ -615,7 +1348,45 @@ nc -vv 127.0.0.1 1234
 netstat
 -------
 
-netstat -tupln   # display network connections, tcp and udp, show which processes are using which sockets (need root for p option), -l is for listening sockets, -n is for active tcp connectionsm 
+netstat -tupln   # display network connections, tcp and udp, show which processes are using which sockets (need root for p option), -l is for listening sockets
+
+-n - show only numbers, not names [i.e. DNS names, which takes time to calculate when not using the -n switch]
+-a - show active connections, where TCP and UDP are listening
+-b - show which program is creating the connection [e.g. you'll see something like chrome.exe]
+-f - shows FQDN in foreign address column
+-? - show all options
+
+
+
+--------------------
+networking - general
+--------------------
+
+# Hubs vs. Switches vs. Routers
+Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
+
+- hub - connect all network devices together
+			- not intelligent, only knows when something is connected to it
+			- data is copied/transmitted to all ports which have a connection to it
+				- can be a security concern if you dont want every device to see data being transmitted between one device on the network and another
+
+- switch - like a hub except intelligent, only broadcasts between communicating devices, not every device on network
+			   - can detect specific devices that are connected to it
+			   - keeps track of mac addresses of the devices connected
+			   
+
+- both of the above
+			- for internal communication within a network
+			- cannot read IP addresses
+			- used to create networks
+
+
+- router - route/fwds data based on the IP address
+				 - inspects packet for the IP address before it routes it
+				 - the gateway of a network
+				 	 - accepts only packets fron the internet intended for its own network
+				 - used to connect networks
+
 
 
 
@@ -630,15 +1401,174 @@ nginx
   ./nginx
 
 
+# Concept in K8s
+- ingress.yaml -> service.yaml -> application-deploy.yaml
+	- ingress has the routing rules, service pods act as the load balancers to the application pods/nodes
+
+
+-----------
+nice/renice
+-----------
+
+# definition: can run a program with a modified scheduling priority
+# range: from -20 to 19. Default is 0, the lower the value, the higher the priority (so -20 is highest priority)
+
+
+# start process with nice value (10 by default)
+nice [command]
+
+# start process with a specific nice value (2 in this case)
+nice -n 2 [command]
+
+# change nice value of a running process
+renice -n 2 -p [pid]
+
+# change nice value for all running processes for a user
+renice -n 2 -u [user] 
+
+
 ---
 npm
 ---
 
-- npm config set '//artifactory_url/artifactory/api/npm/npm/:_authToken' 'zsASDKLNvasdfoloi3w123lk1jhof8jaspodfj'
-- npm config set sass_binary_site=http://artifactory_url:8081/artifactory/node-sass
-- npm config set registry http://artifactory_url:8081/artifactory/api/npm/npm/
-- npm -g config set user root
-- npm config set strict-ssl false
+# Set auth token in npmrc for a target registry
+npm config set '//artifactory_url/artifactory/api/npm/npm/:_authToken' 'zsASDKLNvasdfoloi3w123lk1jhof8jaspodfj'
+
+
+# Set node-sass binary site for pulling sass bindings during an npm install (if required)
+npm config set sass_binary_site=http://artifactory_url:8081/artifactory/node-sass
+
+
+# Set npm registry for resolving dependencies, publishing
+npm config set registry http://artifactory_url:8081/artifactory/api/npm/npm/
+
+
+# Set root user (in case installs fail with permission denied, only for root or sudo installs)
+npm -g config set user root
+
+
+# Set SSL check to false (use only temporarily as a workaround for certificate errors)
+npm config set strict-ssl false
+
+
+# Remove all node_modules folders on an FS in multiple locations
+npx npkill
+
+--------------------
+performance analysis
+--------------------
+
+# Sources
+- https://www.slideshare.net/brendangregg/container-performance-analysis
+
+# To review
+- Brendan Greggs ftrace repo - https://github.com/brendangregg/perf-tools
+- BGs eBPF blog post - http://www.brendangregg.com/blog/2015-05-15/ebpf-one-small-step.html
+- BGs eBPF article - http://www.brendangregg.com/ebpf.html
+- eBPF [aka BPF] - https://github.com/iovisor/bcc
+- Intel snap - a metric collector used by monitoring GUIs: https://github.com/intelsdi-x/snap
+- Collectd plugin - https://github.com/bobrik/collectd-docker
+
+
+# Basic commands
+
+dmesg | tail    	# shows kernel errors
+free -m [or -g]		# memory usage
+iostat -xz 1		# disk I/O
+mpstat -P ALL 1		# CPU balance
+netstat -s 			# shows statistics by protocol (network)
+pidstat 1			# process usage
+sar -n DEV 1		# network I/O
+sar -n TCP,ETCP, 1  # TCP stats
+top 				# overview of processes (hit 1 to see CPU usage). Note: does not show container ID
+uptime     			# shows time passed since last reboot of server
+vmstat 1			# overall stats by time
+
+
+# Advanced tools
+
+iosnoop				# disk I/O events w/ latency
+btrfsdist			# latency histogram
+zfsslower 1			# file system latency is a better pain indicator than disk latency
+
+
+# Namespaces - limit what you can see, whereas cgroups limit what you can use
+
+cat /proc/<PID>/cgroup 						 # events for target container within the cgroup
+docker stats 								 # a top for containers
+dockerpsns.sh [or docker ps --namespaces]    # an initial check before deep dive. More info at https://github.com/docker/docker/issues/32501
+grep <PID> /sys/fs/cgroup/cpu,cpuacct/docker/*/tasks | cut -d/ -f7      # will show container associated with PID
+htop 										 # can show cgroup (unlike top), but may truncate important info
+ls -l /proc/<PID>/ns/*						 # shows ns info about a process
+nsenter -t <PID> -u hostname				 # check which host target PID is running on
+	-m, -u, -i, -n, -p, -U 					 # mount, uts, ipc, net, pid, user
+nsenter -t <PID> -n netstat -i 				 # container netstat
+nsenter -t <PID> -m -p df -h 				 # container file system usage
+nsenter -t <PID> -p top 					 # container top
+nsenter -t <PID> -m -p top 					 # -m for more?
+	grep NSpid /proc/<PID>/status 			 # an alternative to above command
+systemd-cgtop								 # a top for cgroups
+
+
+
+# cgroup metrics cont'd
+
+cd /sys/fs/cgroup/cpu,cpuacct/docker/<container_ID>
+ls
+cat cpuacct.usage
+cat cpu.stat 								 # will show total time throttled
+
+
+
+# CPU profiling
+
+perf record -F 49 -a -g -- sleep 30
+
+	# Limitations
+	- perf wont be able to find /tmp/perf-PID.map files on the host, PID would be different as well
+	- perf cant find container binaries in host paths [i.e. what /usr/bin/java?]
+
+	# Other notes
+	- Can copy files to the host, map PIDs, then run perf script/report:
+		- https://blog.alicegoldfuss.com/making-flamegraphs-with-containerized-java/
+		- http://batey.info/docker-jvm-flamegraphs.html
+	- Can nsenter (-m -u -i -n -p) a "power shell, and then run perf -p PID
+	- perf should be fixed to be namespace aware
+
+
+# CPU Flame Graphs
+
+git clone --depth 1 https://github.com/brendangregg/FlameGraph
+cd FlameGraph
+perf record -F 40 -a -g -- sleep 30
+perf script | ./stackcollapse-perf.pl | ./flamegraph.pl > perf.avg
+
+	# Notes
+	- see CPU Profiling section for getting perf symbols to work
+	- from the host, can study all containers, as well as container overheads
+
+strace -fp <PID>							 # trace/debugging target PID
+
+
+# ftrace
+
+funccount '*ovl*'							 # show kernel function calls (overlay)
+kprobe -s 'p:ovl_fill_merge ctx=%di name=+0(%si):string'   # look into more
+
+
+# BPF (Berkeley Packet Filter)
+runqlat -p <PID> 10 1						 # show queue latency, 10 lines, update every second
+runqlat --pidnss -m 						 # show per namespace
+
+
+#### Summary ####
+
+Identify bottlenecks:
+1. in the host vs. container, using system metrics
+2. in application code on contaienrs, using CPU flame graphs
+3. deeper in the kernel, using tracing tools
+
+
 
 --
 ps
@@ -650,6 +1580,42 @@ ps eww -p <PID>
 or
 
 ps -auwwwx | grep <anything>
+
+
+
+
+------
+python
+------
+
+Threading vs Multiprocessing - both are trying to do the same thing: to run multiple things at the same time.
+
+Threading:
+- A new thread is spawned within the existing process
+- Starting a thread is faster than starting a process
+- Memory is shared between all threads
+- Mutexes often necessary to control access to shared data
+- One GIL (Global Interpreter Lock) for all threads
+
+Multiprocessing:
+- A new process is started independent from the first process
+- Starting a process is slower than starting a thread
+- Memory is not shared between processes
+- Mutexes not necessary (unless threading in the new process)
+- One GIL (Global Interpreter Lock) for each process
+
+
+
+
+--------------------------
+RAM - Random Access memory
+--------------------------
+
+- temporary storage on a computer motherboard
+	- stored in modules that are called DIMMs (Dual Inline Memory Module)
+		- dual because there are two sets of pins (comes in different number of pins as well)
+
+- in order for a program to run, it needs to be loaded into RAM first
 
 
 -----
@@ -690,6 +1656,21 @@ Legend:
 
 
 
+-----
+redis
+-----
+
+- stands for 'Remote Dictionary Server' - an in-memory multi-model database
+- RAM-based processing - data processing happens on RAM, but also stored on disk in case of restructuring/rebuilding needed
+- key/value store - storing data in the form of key/value (different types include string, bitmap, hash, list, set, stream)
+- secondary database - can be used as cache support for relational DBs
+- **primary DB** - can also be the primary database for even a large scale application
+- plugins - can install add-on module plugins to help with structuring, searching, etc.
+- cli - has its own command line (naturally...)
+
+
+
+
 ---
 RPM
 ---
@@ -702,6 +1683,68 @@ RPM
    - check pkgmap - rpm -V <rpm_name> --dbpath /path/to/rpm_db
    - uninstall rpm - rpm -ev pkg_name --dbpath /path/to/rpm_db
 
+
+
+-------
+secrets
+-------
+
+# Apply secret to a K8s namespace from a file
+
+kubectl apply -f secret.yaml
+
+
+# Apply secret using K8s native CLI
+	
+	# passing the string directly
+	
+	kubectl create secret generic my-secret \
+		--from-literal=APU_TOKEN=password123
+
+	# pass from a file
+	
+	kubectl create secret generic my-secret \
+		--from-file=cert=/path/to/cert/file`
+
+
+# secret yaml example
+apiVersion: v1
+kind: Secret
+metadata:
+	name: my-secret
+data:
+	API_TOKEN: c4FDca23zdfA4A=
+
+
+# Use secret in app (from file) - sub-section of yaml
+
+spec:
+  containers:
+..
+..
+..
+     env:
+       - name: API_TOKEN
+         valueFrom:
+         	secretKeyRef:
+         		name: my-secret
+         		key: API_TOKEN
+
+
+# Use secret from a volume
+
+spec:
+  containers:
+  ..
+  ..
+  ..
+     volumeMounts:
+       - name: secret-volume
+       - mountPath: /etc/secret-volume
+  volumes:
+    - name: secret-volume
+      secret:
+      	secretName: my-secret
 
 ---
 sed
@@ -745,17 +1788,38 @@ ssh public/private key generation for passwordless SSH
 	> ssh-keygen -t rsa -b 4096
 	# do not enter a passphrase, just hit enter
 
-2) Copy the contents of id_rsa.pub and ssh to the target server, cd to the user's .ssh folder, edit authorized_keys, and paste the pub key entry into the file and save. You should now be able to ssh from the client to the server without a password.
+2) Copy the contents of id_rsa.pub and ssh to the target server, cd to the users .ssh folder, edit authorized_keys, and paste the pub key entry into the file and save. You should now be able to ssh from the client to the server without a password.
 
 3) You can also try updating authorized_keys from the client like so:
 	> ssh-copy-id -i ~/.ssh/id_rsa.pub user@host
 	
 
+# SSH tunneling - requires SSH server to be set up on target machine
+# source: https://www.youtube.com/watch?v=AtuAdk4MwWw&list=WL&index=9
+
+- tunnel from local machine to a remote machine
+ssh -L <port_to_expose>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
+
+
+- create SOCKS proxy
+ssh -D <any_port> <dest_user>@<destination_SSH_server_IP>
+
+	# after running the above, you can for example set this in your LAN settings in your browser, enter the details in the SOCKS proxy section, and any site you visit will be forwarded through the
+	# SSH tunnel to the destination specified
+
+
+- Set up a SSH tunnel from the target server for a "local" PC or server to access
+ssh -R <any_port>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
+
+	# enter the remote server's IP and any_port in your local browser via remote desktop and you'll be able to remote into the target machine
+
+
+
 -------
 Storage
 -------
 
-Block vs File Storage: very traditional vs. the newer storage types
+# Block vs File Storage: very traditional vs. the newer storage types
 
 Block
 	- accessed through SAN (storage area network)
@@ -779,11 +1843,11 @@ If you need:
 
 
 
-NAS vs SAN
+# NAS vs SAN
 
 NAS - Network Attached Storage
 		- store data in a centralized location accessible to all devices
-		- just stores data, that's it
+		- just stores data, thats it
 		- will have multiple hard drives in a RAID configuration
 		- will have NIC to connect to router so its network accessible, accessed as a shared drive
 		- small to medium scalability
@@ -807,11 +1871,452 @@ SAN - Storage Area Network
 
 
 
-------------
-thread dumps
-------------
 
-Generating Thread Dumps
+
+-----------------
+terraform - azure
+-----------------
+
+Source: https://www.youtube.com/watch?v=bHjS4xqwc9A
+
+1) Get an Azure subscription (can be free)
+
+2) Authenticate with Azure (best to use Azure CLI - can download from Docker Hub)
+	docker run -it --rm -v ${PWD}:/work -w /work --entrypoint /bin/bash mcr.microsoft.com/azure-cli:2.6.0
+	az login
+	export TENANT_ID=<your_tenant_id>
+
+3) List subscription details and set
+	az account list -o table
+	SUBSCRIPTION=<id>
+	az account set --subscription $SUBSCRIPTION
+
+
+4) Create service principal
+
+SERVICE_PRINCIPAL_JSON=$(az ad sp create-for-rbac --skip-assignment --name aks-getting-started-sp -o json)
+
+SERVICE_PRINCIPAL=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.appID')
+SERVICE_PRINCIPAL_SECRET=$(echo $SERVICE_PRINCIPAL_JSON | jq -r '.password')    # Note: keep appID and password for later use
+
+	# where jq is a cli which is like sed for JSON data
+
+
+5) Assign a role to the newly created service principal
+
+az role assignment create --assignee $SERVICE_PRINCIPAL \
+--scope "/subscriptions/$SUBSCRIPTION" \
+--role Contributor
+
+
+6) Install Terraform CLI
+
+curl -o /tmp/terraform.zip -LO https://releases.hashicorp.com/terraform/0.12.28/terraform_0.12.28_linux_amd64.zip
+unzip /tmp/terraform.zip
+chmod +x terraform && mv terraform /usr/local/bin/
+
+
+7) Create terraform files called main.tf and variables.tf
+
+# main.tf file contents
+
+provider "azurerm" {
+	version = "=2.5.0"
+
+	subscription_id = var.subscription_id
+	client_id				= var.serviceprinciple_id
+	client_secret		= var.serviceprinciple_key
+	tenant_id 			= var.tenant_id
+
+	features {}
+}
+
+
+# variables.tf file contents
+
+variable "serviceprinciple_id" {
+}
+
+variable "serviceprinciple_key" {
+}
+
+variable "tenant_id" {
+}
+
+variable "subscription_id" {
+}
+
+
+
+8) Initialize terraform
+
+terraform init     	# will create a .terraform folder, will have all the downloaded plugins, metadata, etc.
+
+
+9) Create terraform plan with the files created in previous step
+
+terraform plan -var serviceprinciple_id=$SERVICE_PRINCIPAL \
+	-var serviceprinciple_key="$SERVICE_PRINCIPAL_SECRET" \
+	-var tenant_id=$TENANT_ID \
+	-var subscription_id=$SUBSCRIPTION
+
+# terraform will keep an in-memory record of the state of the plan that has been applied
+
+
+10) Create a terraform module for your AKS cluster, with its own variables.tf file
+
+mkdir -p <dir>/.terraform/modules/cluster
+
+
+# variables.tf file contents
+
+variable "serviceprinciple_id" {
+}
+
+variable "serviceprinciple_key" {
+}
+
+variable "location" {
+	default = "australiaeast"
+}
+
+variable "kubernetes_version" {
+	default = "1.16.10"
+}
+
+
+11) Create a cluster.tf file and define a resource group and a cluster definition
+
+# cluster.tf file contents
+
+resource "azurerm_resource_group" "aks-getting-started" {
+	name 		 = "ask-getting-started"
+	location = var.location
+}
+
+resource "azurerm_kubernetes_cluster" "aks-getting-started" {
+	name 									= "aks-getting-started"
+	location 							= azurerm_resource_group.aks-getting-started.location
+	resource_group_name		= azurerm_resource_group.aks-getting-started.name
+	dns_prefix						= "aks-getting-started"
+	kubernetes_version		= var.kubernetes_version
+
+
+  default_node_pool {
+  	name 			    	= "default"
+  	node_count    	= 1
+  	vm_size					= "Standard_E4s_v3"
+  	type  					= "VirtualMachineScaleSets"
+  	os_disk_size_gb = 250
+  }
+
+  service_principal {
+  	client_id = var.serviceprinciple_id
+  	client_secret = var.serviceprinciple_key
+  }
+
+  linux_profile {
+  	admin_username = "azureuser"
+  	ssh_key {
+  			key_data = var.ssh_key
+  	}
+  }
+
+  network_profile {
+  		network_plugin = "kubenet"
+  		load_balancer_sku = "Standard"
+  }
+
+  addon_profile {
+  	aci_connector_linux {
+  		enabled = false
+  	}
+
+  	azure_policy {
+  		enabled = false
+  	}
+
+  	http_application_routing {
+  		enabled = false
+  	}
+
+  	kube_dashboard {
+  		enabled = false
+  	}
+
+  	oms_agent {
+  		enabled = false
+  	}
+  }
+}
+
+# see azure provider page and azurerm kubernetes cluster page on the terraform website for more details
+
+
+12) Generate an SSH key for access to the cluster
+
+ssh-keygen -t rsa -b 4096 -N "VeryStrongSecret123!" -C "your_email@example.com"
+export SSH_KEY=$(cat ~/.ssh/id_rsa.pub)
+
+
+13) Update the variables.tf sitting on the same level as the main.tf file (outside of the cluster folder) with the below
+
+# Updated variables.tf file contents
+
+variable "serviceprinciple_id" {
+}
+
+variable "serviceprinciple_key" {
+}
+
+variable "tenant_id" {
+}
+
+variable "subscription_id" {
+}
+
+variable "ssh_key" {
+}
+
+variable "location" {
+	default = "australiaeast"
+}
+
+variable "kubernetes_version" {
+	default = "1.16.10"
+}
+
+
+14) Re-apply updated terraform plan
+
+terraform plan -var serviceprinciple_id=$SERVICE_PRINCIPAL \
+	-var serviceprinciple_key="$SERVICE_PRINCIPAL_SECRET" \
+	-var tenant_id=$TENANT_ID \
+	-var subscription_id=$SUBSCRIPTION \
+	-var ssh_key="$SSH_KEY"
+
+
+15) Update main.tf with the cluster module information
+
+# Updated main.tf file contents
+
+provider "azurerm" {
+	version = "=2.5.0"
+
+	subscription_id = var.subscription_id
+	client_id				= var.serviceprinciple_id
+	client_secret		= var.serviceprinciple_key
+	tenant_id 			= var.tenant_id
+
+	features {}
+}
+
+module "cluster" {
+	source 								= "./modules/cluster/"
+	serviceprinciple_id		= var.serviceprinciple_id
+	serviceprinciple_key  = var.serviceprinciple_key
+	ssh_key								= var.ssh_key
+	location							= var.location
+	kubernetes_version		= var.kubernetes_version
+}
+
+
+16) Re-initialize terraform (confirm if previous plan needs to somehow be wiped first?)
+
+terraform init
+
+
+17) Re-apply updated terraform plan (this will create 2 plans, 1 for the cluster, 1 for the resource group)
+
+terraform plan -var serviceprinciple_id=$SERVICE_PRINCIPAL \
+	-var serviceprinciple_key="$SERVICE_PRINCIPAL_SECRET" \
+	-var tenant_id=$TENANT_ID \
+	-var subscription_id=$SUBSCRIPTION \
+	-var ssh_key="$SSH_KEY"
+
+
+18) Add a new resource to demonstrate terraforms capability of updating infrastructure changes via code
+
+# Add to above cluster.tf contents
+
+resource "azurerm_kubernetes_cluster_node_pool" "monitoring" {
+	name 										= "monitoring"
+	kubernetes_cluster_id 	= azurerm_kubernetes_cluster.aks-getting-started.id
+	vm_size									= "Standard_DS2_v2"
+	node_count							= 1
+	os_disk_size_gb					= 250
+	os_type									= "Linux"
+}
+
+
+19) Update cluster.tf values, such as change node_count to 2 in default_node_pool
+
+20) Re-run the same terraform apply command as in step 17 (you will be prompted to say yes or no to apply the changes)
+
+21) Create a new k8s module (create k8s folder under modules first) and a corresponding variables.tf 
+
+# k8s.tf file contents
+
+provider "kubernetes" {
+	load_config_file				= "false"
+	host 										= var.host
+	client_certificate 			= var.client_certificate
+	client_key							= var.client.key
+	cluster_ca_certificate  = var.cluster_ca_certificate
+}
+
+
+# variables.tf file contents
+
+variable "host" {
+}
+
+variable client_certificate {
+}
+
+variable client_key {
+}
+
+variable cluster_ca_certificate {
+}
+
+
+22) Define a k8s deployment in the k8s.tf file
+
+# Snippet example to put under the provider "kubernetes" section in the file
+
+resource "kubernetes_deployment" "example" {
+	metadata {
+		name = "terraform-example"
+		labels = {
+			test = "MyExampleApp"
+		}
+	}
+
+  ...
+  ...
+  ...
+
+	}
+
+
+23) Add a service definition to the k8s.tf file to expose the deployment in step 22
+
+# Snippet example to put under kubernetes_deployment resource section
+
+resource "kubernetes_service" "example" {
+	metadata {
+		name = "terraform-example"
+	}
+	spec {
+		selector = {
+			test = "MyExampleApp"
+		}
+		port {
+			port         = 80
+			target_port  = 80
+		}
+
+		type - "LoadBalancer"
+	}
+}
+
+
+24) Update main.tf with module information required by the new k8s module
+
+# Add to above main.tf file contents
+
+module "k8s" {
+	source                 = "./modules/k8s/"
+	host                   = "${module.cluster.host}"
+	client_certificate     = "${base64decode(module.cluster.client_certificate)}"
+	client_key				     = "${base64decode(module.cluster.client_key)}"
+	cluster_ca_certificate = "${base64decode(module.cluster.cluster_ca_certificate)}"
+}
+
+
+25) In the cluster module, create a new file called outputs.tf (which terraform uses to grab values from to match with variables we defined. In this case we spit out the contents of kube_config)
+
+# outputs.tf file contents
+
+output "kube_config" {
+	value = azurerm_kubernetes_cluster.aks-getting-started.kube_config_raw
+}
+
+output "cluster_ca_certificate" {
+	value = azurerm_kubernetes_cluster.aks-getting-started.kube_config.0.cluster_ca_certificate
+}
+
+output "client_certificate" {
+	value = azurerm_kubernetes_cluster.aks-getting-started.kube_config.0.client_certificate
+}
+
+output "client_key" {
+	value = azurerm_kubernetes_cluster.aks-getting-started.kube_config.0.client_key
+}
+
+output "host" {
+	value = azurerm_kubernetes_cluster.aks-getting-started.kube_config.0.host
+}
+
+
+26) Go to cluster.tf and remove the monitoring node pool and update default_node_pool value back to 1
+
+27) Re-apply the terraform plan - this will:
+	- add 2 plans (the kubernetes deployment and service)
+	- update 1 plan (the default_node_pool resource)
+	- destroy 1 plan (the monitoring node pool resource)
+
+Note: add a -out param to the terraform apply command to save a plan that you are applying
+
+
+28) Get cluster credentials to put into kubeconfig
+
+az aks get-credentials -n aks-getting-started -g aks-getting-started
+
+
+29) Use kubectl to verify what youve set up
+
+
+
+
+---------------
+troubleshooting
+---------------
+
+***Kubernetes deployments - general approach***
+
+1. Deployments
+2. Pods
+For both check:
+	a) status
+	b) events
+
+- Commands
+	kubectl get deploy
+	kubectl logs <pod_name>
+	kubectl describe deploy <deployment_name>
+- failure examples:
+	- pod not able to pull image (e.g. its missing)
+	- liveliness probe is failing (e.g. the URL doesnt exist)
+- status examples and possible causes:			
+	- status: ContainerCreating
+		- could be stuck because config map missing
+	- status: CrashLoopBack
+		- pod attempts to continually restart but cannot, usually an app or image issue.
+	- status: Pending
+		- insufficient memory
+		- image may not run (e.g. try docker run on it outside a pod)
+	- pods running, but not reachable
+		- check selector label in service def matches app selector label
+			- kubectl get svc
+	- connection refused
+		- endpoint may have wrong targetPort (check yaml for port and targetPort)
+
+
+
+***Generating Thread Dumps for troubleshooting performance issues***
+
 1.	Identify the process ID (pid) of the tomcat process running JIRA by executing the following command: 
 2.	ps aux | grep jira
 3.	Execute the following command (be sure to replace both occurrences of $JIRA_PID with the pid you identified in the previous step): 
@@ -819,3 +2324,27 @@ Generating Thread Dumps
 5.	That script will run for one minute, during which it will generate top output of the process threads to six text files in the current directory.
 6.	Attach the files generated by the script to this issue.
 7.	Generate and send a complete support zip.
+
+
+
+***Performance issues in a web app***
+
+- in Chrome or whichever browser, open the console and check the performance tab, see if memory usage and see if it keeps climbing
+- go to memory tab and take a snapshot of the memory values of each page or call
+
+
+--------
+webhooks
+--------
+
+Source: https://www.youtube.com/watch?v=rUaDIH5ZXB8&list=WL&index=2
+
+Definition: http messages that are sent in response to an event to a third party service (e.g. you can configure a webhook in Github to send messages to Jenkins based on push events to a given repository)
+
+
+
+-----
+whois
+-----
+
+whois [domain_name]   # will return comprehensive information about that URL/domain (given that domain is publicly registered)
