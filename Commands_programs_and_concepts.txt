@@ -1,3 +1,15 @@
+-------
+Ansible
+-------
+
+#### How to automate your Mac setup ####
+
+# Source: https://github.com/geerlingguy/mac-dev-playbook
+
+
+
+
+
 ---
 AWS
 ---
@@ -544,6 +556,114 @@ CompTIA A+ Certifcation 220-801
 
 
 # 6) RAM Slots
+
+- Random Access Memory - temporary memory, installed on the motherboard
+- average motherboard has between 2 and 4 slots
+
+- types:
+
+	- DIMM [Dual Inline memory module]
+		- can have 168, 184 or 240 pins
+		- has 2 independent rows of pins, 1 row per side
+		- 64 bit data path
+
+	- SIMM [Single inline memory module]
+		- older tech
+		- has redundant pins on both sides
+		- has 32 or 72 pins
+		- 32 bit data path
+
+	- RIMM [Rambus inline memory module]
+		- developed by Rambus Inc.
+		- has 184 pins and resembles a DIMM
+		- was a breakthrough in memory speed in 1999
+		- never fully caught on because of advancement of DIMMs
+
+
+- 32 or 64 bit data path refers to number of bits of data transferred in 1 cycle
+	- bit - the smallest form of data that the computer reads
+	- 8 bits = 1 byte
+  - 64 / 8 = 8 byte wide bus
+  - 32 / 8 = 4 byte wide bus
+
+
+
+ # 7) Printers
+
+ - printers allow the ability to print documents or pictures onto paper
+ - usually connects to computer via USB or parallel cable
+ 	- can also connect through a network connection
+ 	- network share - where other computers on your network can use your local printer [as long as your computer is on]
+
+ 	- types:
+
+ 		- non-impact printers
+ 			- print without striking an ink ribbon onto paper
+
+ 				- inkjet
+ 					- most common printers for home use
+ 					- more affordable than laser printers
+ 					- print head moves back and forth across paper
+ 						- places ink on paper in very tiny dots
+ 					- 2 ink cartridges: black and colour
+ 						- can produce photo quality results
+ 						- ink can smudge
+
+ 				- thermal
+ 					- print by using heat
+ 					- user thermal paper, which has wax-based ink
+ 					- as heat is applied to ink, it turns black
+ 					- print head applies heat to areas where ink should be placed
+ 					- ink becomes permanent when cooled
+ 					- very quiet
+ 					- commonly used for printing labels and barcodes
+
+ 				- laser
+ 					- come in different sizes
+ 					- provide highest quality of print
+ 					- most expensive
+ 					- method:
+ 						- electric charge placed on rotating drum
+ 						- laser discharges lower electric charge on drum
+ 						- laser draws image that is going to be printed on the drum itself
+ 						- drum is coated with a fine black powder known as "toner", which will only cling to the laser drawn parts of paper
+ 						- toner is placed on paper
+
+ 		- impact
+ 				- dot matrix
+ 					- very old tech, mediocre print quality
+ 					- very noisy, but very durable and last a long time
+ 					- the pins on the print head strike against a cloth ink ribbon that comes in direct contact with the paper, producing characters in the form of dots
+ 					- can print multi copy docs such as carbon copies
+
+
+# 8) Cooling
+
+- very important to a computer since they generate a lot of heat
+- if components not adequately cooled, computers can overheat and:
+	- run slow
+	- lock up
+	- shut down
+	- shorten the life of the computer
+- biggest heat generators come from the CPU and video card
+
+- types:
+
+	- case fans
+		- intake fan - the fan mounted at front, sucks air in
+		- exhaust fan - mounted at the back, pushes air out
+			- when they work together, its known as "active cooling"
+
+	- heat sink [CPU]
+		- CPU running without a cooling component would fry itself in 10 seconds, needs heat sink to dissipate the heat
+		- an aluminum block with fins that directly makes contact with CPU
+		- increases surface area of CPU so it can make more air contact for cooling
+		- fins increase surface area for air circulation
+			- heat transfers to heat sink fins for air to cool
+			- known as "passive cooling"
+
+
+
 
 
 
@@ -1870,6 +1990,96 @@ SAN - Storage Area Network
 			- very expensive in general
 
 
+-------
+systemd
+-------
+
+# Basic setup
+# Source: Engineer Man - https://www.youtube.com/watch?v=unIAGt5pB7A&list=WL&index=3
+
+- organizes programs in units, uses unit files to manage their state
+- systemd basically auto-manages programs you define for you by auto starting them when they go down, when the system goes down
+
+1) Create a unit file [e.g. somename.service] to define your service:
+
+# File contents
+
+[Unit]
+Description=SomeReallyImportantService
+
+[Service]
+Type=simple
+WorkingDirectory=/root
+ExecStart=/root/my_program.sh
+
+[Install]
+WantedBy=multi-user.target
+
+
+# Or can use more complex file contents below
+
+[Unit]
+Description=SomeReallyImportantService
+Wants=something.service dependedon.service
+Requires=dependedon.service
+After=something.service
+
+[Service]
+Type=simple
+User=root
+Group=root
+Environment=SOMEVAR=someval
+WorkingDirectory=/root
+ExecStart=/root/my_program.sh
+
+[Install]
+WantedBy=multi-user.target
+
+
+# Above sections
+- Description - describes the service [info]
+- Wants - also starts services listed other than this service
+- Requires - like Wants, except if a service listed fails to start, this service will also fail to start
+- After - starts listed service[s] first before starting this service
+
+- Type - defines how the process starts up     # different types defined here: https://www.freedesktop.org/software/systemd/man/systemd.service.html#
+- User and Group - start service as specified user and group
+- Environment - add variables to inject into start up
+- WorkingDirectory - for temp or generated files
+- ExecStart - the path to the script/program to run as part of this service
+- TimeoutSec - up to specified number of seconds to start
+- Restart - defines restart policy [e.g. always]
+- RestartSec - how long to wait before restarting, if service goes down
+
+
+2) Save the file in /etc/systemd/system/
+
+
+3) See below the different commands to manage the service
+
+systemctl start somename 
+systemctl stop somename
+systemctl enable somename 							
+systemctl disable somename 				# If service is disabled, service will not start upon system boot/reboot
+systemctl list unit-files         # Lists all services and their status'. See following link for possible statuses: https://www.freedesktop.org/software/systemd/man/systemctl.html
+
+
+
+# Advanced configuration of systemd
+# see also : https://www.freedesktop.org/software/systemd/man/systemd.unit.html
+
+- multi-user.target - if service is enabled, tells systemd at what run level should this service start [above example corresponds to run level "2"]
+
+
+# Rough Guide on Run Levels - Linux Standard Base [LSB] 4.1.0 [see Wiki on "Runlevel"]
+ID			Name																	Description
+0				Off																		Turns off the device.
+1				Single-user mode											Mode for administrative tasks.[2][b]
+2				Multi-user mode												Does not configure network interfaces and does not export networks services.[c]
+3				Multi-user mode with networking				Starts the system normally.[1]
+4				Not used/user-definable								For special purposes.
+5				Full mode															Same as runlevel 3 + display manager.
+6				Reboot																Reboots the device.
 
 
 

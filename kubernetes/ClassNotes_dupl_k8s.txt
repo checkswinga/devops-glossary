@@ -1,0 +1,278 @@
+READ:
+- Lab 7 Task 2 is optional (using swarm)
+- Lab 8
+
+
+EXAMINE:
+- KLab 1, Task 1, Step 12-13
+- KLab 1, Task 2, Step 17-19, 22
+
+
+
+
+
+Lab 1, STep 9 result: 32767
+
+Lab 1, Step 10 result: only user namespace is different between current shell and the background container
+
+
+
+Matthew Headlee: alias dcls=docker container ls --format "table {{.Names}}\t{{.ID}}\t{{.Image}}\t{{.Status}}"
+
+Matthew Headlee: alias dcls='docker container ls --format "table {{.Names}}\t{{.ID}}\t{{.Image}}\t{{.Status}}"'
+
+
+
+Commands
+========
+
+bash autocompletion of aliases
+------------------------------
+alias d=docker
+complete -F _docker d
+alias dcls='docker container ls --format "table {{.Names}}\t{{.ID}}\t{{.Image}}\t{{.Status}}"'
+alias dils='docker image ls'
+alias dsls='docker service ls --format "table {{.Name}}\t{{.Replicas}}\t{{.Image}}\t{{.Ports}}" | column -t'
+
+
+More stuff
+----------
+
+eval "$(dircolors /etc/DIR_COLORS.256color)"
+realpath <file>
+docker container exec test df -Ph /
+curl server1:5000/v2/_catalog
+docker container commit -a 'StudentX <studentX@example.com>' -c ENTRYPOINT ["/usr/bin/curl"] c2 server1:5000/studentX/mydev:v2
+python -mjson.tool manifest.json
+docker image rm -f $(docker image ls -q)
+rm -rf /tmp/image-{save,export}
+yum -y --releasever=7 --nogpg --installroot=/srv/R7 install passwd yum redhat-release-server vim-minimal
+cd /srv/R7
+tar c -C /srv/R7 . | docker image import - r7base
+docker system prune -af
+docker image save image:v2 | tar tv | awk '/layer/ {print $6}'
+docker history <image_name>
+docker image inspect <image>
+add to vimrc - 
+cp dockerfile-v{3,4}
+
+lsns -p <PID>
+pstree -S $(pgrep <process name>)
+podman container exec <container_name> ps -ef
+
+grep ^graphroot /etc/containers/storage.conf
+ls -l /var/lib/containers/storage/overlay-images/
+ls -l /var/lib/containers/storage/overlay-containers/
+
+
+Configure the containerd daemon to allow the guru user access:
+# containerd config default > /etc/containerd/config.toml TOML = Tom's Obvious, Minimal Language
+# sed -i "s/gid = .*/gid = $(id -g guru)/" /etc/containerd/config.toml
+# systemctl start containerd
+
+
+# grep processor /proc/cpuinfo | wc -l
+2
+# grep MemTotal /proc/meminfo
+MemTotal: 8174760 kB
+
+Grow the /var filesystem to 20G:
+# fsadm -l resize /dev/mapper/vg0-var 20G
+
+Start docker, configure to start up on boot up:
+# systemctl enable --now docker
+
+
+cmd | grep -A14 testc2
+pgrep <string:int within process desc>
+
+sudo killall -STOP http
+sudo killall -CONT http
+
+ctrl + p ctrl + q (exit from pod)
+
+openssl x509 -text -in /etc/kubernetes/pki/ca.crt | head
+
+awk -F:  /client-certificate-data/ {print $2} /etc/kubernetes/controller-manager.conf a
+| base64 --decode | openssl x509 -text
+
+kubectl rollout pause deploy/app1
+
+kubectl create service clusterip app1 --tcp=80 --dry-run -o yaml | tee app.service.yaml
+
+kubectl get events | grep nginx
+
+
+Cert config map:
+----------------
+server {
+  root /data;
+  listen 443 ssl;
+  ssl_certificate_key /etc/nginx/ssl/tls.key;
+  ssl_certificate /etc/nginx/ssl/tls.crt;
+}
+
+kubectl create configmap web-tls-config --from-file=tls.conf
+
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048a -keyout nginx.key -out nginx.crt -subj "/CN=web.s5.apps.example.com"
+
+kubectl create secret tls web-tls-cert --key=nginx.key --cert=nginx.crt
+-------------------------------------------
+
+kubectl describe job failapp | grep ^Pods
+
+Start nc listening for incoming connections on port 1701:
+$ nc -kl 1701
+
+
+Create/mount FS
+----------------
+
+# parted /dev/sdb mklabel msdos
+Information: You may need to update /etc/fstab.
+# parted -a cylinder /dev/sdb mkpart primary xfs 0 1G
+Information: You may need to update /etc/fstab.
+# grep sdb1 /proc/partitions
+8 17 979933 sdb1
+3) Create a filesystem on the new partition and configure the system to mount it on
+boot, then verify it mounts:
+# mkfs -t xfs -L PV /dev/sdb1
+meta-data=/dev/sdb1 isize=512 agcount=4, agsize=61246 blks
+= sectsz=512 attr=2, projid32bit=1
+= crc=1 finobt=0, sparse=0
+. . . snip . . .
+# cp /etc/fstab{,.bak}
+# echo LABEL="PV" /export xfs defaults 0 0 >> /etc/fstab
+# mkdir /export/; mount /export/
+# df -h /export/
+----------------------------
+
+
+Places
+------
+
+/proc
+
+
+
+
+Remember
+---------
+
+- ipc,mnt,net,pid,uts for each container
+- CrashLoopBackOff = containers within pod restarting too quickly
+
+- Annotations:
+nginx.ingress.kubernetes.io/rewrite-target: /
+
+- Kubernetes requires swap to be disabled - installer will fail if enabled
+
+Disable swap to allow the Kubelet to provide predictable performance behavior:
+# swapon -s
+Filename Type Size Used Priority
+/dev/dm-1 partition 524284 0 -1
+# sed -i /swap/d /etc/fstab
+# swapoff /dev/mapper/vg0-swap
+# lvremove -y vg0/swap
+Logical volume "swap" successfully removed
+# swapon -s
+
+Prevent the scripts in the initial ram filesystem from attempting to active the, now
+deleted, swap logical volume at boot:
+File: /etc/default/grub
+GRUB_TERMINAL_OUTPUT="console"
+! GRUB_CMDLINE_LINUX="video=800x600 rd.lvm.lv=vg0/root rd.**lvm.lv=vg0/swap** rhgb quiet"
+GRUB_DISABLE_RECOVERY="true"
+
+----> delete the item within the ** ** above
+
+
+
+Links
+-----
+
+https://en.wikipedia.org/wiki/Cgroups
+
+https://en.wikipedia.org/wiki/Chroot
+
+http://man7.org/linux/man-pages/man7/namespaces.7.html
+
+https://docs.docker.com/engine/security/seccomp/
+
+https://docs.docker.com/ee/ucp/
+
+https://github.com/moby/moby/issues/8460
+
+https://hub.docker.com/
+
+https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-5736
+
+
+Podman - https://developers.redhat.com/blog/2018/08/29/intro-to-podman/
+
+
+https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/building_running_and_managing_containers/index
+
+
+Buildah - alternative to docker, can build images without Docker, created by Redhat
+
+Skopeo - https://github.com/containers/skopeo/blob/master/docs/skopeo.1.md
+
+https://flatpak.org/
+
+https://ubuntu.com/desktop/developers
+
+
+https://yaml.org/spec/1.2/spec.html
+
+Installing Kubernetes the hard way - https://github.com/kelseyhightower/kubernetes-the-hard-way
+
+https://www.cncf.io/certification/cka/
+
+https://etcd.io/
+
+https://raft.github.io/
+
+https://raft.github.io/raft.pdf
+
+https://cri-o.io/
+
+Kubernetes architecture walktrhough doc - https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md
+
+https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG-1.15.md
+
+https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/
+
+https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.15/#pod-v1-core
+
+https://github.com/kubernetes/kubernetes/pull/50796
+
+https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-probes/
+
+https://kubernetes.io/docs/concepts/workloads/controllers/deployment
+
+https://kubernetes.io/docs/concepts/workloads/controllers/replicaset
+
+https://kubernetes.io/docs/concepts/workloads/controllers/deployment
+
+https://docs.ceph.com/docs/master/cephfs/
+
+https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data
+
+https://www.gluster.org/
+
+https://crontab.guru/
+
+https://stackoverflow.com/questions/41192053/cron-jobs-in-kubernetes-connect-to-existing-pod-execute-script
+
+https://stackoverflow.com/questions/49431902/running-a-cronjob-in-a-pod-in-kubernetes
+
+https://kubernetes.io/docs/tasks/administer-cluster/reserve-compute-resources/
+
+https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/
+
+https://labs.play-with-k8s.com/
+
+Book: Kubernetes: Up and Running: Dive into the Future of Infrastructure
+
+Book: 
