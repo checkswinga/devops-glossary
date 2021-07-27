@@ -661,10 +661,107 @@ CompTIA A+ Certifcation 220-801
 		- fins increase surface area for air circulation
 			- heat transfers to heat sink fins for air to cool
 			- known as "passive cooling"
+		- to attach the heat sink to the CPU, the CPU needs "thermal paste" applied evenly to its surface
+			- fills in microscopic gaps on CPU surface, for maximum contact and heat transfer
+
+	- water cooling
+		- inclues pump, hosing, and radiator
+			- unit is placed directly on CPU (from the pump side)
+			- pump circiulates the water throughout the unit to keep the CPU cool
+			- when water reaches the radiator, radiator mounted fan takes in air to cool the water
+			- cycled is repeated
+		- cools far better than air cooling
+		- quieter than air cooling
+		- more expensive than air cooling
 
 
 
+# 9) Random Access Memory (RAM)
 
+- RAM is primary memory or temporary storage
+	- in order for a program to run, needs to be loaded into RAM first
+	- if memory is too low, hard drive has to hold some of the data for the RAM, which slows down the computer since HDD has to still send the data to the RAM once its free
+		- in that case, add more RAM :D
+	- requires constant electrical power to store data
+	- RAM is stored on motherboard in modules called DIMMs
+		- come in different sizes
+		- 128MB to 4GB per DIMM
+
+- Types:
+
+	- Dynamic RAM [DRAM]
+		- contains capacitors
+		- has to be refreshed often [electricity]
+
+	- Synchronous RAM [SRAM]
+		- uses transistors
+		- does NOT have to be refreshed
+		- faster than DRAM
+		- very expensive
+		- examples: memory cache used by CPU
+
+	- Synchronous DRAM [SDRAM]
+		- used today in RAM DIMMs
+		- difference between SDRAM vs. DRAM
+			- DRAM - operates asynchronously with the system clock
+			- SDRAM - operates synchronously with the system clock
+								- all signals are tied to the system clock for better controlled timing
+
+		- SDRAM Speeds:
+			- eg. PC-100 256MB SDRAM
+				- 100 Mhz = the speed at which it operates
+				- 8 byte wide bus
+				- 100 Mhz x 8 bytes = 800Mbps
+
+	- DDR RAM [Double Data Rate]
+		- sends double the amount of data in each clock signal
+			- non-DDR uses only the rising edge of the clock signal to send data
+				- DDR uses both, hence twice as fast
+	
+		- labelling diff - unlike SDRAM, DDR uses the total bandwidth in its labelling 
+				- eg. PC-2700 512MB DDR RAM
+					- 333 * 8 bytes = 2700Mbps (roughly)
+
+		- 184 pins
+
+	- DDR2 RAM
+		- higher bus speeds with less power than DDR
+		- 240 pins
+		- eg. PC2-3200 DDR2 1GB DDR2 RAM
+
+	- DDR3 RAM
+		- twice as fast as DDR2
+		- bandwidths of over 12800 Mbps
+		- 240 pins
+			- unlike DDR/DDR2, bottom notches are in different places, so cannot mix and match DDR/DDR2 and DDR3 RAM on the same motherboard
+		- eg. PC3-8500, PC3-12800
+
+	- RDRAM
+		- developed by Rambus Inc., debuted in 1999 [a breakthrough at the time]
+		- RIMM - Rambus Inline Memory Module
+		- look similar to DIMMs: 184 pins, but notches located in center of module
+		- ran at 800 MHz [at the time SDRAM was 133 Mhz]
+			- downside: only had a 2 byte wide bus
+		- designed to work with a continuous signal
+			- all other memory slots must be in use/filled in
+				- could install C-RIMM [Continuity RIMM] or dummy RIMM can be used to fill space as well
+
+
+	- Dual Channel Mode
+		- motherboard must be equipped to work in this mode
+		- DIMMs must be identical to each other
+		- DIMMs must be inserted into the motherboard in a specific slot configuration
+
+
+	- Error Correcting Code [ECC RAM]
+		- detects if the data was correctly processed by the memory module
+		- makes a correction if it needs to
+		- ECC has 9 memory chips, while non ECC has 8
+			- most modules are non-ECC with the advancement of RAM and less errors
+		- mostly used in servers as extra precaution to guard against memory errors
+
+
+# 10) CPU, Socket and Chipset
 
 
 
@@ -1726,18 +1823,6 @@ Multiprocessing:
 
 
 
-
---------------------------
-RAM - Random Access memory
---------------------------
-
-- temporary storage on a computer motherboard
-	- stored in modules that are called DIMMs (Dual Inline Memory Module)
-		- dual because there are two sets of pins (comes in different number of pins as well)
-
-- in order for a program to run, it needs to be loaded into RAM first
-
-
 -----
 Regex
 -----
@@ -2032,7 +2117,7 @@ Environment=SOMEVAR=someval
 WorkingDirectory=/root
 ExecStart=/root/my_program.sh
 
-[Install]
+[Install]     ############################################## need to learn more on this section ###################################################
 WantedBy=multi-user.target
 
 
@@ -2074,9 +2159,9 @@ systemctl list unit-files         # Lists all services and their status'. See fo
 # Rough Guide on Run Levels - Linux Standard Base [LSB] 4.1.0 [see Wiki on "Runlevel"]
 ID			Name																	Description
 0				Off																		Turns off the device.
-1				Single-user mode											Mode for administrative tasks.[2][b]
-2				Multi-user mode												Does not configure network interfaces and does not export networks services.[c]
-3				Multi-user mode with networking				Starts the system normally.[1]
+1				Single-user mode											Mode for administrative tasks.
+2				Multi-user mode												Does not configure network interfaces and does not export networks services.
+3				Multi-user mode with networking				Starts the system normally.
 4				Not used/user-definable								For special purposes.
 5				Full mode															Same as runlevel 3 + display manager.
 6				Reboot																Reboots the device.
