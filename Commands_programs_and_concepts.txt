@@ -842,6 +842,31 @@ wget --no-parent -r http://WEBSITE.com/DIRECTORY
 echo insecure >> $HOME/.curlrc
 
 
+---------------
+default gateway
+---------------
+
+Source: https://www.youtube.com/watch?v=pCcJFdYNamc
+
+- definition: a device that forwards data from one network to another [usually a router]
+	- lets devices from one network communicate with devices on another network
+	- "default" means the designated device is the first option thats looked upon when data needs to exit the network
+	- to connect out to the internet from a local network, it has to go through a gateway, usually the default
+	- not required for internetwork communication
+
+	- an IP address consists of two parts: network address and host address
+	- subnet mask: reveals how many bits in the IP address are used for the network by masking the network portion of the address
+
+		- eg.
+			- IP address  - 192.168.0.2   -   11000000.10101000.00000000.00000010
+			- Subnet mask - 255.255.255.0 -   11111111.11111111.11111111.00000000
+																				network  network network     host
+
+			  - for each of the 4 digits, the sections with all 1s indicate the network portion, and these "mask" the corresponding parts of the IP address of the network, telling it
+			  	that it does NOT have to go through the default gateway to communicate with the device on that subnet
+			  	- 192.168.0 is the subnet in this case
+			  	- see 3:39 in source vid for examples of communication
+
 
 ----
 deno
