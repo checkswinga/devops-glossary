@@ -166,7 +166,6 @@ Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=_NX99ad2FUA
 		- CAT8 - 40 Gbps - ultimate copper cable, shielded (4 times faster than CA6a/CAT7)
 
 
-
 ------------
 certificates
 ------------
@@ -1604,6 +1603,9 @@ netstat -tupln   # display network connections, tcp and udp, show which processe
 networking - general
 --------------------
 
+ - An example LAN [NetworkChucks setup]: PC -> Switch -> Router -> Firewall -> Modem -> Fiber optic -> Internet
+
+
 # Hubs vs. Switches vs. Routers
 Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
 
@@ -1847,6 +1849,13 @@ Multiprocessing:
 - One GIL (Global Interpreter Lock) for each process
 
 
+----------
+References 
+----------
+
+- boson.com - highly recommended by NetworkChuck [YT] for CCNA, CCNP, etc. certification
+
+
 
 -----
 Regex
@@ -1918,6 +1927,33 @@ RPM
 -------
 secrets
 -------
+
+# General levels of keeping secrets
+# Source: DevOps Directive [Sid Palas] - https://www.youtube.com/watch?v=7NTFZoDpzbQ
+
+1) Hardcode directly in the code
+
+2) Create a config file, but still stored in plaintext
+	- generally ok to check into source if the secrets are for dev envs 
+
+3) Encrypt the config file
+	- can use openssl to encrypt the config
+
+		openssl aes-256-cbc -d -a -salt -in secrets.env.enc -out secrets.env -pass pass:Where-am-I-supposed-to-store-this?!
+		cat secrets.env
+		
+		# eg. file contents
+		DB_PASS=somethingsomething
+
+
+4) Use a dedicated secret manager
+	- eg. in code, secret manager is called and variable referenced
+
+
+5) Ephemeral or temporary credentials (eg. using Hashicorp vault)
+	- rotates/renews credentials automatically, creds have an enforced expiry
+
+
 
 # Apply secret to a K8s namespace from a file
 
