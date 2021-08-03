@@ -2027,6 +2027,69 @@ Multiprocessing:
 
 
 
+----
+RAID
+----
+
+# Sources: Powercert Animated Videos - https://www.youtube.com/watch?v=U-OCdTeZLac [RAID 0, 1, 5, 10]
+#																		 - https://www.youtube.com/watch?v=UuUgfCvt9-Q [RAID 5 & 6]
+
+
+- RAID stands for "Redundant Array of Indepdent Disks"
+- used for data loss prevention in the event of hardware failure
+	- data is spread across multiple disks for fault tolerance
+
+- types:
+
+	- RAID 0
+		- not fault tolerant
+		- data is 'striped' across multiple disks
+			- eg. disk A would have certain parts of the data, disk B would have the other parts. If one of these disks fail, all of the data would be lost
+		- advantage: speed
+			- 2 disk controllers instead of one, makes data access much faster
+
+	- RAID 1
+		- fault tolerant
+		- data is copied on more than 1 disk [duplicate copy of the data across each disk]
+			- i.e. each disk has the same data 
+
+	- RAID 5
+		- requires 3 or more disks
+		- fast and can store a large amount of data
+		- can handle single disk failure, cannot handle two disk failures at the same time
+		- data is not duplicated but striped across multiple disks along with "parity"
+			- parity
+				- an entire copy of the data across each disk
+				- used to rebuild a failed disk
+				- eg. an array of 4 disks totaling 4 TB
+					- only 3 TB used for data storage
+					- 1 TB used to store parity for rebuilding any of the 4 disks in the event of failure
+
+	- RAID 6
+		- requires 4 or more disks
+		- 50% capacity used for data storage
+		- like RAID 5 in terms of data striping, but parity is spread TWICE on each disk
+			- can handle 2 disk failures at the same time [rare occurrence]
+				- if 2 drives fail at the same time, double parity from other disks would be used to rebuild the data on the new drives
+		- read performance is the same between RAID 5 and 6
+		- write performance is slower because it has to write 2 independent parity blocks instead of 1
+
+
+	- RAID 10
+		- combines RAID 0 and 1 together
+		- benefits of RAID fault tolerance from RAID 1 with the speed from RAID 0
+			- downside: can only use 50% of the capacity for data storage
+		- minimum of 4 disks needed
+		- RAID 0 pointing to 2 RAID 1 sets of 2 disks 
+			- RAID 0 -> RAID 1 -> disk 1 
+												 -> disk 2
+							 -> RAID 1 -> disk 3
+							 					 -> disk 4
+
+
+
+
+
 -----------
 Rapberry Pi
 -----------
