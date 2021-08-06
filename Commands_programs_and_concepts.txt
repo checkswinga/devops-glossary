@@ -1120,25 +1120,95 @@ cd /tmp
 nc 127.0.0.1 1234 | tar -xvf -
 
 
-----------------
-Filesystem types
-----------------
+-----------
+Filesystems
+-----------
+
+- file systems divide the storage space on a drive into virtual compartments known as "clusters"
+- maintain an index of where individual files are located
+
+
+
+# Types
+
 auto - this is a special one. It will try to guess the fs type when you use this.
 
-ext4 - this is probably the most common Linux fs type of the last few years
+exFAT - Extended file allocation table
+	- file system optimized for high-capacity USB flash drives and memory cards
+	- maximum file size = 16EB
+	- default FS for SDXC mem cards
+	- broader non-Windows OS support than NTFS [including read/write on MacOS]
 
-ext3 - this is the most common Linux fs type from a couple years back
 
-ntfs - this is the most common Windows fs type or larger external hard drives
+ext - Extended File System
+	- launched in 1992 for Linux
 
-vfat - this is the most common fs type used for smaller external hard drives
+ext2 - launched in 1993
+	- default FS in many Linux systems for years
 
-exfat - is also a file system option commonly found on USB flash drives and other external drives
+ext3
+	- launched in 2001
+	- this is the most common Linux fs type from a couple years back
+	- introduced journaling to protect against corruption in the event of crashes or power failures
+
+ext4
+	- launched 2008
+	- this is probably the most common Linux fs type of the last few years
+	- maximum file size of 16TB, max volume size of 1EB
+	- no native Windows or MacOS support
+
+
+FAT - File Allocation Table
+	- major variants: FAT12, FAT16, FAT32
+		- each has increasing number of clusters, maximum file and volume sizes
+		- FAT32 still widely used for removeable media and popular due to wide OS compatibility
+
+		- max file size
+			- FAT12 - 32MB [8KB clusters] or 16MB w/ 4KB clusters
+			- FAT16 - 2GB/4GB
+			- FAT32 - 4GB
+
+		- max volume size
+			- FAT12 - 32MB [8KB clusters]
+			- FAT16 - 16GB [256KB clusters]
+			- FAT32 - 32GB [Windows format]
+						  - 2TB [other OS]
+						  - 16TB [theoretical]
+
 
 glusterfs - for Gluster
 
-zfs - an advanced fs fype that pools disk storage
-	# source article: https://itsfoss.com/what-is-zfs/
+
+HFS - Hierarchical File System [for MacOS]
+	- aka MacOS Standard
+	- was introduced w/ journaling as HSF+ [HSF Extended]
+	- files and volumes up to 8EB [as of MacOS 10.4]
+	- 2017 - APFS launched [Apple file system]
+	- no native Windows or Linux support
+
+
+
+NTFS - New Technology File System
+
+	- this is the most common Windows fs type or larger external hard drives
+	- file size limit of 16 exabytes
+	- journaling file system [maintains a record of changes in case of failures]
+	- supports file permissions and encryption
+	- all Windows must be installed on NTFS
+		- downside: limited non-Windows OS compatibility - eg. read-only in MacOS and older Linux distros
+
+
+vfat - this is the most common fs type used for smaller external hard drives
+
+
+ZFS - zed file system
+- created by Sun Microsystems, now developed by OpenZFS project
+- an advanced fs fype that pools disk storage
+- integrated volume manager to control storage hardware
+	- provides increased data protection
+- available for Linux, FreeBSD and TrueOS
+
+
 
 
 
