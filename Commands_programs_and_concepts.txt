@@ -1838,8 +1838,43 @@ networking - general
  - An example LAN [NetworkChucks setup]: PC -> Switch -> Router -> Firewall -> Modem -> Fiber optic -> Internet
 
 
+# ARP - Address Resolution Protocol
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=cn8Zxh9bPio
+
+- definition - used to resolve IP addresses to MAC addresses [the physical address of a device, eg. 00-04-5A-63-AI-66]
+
+- info
+	- devices need the MAC address for communication on a LAN
+	- devices use ARP to acquire MAC address for a device
+		- IP address is used to locate device on a network
+		- MAC address is used to identify the actual device
+
+- process
+	1. device checks its ARP cache table, the internal list of all IP/MAC address combinations
+
+		arp -a  				# Windows cmd to check list
+
+	2. device sends a broadcast message to every device on the network for a specific destination IP address it wants to talk to
+		- asks for MAC address
+	3. receiving device with the destination IP responds with MAC address
+	4. stores IP/MAC address info in arp cache [which can be checked with arp -a command]
+	5. communication between devices can begin
+	6. subsequent communication to that device, it can check the ARP cache instead of broadcasting request to whole network
+
+
+- two types of ARP entries
+
+	- dynamic - entry is created automatically when a device sends out broadcast message requesting a MAC address
+						- entries are not permanent, flushed periodically
+	- static - a manual entry of a IP/MAC address into the ARP cache
+					 - often used to reduce any unnecessary ARP broadcast traffic on a network
+
+		arp -s x.x.x.x  yy-yy-yy-yy-yy-yy     # command for entering static entry into ARP cache, with IP followed by MAC address
+
+
+
 # Hubs vs. Switches vs. Routers
-Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
+# Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
 
 - hub - connect all network devices together
 			- not intelligent, only knows when something is connected to it
@@ -1878,6 +1913,30 @@ Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
 - default gateway - IP address of your router or modem/router combo that your computer connects to
 - subnet mask - defines which parts of the IP address refers to the network and host
 - 
+
+
+
+# Port Forwarding
+# Source: https://www.youtube.com/watch?v=2G1ueMDgwxw
+
+- definition: allows computers over the internet to connect to a specfic computer or service within a private network
+
+- info
+	- port - a logical connection that is used by programs and services to exchange information
+				 - is always associated with an IP address
+				 - identified by a unique number
+				 - IP address purpose is determined by the port [e.g. some_ip:80 usually means a http webpage, 22 for SSH/SFTP, 443 for HTTPS]
+				 - "Well Known Ports" - priviledged category of ports ranging from "0 - 1023"
+
+- eg. Remote Desktop Connection from a public computer to a destination computer on a private network behind a router
+
+	- the router will receive the RDP request and needs to know where to forward for port 3389, the default RDP port
+	
+		- need to configure the destination computers private IP into the routers webpage
+			- under single port forwarding -> app name: RDP, external port: 3389, internal port: 3389, protocol: BOTH, To IP Address: <dest_pc_ip>, Enabled: True
+			- source computer will try to hit the router IP:port -> router forwards to internal IP:port 
+
+	
 
 
 -----
