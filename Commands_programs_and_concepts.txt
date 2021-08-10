@@ -895,6 +895,69 @@ CompTIA A+ Certifcation 220-801
 
 # 11) Bus Slots
 
+- aka expansion slots - can plug in a sound card, USB expansion card, etc. 
+- all motherboards have I/O bus slots
+- typically located at bottom rear of motherboard
+
+- Types:
+
+	- ISA - Industry Standard Architecture
+		- first ever bus type
+		- 8 bit data path @ 4.7 MHz
+		- old and slow, succeeded by faster PCI slots
+
+
+	- PCI - Peripheral Component Interconnect
+		- modern bus type
+		- developed in 1993
+		- 32 or 64 bit data path
+		- 133 - 533 Mbps
+		- half the size of the ISA slot
+
+
+	- AGP - Accelerated Graphics Port [brown]
+		- created to assist in accelerating 3D computer graphics
+		- faster than standard PCI
+		- has its own dedicated pathway to the processor [instead of going through the north bridge]
+		- only used for video card
+
+
+	- PCI-E - PCI Express [yellow]
+		- latest version of bus slots
+		- faster than PCI
+		- up to 4GB/s
+		- transfers data in serial [hence faster]
+		- designed to succeed all other bus slots
+		- not backward compatible
+
+		- PCI-E slot sizes
+			- PCIe x1
+				- has 1 lane for data
+					- a lane has 4 wires: 2 for sending, 2 for receiving
+			- PCIe x4
+				- has 4 lanes for data
+			- PCIe x8
+				- has 8 lanes for data
+			- PCIe x16
+				- has 16 lanes for data
+				- has succeeded the AGP slot for the video card 
+
+		- AMR - Audio/Modem Riser [brown]
+		  - on older motherboards 
+			- allows manufacturers to create motherboards that didnt have analog input/output functions [such as modem or sound expansion card]
+			- developer in 1998
+			- about half the size of standard PCI slot
+			- software driven
+			- not plug and play compatible
+
+		- CMR - Communications and Networking Riser [brown]
+			- designed to be improvement over AMR
+			- can be either software or hardware driven
+			- plug and play compatible
+			- becoming obsolete with better integrated components in newer motherboards
+
+
+# 12) PATA Interface
 
 
 -------
@@ -1613,9 +1676,12 @@ kubectl -n <namespace> port-forward <pod_name> <port> 			# Port forward to expos
 
 
 
---------------------
-kubernetes - general
---------------------
+----------
+kubernetes
+----------
+
+
+# General
 
 - control nodes and control plane - the administrative node[s] of a cluster which instruct and manage the worker nodes which run workloads
 
@@ -1626,6 +1692,220 @@ kubernetes - general
 	- kube-proxy - intercommunication mechanism in a cluster between nodes
 	- controller-manager - responsible for telling the api server to match the desired state with the actual state of pods within a cluster
 
+
+
+# Installing a Kubernetes cluster using kubeadm [Centos7]
+# Source: Just Me And Opensource - https://www.youtube.com/watch?v=v6Jh2sZClDY
+#																 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-centos-7.md
+# 															 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-ubuntu-20.md [for install on Ubuntu 20.04]         
+
+
+For Centos 7 install:
+
+On both master and worker,
+
+1. Disable firewalld
+
+systemctl disable firewalld; systemctl stop firewalld
+
+
+2. Disable swap
+
+swapoff -a; sed -i '/swap/d' /etc/fstab
+
+
+3. Disable SELinux
+
+setenforce 0
+sed -i --follow-symlinks 's/^SELINUX=enforcing/SELINUX=disabled/' /etc/sysconfig/selinux
+
+
+4. Update sysctl settings for Kubernetes networking
+
+cat >>/etc/sysctl.d/kubernetes.conf<<EOF
+net.bridge.bridge-nf-call-ip6tables = 1
+net.bridge.bridge-nf-call-iptables = 1
+EOF
+sysctl --system
+
+
+5. Install docker  #### note will have to check how this works for containerd since docker is deprecated in K8s as of v1.21
+
+yum install -y yum-utils device-mapper-persistent-data lvm2
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum install -y docker-ce-19.03.12 
+systemctl enable --now docker
+
+
+6. Add yum repo for Kubernetes install
+
+cat >>/etc/yum.repos.d/kubernetes.repo<<EOF
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+EOF
+
+
+7. Install Kubernetes
+
+yum install -y kubeadm-1.18.5-0 kubelet-1.18.5-0 kubectl-1.18.5-0
+
+
+8. Enable and start kubelet service
+
+systemctl enable --now kubelet
+
+
+
+On master node,
+
+9. Initialize Kubernetes cluster
+
+kubeadm init --apiserver-advertise-address=172.16.16.100 --pod-network-cidr=192.168.0.0/16
+
+
+10. Deploy Calico network
+
+kubectl --kubeconfig=/etc/kubernetes/admin.conf create -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+
+
+11. Cluster join command [generating token for worker nodes]
+
+kubeadm token create --print-join-command
+
+
+Side note: if you want to be able to run kubectl commands as non-root user, then as a non-root user perform these:
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+12. On the worker node[s], use the output from the "kubeadm token create" command and run it.
+
+
+13. Verify cluster
+
+kubectl get nodes
+kubectl get cs         # get component status
+
+
+
+# Webhooks
+# Source - Marcel Dempers (That DevOps Guy) - https://www.youtube.com/watch?v=1mNYSn2KMZk
+#																						- https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/admissioncontrollers/introduction
+
+
+- admission webhooks
+	- types
+		- mutating - intercepts object/YAML before it hits API server, allows us to make changes first
+			- egs. inject CPU limits, labels, ulimits, go to a specific node, etc.
+
+		- validation - accept or reject request
+			- egs.
+				- policy enforcement - if CPU/mem limits not set, do not create pod
+														 - only allow pods if the image is part of a specific image registry
+				- notfiications when events occur
+
+
+- steps to create a webhook from scratch
+
+	1. Create a K8s cluster [can use kind or k3s for ease]
+
+	2. Create a TLS certificate for the webhook [can use Cloudflare SSL utility as shown below, the swiss army knife for dealing with TLS certs]
+
+		cd kubernetes/admissioncontrollers/introduction      # within the Github repo in the source above
+		docker run -it --rm -v ${PWD}}:/work -w /work debian bash
+
+
+		# a. Install Cloudflare SSL and json utilities
+
+		apt-get update && apt-get install -y curl &&
+		curl https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 -o /usr/local/bin/cfssl && \
+		curl https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64 -o /usr/local/bin/cfssljson && \
+		chmod +x /usr/local/bin/cfssl && \
+		chmod +x /usr/local/bin/cfssljson
+
+
+		# b. Generate a CA certificate in /tmp
+		cfssl gencert -initca ./tls/ca-csr.json | cfssljson -bare /tmp/ca
+
+
+		# c. Generate webhook certificate
+
+    cfssl gencert \
+    	-ca=/tmp/ca.pem \
+    	-ca-key=/tmp/ca-key.pem \
+    	-config=./tls/ca-config.json \
+  	  -hostname="example-webhook,example-webhook.default.svc.cluster.local,example-webhook.default.svc,localhost,127.0.0.1" \
+  		-profile=default \
+  		./tls/ca-csr.json | cfssljson -bare /tmp/example-webhook
+
+
+
+		# d. Make a secret
+
+cat <<EOF > ./tls/example-webhook-tls.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+	name: example-webhook-tls
+type: Opaque
+data:
+	tls.crt: $(cat /tmp/example-webhook.pem | base64 | tr -d '\n')
+  tls.key: $(cat /tmp/example-webhook-key.pem | base64 | tr -d '\n') 
+EOF
+
+
+		# e. Generate CA Bundle + inject into template
+		
+		ca_pem_b64="$(openssl base64 -A <"/tmp/ca.pem")"         # where -A means no line breaks so the full certificate string can be stored in the variable
+
+		sed -e 's@${CA_PEM_B64}@'"$ca_pem_b64"'@g' <"webhook-template.yaml" \
+    > webhook.yaml
+
+
+  3. Create the webhook with the generated CA
+
+  # a. YAML templated definition - see https://github.com/marcel-dempers/docker-development-youtube-series/blob/master/kubernetes/admissioncontrollers/introduction/webhook-template.yaml
+
+  apiVersion: admissionregistration.k8s.io/v1
+  kind: MutatingWebhookConfiguration
+  metadata:
+    name: example-webhook
+  webhooks:
+    - name: example-webhook.default.svc.cluster.local
+      admissionReviewVersions:
+        - "v1beta1"
+      sideEffects: "None"
+      timeoutSeconds: 30
+      objectSelector:
+        matchLabels:
+          example-webhook-enabled: "true"
+      clientConfig:
+        service:
+          name: example-webhook
+          namespace: default
+          path: "/mutate"
+        caBundle: "${CA_PEM_B64}"
+      rules:
+        - operations: [ "CREATE" ]
+          apiGroups: [""]
+          apiVersions: ["v1"]
+          resources: ["pods"]
+
+   # End YAML
+ 
+     - note the CA_PEM_B64 variable, referencing step 2e. Running that will replace the variable with the actual value in webhook.yaml
+
+   #### INCOMPLETE ####
+
+
 ---
 ldd
 ---
@@ -1635,13 +1915,17 @@ ldd -d
 
 
 
-----------------------------
-localtime - change time zone
-----------------------------
+---------
+localtime 
+---------
+
+# change time zone
 
 rm -f /etc/localtime
 ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 date
+
+
 
 
 --------
@@ -1676,11 +1960,11 @@ Mac OS X
    		sysctl -a | grep cpu.core_count
 
    # check GPU:
-		system_profiler SPDisplaysDataType
+	 	  system_profiler SPDisplaysDataType
 
    # stop and start Jenkins
    		sudo launchctl unload /Library/LaunchDaemons/org.jenkins-ci.plist
-		sudo launchctl load /Library/LaunchDaemons/org.jenkins-ci.plist
+		  sudo launchctl load /Library/LaunchDaemons/org.jenkins-ci.plist
 
    # update URL
    	    sudo defaults write /Library/Preferences/org.jenkins-ci httpPort 8082
@@ -1694,13 +1978,13 @@ Mac OS X
 
    # update heap size/permGen
         sudo defaults write /Library/Preferences/org.jenkins-ci minPermGen 512m
-  		sudo defaults write /Library/Preferences/org.jenkins-ci permGen 2048m
-  		sudo defaults write /Library/Preferences/org.jenkins-ci minHeapSize 512m
-  		sudo defaults write /Library/Preferences/org.jenkins-ci heapSize 2048m
+  		  sudo defaults write /Library/Preferences/org.jenkins-ci permGen 2048m
+  		  sudo defaults write /Library/Preferences/org.jenkins-ci minHeapSize 512m
+  		  sudo defaults write /Library/Preferences/org.jenkins-ci heapSize 2048m
 
 
    # check installed java versions:
-   		/usr/libexec/java_home -V
+   		  /usr/libexec/java_home -V
 
 
 -----------------
@@ -2378,8 +2662,16 @@ Rapberry Pi
 References 
 ----------
 
+# Technical
+- https://crontab.guru/          # service to figure out any crontab entry
+- https://bundlephobia.com/      # check cost of adding select NPM packages
+- https://www.shellcheck.net/    # shell scripting syntax checker
+- https://explainshell.com/      # check what individual CLI lines mean [help text]
+
+
+# Training
 - boson.com - highly recommended by NetworkChuck [YT] for CCNA, CCNP, etc. certification
-- https://www.youtube.com/watch?v=uEVmD6n8Il0 - 7 ways to deploy NodeJS
+- https://www.youtube.com/watch?v=uEVmD6n8Il0 - NodeJS deployment strategies [Fireship]
 
 
 
@@ -3196,6 +3488,39 @@ az aks get-credentials -n aks-getting-started -g aks-getting-started
 
 29) Use kubectl to verify what youve set up
 
+
+
+----------
+traceroute
+----------
+
+- definition: a command-line utility used to show the exact route that is taken by data packets as they travel across the internet to their desiination
+	- helps to find bottlenecks in routes
+
+- vs. ping - tells you general connnectivity to destination and amount of time. traceroute shows more info.
+
+- eg. of command usage
+
+	tracert google.com      # Windows cmd (also available in Linux) to show trace to google.com
+
+		- sends 3 data packets to each router on its way to the destination
+			- helps isolate false issues [instead of sending just 1 packet]
+		- router sends back the 3 data packets with info about that router:
+				- number of hops to router
+				- time/duration of round trip
+						- increases with each hop since each hop is further and further, towards destination
+						- network slowness: if theres a big difference between hops, could indicate a problem or the distance between two particular hops/routers is very large
+						- request timed out: indicates problem or
+							- if the trace still goes all the way through and request timed out happens at one hop/router, it could be because that router wasnt configured to return info back to the source
+				- IP of router
+
+- time to live [TTL] - the max number of hops a trace will do [can be modified]
+										 - prevents data packets from traveling endlessly around the internet
+										 	- e.g. misconfigured routers tied together in a loop that receive a trace with no TTL might endlessly pass data packets and slow down a network
+
+	tracert -h 4 google.com    # set max hops to 4 - if destination is further than 4 hops, destination will not be reached
+
+- Linux/MacOS CLI equivalent is "traceroute"
 
 
 
