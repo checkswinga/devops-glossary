@@ -1,4 +1,80 @@
 -------
+Android
+-------
+
+# Starting out with an Android project [from a DevOps point of view]
+# Source: Engineer Man - https://www.youtube.com/watch?v=R3eAMMBh2ng
+
+1) Download Android Studio from the developer.android.com site and follow the instructions to install on your computer or server
+
+2) Open Android Studio and in "Select A Project Template", choose whatever you like [e.g. Empty Activity]
+
+3) In "Configure Your Project", youll need to configure the following:
+
+	- Name: My Application
+	- Package Name: com.hq.myapplication       # can leave as default
+	- Save location: <whereever_you_like>
+	- Language: Java or Kotlin
+	- Minimum SDK: recommendation is Android 5.0 [Lollipop] or 6.0 [Marshmallow]       # going too low might make for problems and extra work down the road
+
+- Side note: - designing layouts in Android [you will see the options when in Android studio]
+	- purely with code
+	- split between code and visual preview
+	- purely drag and drop 
+
+
+4) Explantations on different files and folders created:
+
+- AndroidManifest.xml [under app/manifests]
+	- metadata about the application
+		- in the application block, see things like the text label, icons, activity block [screen that shows up on Android or a screen that might be switched to]
+
+
+- java folder
+	- contains all the java code for your application
+	- other folders: one for main code, one for tests
+	- example code: MainActivity.java under com.hq.myapplication
+
+
+- java [generated] folder
+	- never need to directly be concerned with it, though code gets generated here because of content or code you create elsewhere [such as a content xml in the layout folder]
+
+
+- res folder [resources]
+	- contains everything except java code itself
+
+	- sub-folders
+		- drawable folder
+			- contains vector assets and images
+		- layout folder
+			- for layouts [e.g. menus, list items, etc.]
+			- eg. activity_main.xml - eg. content xml file referenced by the MainActivity.java file
+
+
+- mipmap folder
+	- contains several variations of the same image [for different phone sizes]
+	- in code, reference by the same name, and the phone figures out which image to use
+
+
+- values folder
+	- stores various constant values of different things such as colours and strings [e.g. color name="purple_200" matched to a hex value]
+	- file: strings.xml - used in case app is gonna be in different languages
+
+
+- themes folder
+	- application wide theme [eg. light and dark themes to apply, phone can toggle depending on user choice]
+
+
+- Gradle scripts
+	- for building the application
+		- build.gradle - has the build instructions
+
+
+5) To test run your app, plug your phone into your computer and click the Play button in Android Studio
+
+
+
+-------
 Ansible
 -------
 
@@ -2035,6 +2111,33 @@ deno
 
 
 
+
+----
+DHCP
+----
+
+# See CompTIA section for general notes
+
+- DHCP is a service that runs on a server, such as a Microsoft server or a Linux server
+	- also a service that runs on routers
+
+
+- scope - the range of IP addresses a DHCP server can hand out [from a start IP address to an end IP address]
+				- customizable
+
+
+- lease - DHCP assigns the IP address to a computer for a certain amount of time
+				- to make sure DHCP server does not run out of IP addresses in its scope
+				- renewal - lease expires if a computer does not automatically renew its lease [e.g. if a computer is not on the network, in which case lease expires]
+
+
+- reservation - ensures that a specific computer or device [identified by its MAC address] will always be given the same IP address
+						  - can configure this in DHCP settings on a DHCP server
+						  - typically given to special devices such as network printers, servers, routers, etc.
+
+
+
+
 ------
 docker
 ------
@@ -2090,7 +2193,8 @@ docker run --restart always --name cntlm \
   robertdebock/docker-cntlm
 
 
-# Building an image with multi-stage (cut down the size) - example Dockerfile  (2021/04/08)
+
+# Multi-stage docker image build - Building an image with multi-stage (cut down the size) - example Dockerfile  (2021/04/08)
 
 #### First stage
 
@@ -2108,6 +2212,55 @@ COPY --from=builder /asttpd /asmttpd             # this is where the executable 
 COPY /web_root/index.html /web_root/index.html
 
 CMD ["/asmttpd", "/web_root", "8080"]
+
+
+
+# Multi-stage docker image build - 2nd example of a python Dockerfile where you can build either a debugger or regular image, depending on the scenario
+# Source: DevOps Directive - https://www.youtube.com/watch?v=qCCj7qy72Bg
+
+###############
+# base
+###############
+
+FROM python:3.8.4-slim AS base
+
+RUN pip install pytz
+
+WORKDIR /src
+COPY . ./
+
+
+######################
+# debugger
+######################
+
+FROM base AS debugger
+
+RUN pip install debuggy
+
+ENTRYPOINT ["python","-m", "debugger", "--listen", "0.0.0.0:5678", "--wait-for-client", "-m"]
+
+
+######################
+# primary
+######################
+
+FROM base as primary
+
+ENTRYPOINT [ "python", "-m"]
+
+
+# END DOCKERFILE
+
+- to build the debugger:
+	docker build -t debugger:<version> --target=debugger .
+
+- to run debugger:
+	docker run -p 5678:5678 debugger:<version> unittest         # where unittest is the py module used in the video example
+
+- to build the primary image:
+  docker build -t primary:<version> --target=primary .
+
 
 
 
@@ -2686,6 +2839,7 @@ kubernetes
 	- kubelet - the agent which sits on the worker node and communicates with the api server
 	- kube-proxy - intercommunication mechanism in a cluster between nodes
 	- controller-manager - responsible for telling the api server to match the desired state with the actual state of pods within a cluster
+	- daemonset - ensures that all or some nodes run a copy of a pod [e.g. kube-proxy daemonset would ensure kube-proxy pod runs on every available node in the cluster]
 
 
 
@@ -3149,6 +3303,58 @@ networking - general
 					 - often used to reduce any unnecessary ARP broadcast traffic on a network
 
 		arp -s x.x.x.x  yy-yy-yy-yy-yy-yy     # command for entering static entry into ARP cache, with IP followed by MAC address
+
+
+
+
+# Bluetooth vs. Wi-Fi
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=mPMGRILsOVk&list=WL&index=1
+
+- both are radio frequency technlogies for wirelessly connecting electronic devices
+
+- Bluetooth
+	- a low power wireless technology that uses a short-range radio that provides a way to connect nearby devices to each other
+	- has a computer chip that will broadcast a signal for other devices to connect and exchange data - known as "pairing"
+
+	- most common usages:
+		- wireless audio streaming [e.g. wireless earbuds to iPhone]
+		- headphones to a TV
+		- wireless keyboard/mouse to a computer
+		- cellphone to car audio for hands free
+
+	- range: 30ft or 10m
+
+
+- Wi-Fi
+	- a wireless technology that uses radio waves that allows devices to be able to connect to the internet
+	- most common method: via Wi-Fi router in a network, for devices to connect to
+	- range: 100 - 300ft [30 - 91m]
+
+
+- differences
+	- Bluetooth
+		- used to connect devices to each other
+		- less power
+		- slower transfer rate
+		- shorter range
+		- longer battery life
+		- smaller battery
+		- simpler to connect to than Wi-Fi
+
+	
+	- Wi-Fi
+		- used to connect devices to the internet
+		- faster than Bluetooth
+		- 10x longer ranger
+		- often requires a password
+
+	
+- both operate at 2.4GHz
+	- other devices also operate at this frequency. Bluetooth is less vulernerable/highly resistant to interference because it uses "Frequency Hopping Spread Spectrum" [FHSS]
+		- trasmits signals in a specific pattern that only the transmitting and receiving devices know
+		- hops between 79 different channels
+		- changes channels 1600 times per second
+
 
 
 
@@ -4570,6 +4776,85 @@ For both check:
 
 - in Chrome or whichever browser, open the console and check the performance tab, see if memory usage and see if it keeps climbing
 - go to memory tab and take a snapshot of the memory values of each page or call
+
+
+
+-------
+vagrant
+-------
+
+- open-source software product for building and maintaining portable virtual software development environments
+	- grouped under "Virtual Machine Management"
+
+
+# Vagrantfile example for provisioning three virtual machines for a K8s cluster
+
+# START VAGRANTFILE
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+ENV['VAGRANT_NO_PARALLEL'] = 'yes'
+
+Vagrant.configure(2) do |config|
+
+  config.vm.provision "shell", path: "bootstrap.sh"
+
+  # Kubernetes Master Server
+  config.vm.define "kmaster" do |node|
+
+    node.vm.box               = "generic/ubuntu2004"
+    node.vm.box_check_update  = false
+    node.vm.box_version       = "3.3.0"
+    node.vm.hostname          = "kmaster.example.com"
+
+    node.vm.network "private_network", ip: "172.16.16.100"
+
+    node.vm.provider :virtualbox do |v|
+      v.name    = "kmaster"
+      v.memory  = 2048
+      v.cpus    =  2
+    end
+
+    node.vm.provider :libvirt do |v|
+      v.memory  = 2048
+      v.nested  = true
+      v.cpus    = 2
+    end
+
+    node.vm.provision "shell", path: "bootstrap_kmaster.sh"
+
+  end
+
+
+  # Kubernetes Worker Nodes
+  NodeCount = 2
+
+  (1..NodeCount).each do |i|
+
+    config.vm.define "kworker#{i}" do |node|
+
+      node.vm.box               = "generic/ubuntu2004"
+      node.vm.box_check_update  = false
+      node.vm.box_version       = "3.3.0"
+      node.vm.hostname          = "kworker#{i}.example.com"
+
+      node.vm.network "private_network", ip: "172.16.16.10#{i}"
+
+      node.vm.provider :virtualbox do |v|
+        v.name    = "kworker#{i}"
+        v.memory  = 1024
+        v.cpus    = 1
+      end
+
+      node.vm.provision "shell", path: "bootstrap_kworker.sh"
+
+    end
+
+  end
+
+end
+
+# END VAGRANTFILE
 
 
 --------
