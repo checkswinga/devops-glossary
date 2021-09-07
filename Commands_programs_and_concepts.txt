@@ -423,7 +423,7 @@ deno
 DHCP
 ----
 
-# See CompTIA section for general notes
+# Additional notes not covered in detail in CompTIA notes
 
 - DHCP is a service that runs on a server, such as a Microsoft server or a Linux server
 	- also a service that runs on routers
@@ -443,6 +443,20 @@ DHCP
 						  - typically given to special devices such as network printers, servers, routers, etc.
 
 
+
+
+---
+DMZ
+---
+
+- Demilitarized Zone
+	- a.k.a a perimeter network
+	- used to improve the security of an organizations network by segregating devices such as computers and servers on opposite sides of a firewall
+
+	- the servers are behind a companys firewall and are inside the companys private network
+	 	- the company is letting in people from an untrusted network [the internet] and are given access behind the companys firewall
+
+	- divides a network into two parts by taking devices from inside the firewall and putting them outside
 
 
 ------
@@ -1141,6 +1155,49 @@ Jenkins
 	- Remove the elements authorizationStrategy and securityRealm
 	- Start Jenkins
 
+
+
+
+-----
+kafka
+-----
+
+# Introduction
+# Source: Marcel Dempers [That DevOps Guy] - https://www.youtube.com/watch?v=heR3I3Wxgro
+#																					 - https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/messaging/kafka  [source code + README with instructions]
+
+- Apache Kafka - an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration,
+								 and mission-critical applications.
+
+- zookeeper - centralized service for maintaining configuration information [naming and providing distributed synchronization for apache services such as kafka]
+						- keeps track of status of kafka cluster nodes
+						- also keeps track of partitions and topics
+
+
+- logistics
+	- client [producer] ----> kafka broker	----> application server[s]
+
+		- clients are referred to as "producers"
+		- messages go to "brokers" which are kafka instances
+
+		- servers that consume messages are called "consumers"
+			- consumer can subscribe to a topic and receive messages, in order, indexing what it has received so far
+				- if a consumer dies/shuts down, once its back online it can use the index number to pick up consuming messages from the index it left off on
+
+		- messages are stored on the brokers in "topics"
+			- topics can be divided into partitions, messages/copies of messages go into the partitions
+				- if a broker dies, messages are not lost as a result of this replication
+
+		- in source vid and repo, the example for testing will make use of pre-packed scripts that come with the Kafka installation to mock producers and consumers for testing purposes
+
+
+ - testing
+
+	- the Github repo above has a Dockerfile to build a Debian/Java11 container with Kafka installed [see dockerfile under messaging/kafka folder]
+ 		- can spin up multiple instances of this image for having more than one broker to replicate topics/partitions/messages
+ 			- minor configuration updates requires for server.properties, such as broker ID, which has to be unique for each container
+ 		- for zookeeper, its the same dockerfile except you use the start-zookeeper.sh script as the entrypoint. For testing, one zookeeper container is sufficient
+ 			- see zookeeper dockerfile and start script under messaging/kafka/zookeeper
 
 
 
@@ -2275,10 +2332,24 @@ Rapberry Pi
   rancherd reset-admin   # will give you server URL + default username and password to login to the console with
 
 
-24) In the Rancher console, add your Raspberry Pi cluster
+24) Once you login to the Rancher console [and reset your password], add your Raspberry Pi cluster:
 
-	- choose Other under Import Cluster
+	- two options to choose from
+		- I want to create or manage multiple clusters                  <----- choose this one
+		- Im only going to use the cluster Rancher was installed on
 
+	- agree to Terms and Conditions and continue
+
+	- copy and save server URL thats generated
+
+
+25) You will see the Rancher local cluster. Next step is to add the Raspberry Pi cluster
+
+	- click Add Cluster
+	- click Other Cluster
+	- enter a name for the cluster
+	- run the insecure curl command in your terminal [or secure if your K3s cluster is secure] to import the Raspberry Pi cluster into Rancher
+	- click Done in the consoel once the command executes successfully
 
 
 
