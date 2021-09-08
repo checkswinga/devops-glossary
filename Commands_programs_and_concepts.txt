@@ -589,6 +589,109 @@ ENTRYPOINT [ "python", "-m"]
 
 
 
+--------------
+docker compose
+--------------
+
+# Source: Marcel Dempers (That DevOps Guy) - https://github.com/marcel-dempers/docker-development-youtube-series/blob/master/messaging/kafka/docker-compose.yaml
+
+- side notes
+	- docker compose is a separate installer package on Linux, but is included in Docker Desktop for Mac and Windows and does not need to be installed separately in this case.
+	- docker compose allows you to describe the building and runninig of multiple container images all in one file [in YAML format]
+
+
+# Example of docker-compose.yaml from Marcel's Kafka with docker compose video
+# Note: you would still need to create the network like in the docker example for building/running the containers individually
+
+version: "3.8"
+services:
+  zookeeper-1:
+    container_name: zookeeper-1
+    image: aimvector/zookeeper:2.7.0
+    build:
+      context: ./zookeeper
+    volumes:
+    - ./config/zookeeper-1/zookeeper.properties:/kafka/config/zookeeper.properties
+    - ./data/zookeeper-1/:/tmp/zookeeper/
+    networks:
+    - kafka
+  kafka-1:
+    container_name: kafka-1
+    image: aimvector/kafka:2.7.0
+    build: 
+      context: .
+    volumes:
+    - ./config/kafka-1/server.properties:/kafka/config/server.properties
+    - ./data/kafka-1/:/tmp/kafka-logs/
+    networks:
+    - kafka
+  kafka-2:
+    container_name: kafka-2
+    image: aimvector/kafka:2.7.0
+    build: 
+      context: .
+    volumes:
+    - ./config/kafka-2/server.properties:/kafka/config/server.properties
+    - ./data/kafka-2/:/tmp/kafka-logs/
+    networks:
+    - kafka
+  kafka-3:
+    container_name: kafka-3
+    image: aimvector/kafka:2.7.0
+    build: 
+      context: .
+    volumes:
+    - ./config/kafka-3/server.properties:/kafka/config/server.properties
+    - ./data/kafka-3/:/tmp/kafka-logs/
+    networks:
+    - kafka
+  kafka-producer:
+    container_name: kafka-producer
+    image: aimvector/kafka:2.7.0
+    build: 
+      context: .
+    working_dir: /kafka
+    entrypoint: /bin/bash
+    stdin_open: true
+    tty: true
+    networks:
+    - kafka
+  kafka-consumer:
+    container_name: kafka-consumer
+    image: aimvector/kafka:2.7.0
+    build: 
+      context: .
+    working_dir: /kafka
+    entrypoint: /bin/bash
+    stdin_open: true
+    tty: true
+    networks:
+    - kafka
+  kafka-consumer-go:
+    container_name: kafka-consumer-go
+    image: aimvector/kafka-consumer-go:1.0.0
+    build: 
+      context: ./applications/consumer
+    environment:
+    - "KAFKA_PEERS=kafka-1:9092,kafka-2:9092,kafka-3:9092"
+    - "KAFKA_TOPIC=Orders"
+    - "KAFKA_VERSION=2.7.0"
+    - "KAFKA_GROUP=orders"
+    networks:
+    - kafka
+networks: 
+  kafka:
+    name: kafka
+
+
+# How to Use the above file
+
+docker network create kafka   # pre-requisite to running the containers
+docker compose build       # will build all of the container images described in the file. Notice the different context or folder paths for each image shown in the build context section
+docker compose up          # will run all of the container images that were built from this docker compose file
+
+
+
 ------------------------------
 Fail2ban - for blocking access
 ------------------------------
@@ -865,7 +968,7 @@ git bisect good v2.6.13-rc2    # v2.6.13-rc2 is known to be good
       Bisecting: 675 revisions left to test after this (roughly 10 steps)
   
 
-3] You should now compile the checked-out version and test it. If that version works correctly, type
+3] You should now compile the checked-out version and test it. If that version works correctly, type:
 
 git bisect good
 
