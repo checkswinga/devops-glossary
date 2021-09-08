@@ -457,6 +457,10 @@ DMZ
 	 	- the company is letting in people from an untrusted network [the internet] and are given access behind the companys firewall
 
 	- divides a network into two parts by taking devices from inside the firewall and putting them outside
+		- a more secure network would use 2 [or more] firewalls for extra layers of protection
+
+	- in the real world, a DMZ is an area where the military is forbidden
+	- in the computing world, a DMZ is where firewall protection is forbidden
 
 
 ------
@@ -823,22 +827,13 @@ Fortify
 GIT
 ---
 
-# install newer version on CentOS7
-yum -y install https://packages.endpoint.com/rhel/7/os/x86_64/endpoint-repo-1.7-1.x86_64.rpm
-yum install git
 
+### Commands and configs ###
+# Sources: Fireship - https://www.youtube.com/watch?v=ecK3EnyGD8o
+#					 git-scm - https://git-scm.com
+#          General experience :D
 
-# Migrate repos from one remote to another
-git clone --bare <repo_url>
-cd <cloned_repo>.git
-git push --mirror  https://github.cibcdevops.com/<new-repo>
-
-
-# set up storing creds in OSX
-git config --global credential.helper store
-
-
-# use .gitattributes within a repo to define file behaviours/attributes. Eg below of contents within a .gitattributes file:
+# .gitattributes - use .gitattributes within a repo to define file behaviours/attributes. Eg below of contents within a .gitattributes file:
 
 *               text=auto
 *.txt		text
@@ -847,13 +842,147 @@ git config --global credential.helper store
 *.jpg		-text
 
 
+# Alias - creating command alias and storing within git configuration
+
+git config --global alias.ac "commit -am"    # where ac is the new alias command
+git ac "Your commit message"								 # usage for above alias
+
+
+
+# Bisect - do a binary search through commits to figure out where a bug was introduced
+# Source: git-scm - https://git-scm.com/docs/git-bisect
+
+1] As an example, suppose you are trying to find the commit that broke a feature that was known to work in version v2.6.13-rc2 of your project. You start a bisect session as follows:
+
+git bisect start
+git bisect bad                 # Current version is bad
+git bisect good v2.6.13-rc2    # v2.6.13-rc2 is known to be good
+
+
+2] Once you have specified at least one bad and one good commit, git bisect selects a commit in the middle of that range of history, checks it out, and outputs something similar to the following:
+
+# Output
+      Bisecting: 675 revisions left to test after this (roughly 10 steps)
+  
+
+3] You should now compile the checked-out version and test it. If that version works correctly, type
+
+git bisect good
+
+
+4] If that version is broken, type
+
+git bisect bad
+
+- then git bisect will respond with something like
+
+# Output
+	Bisecting: 337 revisions left to test after this (roughly 9 steps)
+
+
+5] Keep repeating the process: compile the tree, test it, and depending on whether it is good or bad run git bisect good or git bisect bad to ask for the next commit that needs testing. Eventually
+there will be no more revisions left to inspect, and the command will print out a description of the first bad commit. The reference refs/bisect/bad will be left pointing at that commit.
+
+
+
+# Clean - cleans up hanging or loose file references
+
+git clean -df
+
+
+# Combine add and commit in one command (add applies to working directory like using "git add .")
+
+git commit -am "Your commit message"
+
+
+
+# Commit message update (of an existing commit)
+
+git commit --amend -m "Your new commit message"
+
+
+
+# Commit additional files to your last commit (without updating the commit message) - only works locally, if you haven't pushed your commit to the remote
+
+git commit --amend --no-edit
+
+
+
+# Credentials storing - set up storing creds in OSX
+git config --global credential.helper store
+
+
+
+# Hooks - tell GIT to do stuff upon certain CLI actions
+
+- in local repo, look under .git/hooks folder, you can create shell scripts for different things like pre-commit actions, post-commit actions, etc.
+- husky - an npm package that makes implementing GIT hooks easier [go to Github repo and "npm install husky -D" locally to find out more]
+
+
+# Log - an advanced command for an easier look at git commit history locally
+
+git log --graph --oneline --decorate
+
+
+# Migrate repos from one remote to another
+git clone --bare <repo_url>
+cd <cloned_repo>.git
+git push --mirror  https://github.cibcdevops.com/<new-repo>
+
+
+
+# Squash - take two or more commits in a branch and "squash" them together into a single commit
+# See medium.com for more details - https://medium.com/@slamflipstrom/a-beginners-guide-to-squashing-commits-with-git-rebase-8185cf6e62ec
+
+git rebase <branch_name> --interactive
+
+	# the above opens a file that shows all of the commits for that branch
+	# then you would "pick" the commit you want to use, and "squash" the commits you want to go into the picked commit.
+
+
+# Squash automatically or auto-squash - tell GIT in advance that you will be squashing commits
+
+git commit --fixup fb2f677       # fixup is like squash except it ignores the commit message when squashing occurs
+git commit --squash fc2f55       # preps commit for squashing upon commit
+git rebase -i --autosquash       
+
+
+
+# Stash - used to set local changes aside for later
+
+git stash        
+git pop          # you can use stash and pop if you only plan to use stash for one set of changes to put away
+
+
+# Stash - commands below are for saving multiple stashes
+
+git stash save <name_of_stash>
+git stash list                                  # list all stashes
+git stash apply <index_of_stash_name>           # pop the selected stash from the index list
+
+
+# yum install - install newer version on CentOS7
+yum -y install https://packages.endpoint.com/rhel/7/os/x86_64/endpoint-repo-1.7-1.x86_64.rpm
+yum install git
+
+
+
 ------
 Github
 ------
 
+# Commands
+
 - sudo reboot - reboot Linux server [which will ultimately reboot the Github service - note needs updating]
 - sudo systemctl start elasticsearch - restart search service
 - sudo systemctl status elasticsearch - check search services status
+
+
+# Cool Stuff
+# Source: Fireship - https://www.youtube.com/watch?v=ecK3EnyGD8o
+
+- to use VSCode in a browser to work on a specific repo in Github, go to the repo you want to work on, and hit the "." key
+	- you can use a terminal if you set up Github codespace, option can be found within the VSCode browser editor
 
 
 
