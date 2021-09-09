@@ -1783,6 +1783,67 @@ lsof -i <protocol>    # check which processes are listening on specific protocol
 
 
 
+
+---
+lxd
+---
+
+# Source: https://linuxcontainers.org/
+
+- a next generation system container and virtual machine manager
+- the lxc cli that lxd uses should not be confused with lxc itself [which is OS-level virtualization for running multiple Linux containers on a single host]. lxd is really just
+  an alternative to lxc, and makes use of lxc tools via liblxc, such as the cli
+	
+
+
+# Commands - the below are lxc cli commands that can be executed within an lxd environment
+# Can also try online without installing locally as well at https://linuxcontainers.org/lxd/try-it/
+
+
+# Basics for listing and running container images
+
+lxc image list        							    							# list images stored locally (docker equivalent command: docker images)
+lxc image list ubuntu: | less  			    							# list of images from the ubuntu: registry
+lxc launch images:ubuntu/18.04 [container_name]     	# run a container called container_name based on the ubuntu 18.04 image
+lxc list  														  							# check running containers
+lxc info [container_name]               							# inspect running container named container_name
+lxc config show [container_name]											# show configuration details of container_name
+lxc stop [container name] 														# stop running container container_name
+lxc delete [container_name]  													# remove running container container_name
+lxc start [container_name]														# start running container container_name
+lxc delete --force [container_name]                   # force stop and delete container_name
+
+
+# Container interaction commands
+
+lxc exec [container_name] -- free -m                	      # execute free -m within container_name
+lxc config set [container_name] limits.memory 128MB   			# set memory limit on container_name
+lxc exec [container_name] -- apt-get update           			# run apt-get update within container_name
+lxc exec [container_name] -- apt-get install sl -y    			# install sl package within container_name
+lxc exec [container_name] -- /usr/games/sl            			# run sl program within container_name [sl stands for 'Steam Locomotive' - displays a train on-screen when you mistype ls command :D ]
+lxc snapshot [container_name] clean  												# take a snapshot called clean of running container_name, which can be used for restoration if something messes up in the container
+lxc restore [container_name] clean  												# restore the clean snapshot of container_name
+lxc file pull [container_name]/etc/hosts .            			# copy a file from container_name to local
+lxc file push hosts [container_name]/etc/hosts        			# copy a file from local to container_name
+lxc file pull [container_name]/var/log/syslog - | less      # check log files in the container
+lxc exec lxdserver:[container_3] bash  				 							# log into remote container on remote lxdserver
+lxc copy lxdserver:[container_3] lxdserver:[container_4]    # create a copy of that container on that same remote
+lxc move lxdserver:[container_4] [container_5]              # move the copied remote container to local and rename it to container_5
+lxc start [container_5]                                     # and then start container_5
+
+
+# Image commands
+
+lxc publish [container_name]/clean --alias clean-ubuntu     # publish the snapshot "clean" of container_name to the default registry
+lxc launch clean-ubuntu [container_2]												# launch a new container based on the published image
+lxc remote list                                             # list all remote registries
+lxc list lxdserver:  																			  # list all remote containers on lxdserver
+lxc image list lxdserver:	 																	# list all images on remote lxdserver
+lxc launch clean-ubuntu lxdserver:[container_3]       			# create new container called container_3 on remote lxdserver
+lxc image delete clean-ubuntu                               # delete the published image
+
+
+
 ---------
 Mac OS X
 ---------
