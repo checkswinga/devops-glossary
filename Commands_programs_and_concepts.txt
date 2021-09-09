@@ -698,11 +698,13 @@ Fail2ban - for blocking access
 
 - Source article: https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-centos-7
 
+To install on CentOS [for Rocky Linux, you would use dnf, but need to test it]:
+
 yum install epel-release
 yum install fail2ban
 systemctl enable fail2ban
 
-- Edit /etc/fail2ban/jail.local (see file on disk for details)
+- Edit /etc/fail2ban/jail.local (see jail.local.txt in this repo for details)
 
 systemctl restart fail2ban
 fail2ban-client status
@@ -715,7 +717,7 @@ File transfers
 --------------
 
 # Linux large tar transfer w/ untar at the same time, nohup the log into tmp:
-nohup bash -c "cat vl53_aem01p_aaem-olbauth-01_20190824_agentsdisabled.tar | ssh -t aemftp@52.233.56.66 'tar -C /mnt/deploy/oldrepo -xvf - aem-olbauth-01/repos'" > /tmp/aemXfer.out &
+nohup bash -c "cat somearchive.tar | ssh -t linuxuser@x.x.x.x 'tar -C /path/to/dest -xvf - /path/to/tarup'" > /tmp/filexfer.out &
 
 # using netcat
 
@@ -2316,6 +2318,21 @@ Identify bottlenecks:
 
 
 
+------
+Piston
+------
+
+# Source: Engineer Man - https://www.youtube.com/watch?v=SD4KgwdjmdI
+#									     - https://github.com/engineer-man/piston
+
+- This is a code execution engine built by Engineer Man, originally running on Docker but was moved to LXC for better performance [and incidentally, better security]
+	- you can take any source code and put it into the engine, and it will execute it for you
+	- it even runs untrusted and possibly malicious code without fear of any harmful effects
+
+
+### To be filled in with more details at a later date if a useful place to apply it is found ###
+
+
 --
 ps
 --
@@ -2416,9 +2433,9 @@ RAID
 
 
 
------------
-Rapberry Pi
------------
+------------
+Raspberry Pi
+------------
 
 # Installing Kubernetes on Raspberry Pis'
 # Source - NetowrkChuck - https://www.youtube.com/watch?v=X9fSMGkjtug
