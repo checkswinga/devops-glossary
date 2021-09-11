@@ -251,12 +251,12 @@ certificates
 # Download and import website certs into JAVA store (eg. google's certs for dl.google.com/android repo):
 
 openssl s_client -connect google.com:443 -showcerts | openssl x509 -out certfile.txt
-keytool -importcert -alias cibcglobalproxy -file certfile.txt -trustcacerts -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storetype JKS
+keytool -importcert -alias globalproxy -file certfile.txt -trustcacerts -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storetype JKS
 
 OR 
 
-keytool -importcert -file cibc_proxy.crt -alias cibc_proxy -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts
-keytool -importcert -file cibc_proxy.crt -alias cibc_proxy -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
+keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts
+keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
 
 # check cacerts store
 
@@ -1032,7 +1032,7 @@ git log --graph --oneline --decorate
 # Migrate repos from one remote to another
 git clone --bare <repo_url>
 cd <cloned_repo>.git
-git push --mirror  https://github.cibcdevops.com/<new-repo>
+git push --mirror  https://github.com/<new-repo>
 
 
 
@@ -1738,6 +1738,20 @@ EOF
      - note the CA_PEM_B64 variable, referencing step 2e. Running that will replace the variable with the actual value in webhook.yaml
 
    #### INCOMPLETE ####
+
+
+
+-----------------------------------------
+kURL - a custom Kubernetes distro creator
+-----------------------------------------
+
+# Website - https://kurl.sh/
+
+# Demo for installation: Just Me and Opensource - https://www.youtube.com/watch?v=_4edisHDWzs
+
+- the kURL tool helps you to create a Kubernetes cluster which can be customized off the bat with different tools that are more typical/standard that are not provided out of the box right away
+	with a vanilla K8s installation such as monitoring tools [Prometheus], cluster backup and restore mechanism [Velero], certificate management [CertManager], and more. See kurl.sh for more details.
+
 
 
 ---
