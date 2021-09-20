@@ -79,7 +79,7 @@ Source repo reference: https://github.com/nginxinc/kubernetes-ingress
 
 On your K8s master node,
 
-1) Create namespace, SA (service account), default secret and customization config map (see https://github.com/checkswinga/linux/tree/master/kubernetes/bare_metal_setup for yamls)
+1) Create namespace, SA (service account), default secret and customization config map:
 
 	kubectl apply -f ns-and-sa.yaml
 	kubectl apply -f default-server-secret.yaml
