@@ -23,7 +23,7 @@ Android
 	- purely drag and drop 
 
 
-4) Explantations on different files and folders created:
+4) Explanations on different files and folders created:
 
 - AndroidManifest.xml [under app/manifests]
 	- metadata about the application
@@ -1763,6 +1763,215 @@ ldd -d
 
 
 
+------------
+Linux kernel
+------------
+
+# General
+# Sources: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
+
+- privilege rings in Linux
+	- Ring 3 - most outer ring
+			 - least privilege
+			 - user space/applications - cannot talk directly to hardware
+
+	- Ring 2 - between Ring 3 and 1
+			 - device drivers
+			 - more privilege than Ring 3
+
+	- Ring 1 - device drivers [pseudo hardware]
+
+	- Ring 0 - the kernel space
+			 - inner most ring
+			 - most privilege
+			 - kernel modules/apps connect user space applications to physical and pseudo hardware
+			 - kernel programs [unlike user space applications] run reactionally, responding to events [such as user applications]
+
+# How to build a Linux loadable kernel module [that Rickrolls people]
+# Source: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
+
+
+1] Re-creating the example of kernel module called "rickroll.c", which prints a message when the module has been loaded and unloaded
+
+# START
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+
+static int __init rickroll_init(void) {
+	printk(KERN_INFO "Rickroll module has been loaded\n");
+	return 0;
+}
+
+static void __exit rickroll_exit(void) {
+	printk(KERN_INFO "Rickroll module has been unloaded\n");
+}
+
+
+module_init(rickroll_init);
+module_exit(rickroll_exit);
+
+# END
+
+
+2] Create a Makefile
+
+obj-m += rickroll.o
+
+all:
+	make -C /lib/modules/$(shell uname -r)/build M=${PWD} modules
+
+clean:
+	make -C /lib/modules/$(shell uname -r)/build M=${PWD} clean
+
+
+
+3] Build the module
+
+make     	
+
+- this will create a bunch of files
+	- modules.order
+	- Module.symvers
+	- rickroll.c
+	- rickroll.ko     # ko stands for "kernel object"
+	- rickroll.mod.c
+	- rickroll.mod.o
+	- rickroll.o
+
+4] Tail the kernel log in a different terminal
+
+tail -f /var/log/kern.log
+
+
+5] Inject the kernel module
+
+sudo insmod rickroll.ko 
+
+- the log should print that the module has been loaded
+
+
+6] Test removing the module
+
+sudo rmmod rickroll
+
+- the log should print that the module has been removed
+
+
+7] Expand the module to build a device to "Rickroll" people if they read from the device
+
+# Updated module code below for rickroll.c
+
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/fs.h>
+#include <linux/uaccess.h>
+
+#define DEVICE_NAME "rickroll"
+
+static int dev_open(struct inode*, struct file*);
+static int dev_release(struct inode*, struct file*);
+static ssize_t dev_read(struct file*, char*, size_t, loff_t*);
+static ssize_t dev_write(struct file*, const char*, size_t, loff_t*);
+
+static struct file_operations fops = {
+	.open = dev_open,
+	.read = dev_read,
+	.write = dev_write,
+	.release = dev_release,
+};
+
+static int major;
+
+
+static int __init rickroll_init(void) {
+	major = register_chrdev(0, DEVICE_NAME, &fops);
+
+	if (major < 0) {
+		printk(KERN_ALERT "Rickroll load has failed\n");
+		return major;
+	}
+
+	printk(KERN_INFO "Rickroll module has been loaded\n");
+	return 0;
+}
+
+
+static void __exit rickroll_exit(void) {
+	unregister_chrdev(major, DEVICE_NAME);
+	printk(KERN_INFO "Rickroll module has been unloaded\n");
+}
+
+
+static int dev_open(struct inode *inodep, struct file *filep) {
+	printk(KERN_INFO "Rickroll device opened\n");
+	return 0;
+}
+
+
+static ssize_t dev_write(struct file *filep, const char *buffer, size_t len, loff_t *offset) {
+	printl(KERN_INFO "Sorry, rickroll is read only\n");
+	return -EFAULT;
+}
+
+
+static int dev_release(struct inode *inodep, struct file filep*) {
+	printk(KERN_INFO "Rickroll device closed");
+	return 0;
+}
+
+
+static ssize_t dev_read(struct file *filep, char *buffer, size_t len, loff_t *offset) {
+	int errors = 0;
+	char *message = "never gonna give you up, never gonna let you down...;      # missing end double quote on purpose, make sure to add back
+	int message_len = strlen(message);
+
+	errors = copy_to_user(buffer, message, message_len);
+
+	return errors == 0 ? message_len : -EFAULT;
+}
+
+module_init(rickroll_init);
+module_exit(rickroll_exit);
+
+# END 
+
+
+- Notes on updated rickroll.c
+	- dev_open - when the device is open
+	- dev_release - when the device is released or closed
+	- dev_read - when the device is read from
+	- dev_write - when the device is written to
+	- register_chrdev - chrdev stands for character device
+		- the 0 in this function means dynamically generate a major number
+		- the major number is a small integer that serves as the index into a static array of char driver
+			- i.e. every device has a major number associated with it
+	- return 0 if successful
+	- char *buffer is from user space to copy error message into
+	- on the return errors line, the ? message_len mean to return it if no errors, or return -EFAULT if neither are true
+
+ #### SOME MORE INFO NEEDED ON OTHER FUNCTIONS IN THE CODE ####
+
+
+8] Repeat step 5 and make note of the major number from the log
+
+9] Register the new "device" [into /dev directory] and point it to the rickroll module
+
+cd /dev
+sudo mknod rickroll c <major_number> 0
+ls -l | grep rick
+
+
+10] Test the new "device"
+
+cat /dev/rickroll
+
+- should print the char *message a lot
+- Ctrl ^C to close the device, and the log should print that the device is closed
+
+
+
 ---------
 localtime 
 ---------
@@ -2024,11 +2233,12 @@ netstat -tupln   # display network connections, tcp and udp, show which processe
 
 
 
+
 --------------------
 networking - general
 --------------------
 
- - An example LAN [NetworkChucks setup]: PC -> Switch -> Router -> Firewall -> Modem -> Fiber optic -> Internet
+- An example LAN [NetworkChucks setup]: PC -> Switch -> Router -> Firewall -> Modem -> Fiber optic -> Internet
 
 
 # ARP - Address Resolution Protocol
@@ -2229,6 +2439,7 @@ nodejs
 # Source Video: Marcel Dempers [That DevOps Guy] - https://www.youtube.com/watch?v=ktvgr9VZ4dc
 # Source Code: https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/nodejs    [for docker stuff and source code]
 # 						 https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/.vscode   [for vscode add-on launch.json which runs the debugger]
+# Source Video for Debugger example: DevOps Directive - https://www.youtube.com/watch?v=5JQlFK6MdVQ
 
 
 # Prerequisites
@@ -2239,11 +2450,12 @@ nodejs
 # Components
 
 - dockerfile [in the nodejs folder in the Github repo]
-	- the debugger image can be built using docker compose [YAML can be found at the top of the repo]
-	- need to expose the server port of the nodejs app and another port for the debugger
-	- the source code itself is mounted into the container, technically not needing nodejs installed on the local since its in the container,
+	- image: the debugger image can be built using docker compose [YAML can be found at the top of the repo]
+	- port exposing: need to expose the server port of the nodejs app and another port for the debugger
+	- hot reloading: the source code itself is mounted into the container, technically not needing nodejs installed on the local since its in the container,
 		so you just update the code locally and it automatically reflects in the container
-		- the only time you need to rebuild the actual image is when package.json gets updated since you may need to npm install any updated dependencies
+		- rebuilding the image: the only time you need to rebuild the actual image is when package.json gets updated since you may need to npm install any updated dependencies
+	- debugger: in server.js, inside the request/response function, you can put a "debugger;" line and execution will stop there so you can see whats going on in the execution at that point in time
 
 
 
@@ -2295,30 +2507,30 @@ performance analysis
 
 # Basic commands
 
-dmesg | tail    	# shows kernel errors
-free -m [or -g]		# memory usage
-iostat -xz 1		# disk I/O
-mpstat -P ALL 1		# CPU balance
-netstat -s 			# shows statistics by protocol (network)
-pidstat 1			# process usage
-sar -n DEV 1		# network I/O
+dmesg | tail    		# shows kernel errors
+free -m [or -g]			# memory usage
+iostat -xz 1				# disk I/O
+mpstat -P ALL 1			# CPU balance
+netstat -s 					# shows statistics by protocol (network)
+pidstat 1						# process usage
+sar -n DEV 1				# network I/O
 sar -n TCP,ETCP, 1  # TCP stats
-top 				# overview of processes (hit 1 to see CPU usage). Note: does not show container ID
-uptime     			# shows time passed since last reboot of server
-vmstat 1			# overall stats by time
+top 								# overview of processes (hit 1 to see CPU usage). Note: does not show container ID
+uptime     					# shows time passed since last reboot of server
+vmstat 1						# overall stats by time
 
 
 # Advanced tools
 
-iosnoop				# disk I/O events w/ latency
-btrfsdist			# latency histogram
+iosnoop					# disk I/O events w/ latency
+btrfsdist				# latency histogram
 zfsslower 1			# file system latency is a better pain indicator than disk latency
 
 
 # Namespaces - limit what you can see, whereas cgroups limit what you can use
 
-cat /proc/<PID>/cgroup 						 # events for target container within the cgroup
-docker stats 								 # a top for containers
+cat /proc/<PID>/cgroup 						 					 # events for target container within the cgroup
+docker stats 								 								 # a top for containers
 dockerpsns.sh [or docker ps --namespaces]    # an initial check before deep dive. More info at https://github.com/docker/docker/issues/32501
 grep <PID> /sys/fs/cgroup/cpu,cpuacct/docker/*/tasks | cut -d/ -f7      # will show container associated with PID
 htop 										 # can show cgroup (unlike top), but may truncate important info
@@ -2673,7 +2885,7 @@ Raspberry Pi
 	- click Other Cluster
 	- enter a name for the cluster
 	- run the insecure curl command in your terminal [or secure if your K3s cluster is secure] to import the Raspberry Pi cluster into Rancher
-	- click Done in the consoel once the command executes successfully
+	- click Done in the console once the command executes successfully
 
 
 
@@ -2926,33 +3138,97 @@ ssh public/private key generation for passwordless SSH
 ------------------------------------------------------
 
 1) on the client side, create an ssh public/private key pair:
-	> ssh-keygen -t rsa -b 4096
+	ssh-keygen -t rsa -b 4096
 	# do not enter a passphrase, just hit enter
 
 2) Copy the contents of id_rsa.pub and ssh to the target server, cd to the users .ssh folder, edit authorized_keys, and paste the pub key entry into the file and save. You should now be able to ssh from the client to the server without a password.
 
 3) You can also try updating authorized_keys from the client like so:
-	> ssh-copy-id -i ~/.ssh/id_rsa.pub user@host
+	ssh-copy-id -i ~/.ssh/id_rsa.pub user@host
 	
 
 # SSH tunneling - requires SSH server to be set up on target machine
 # source: https://www.youtube.com/watch?v=AtuAdk4MwWw&list=WL&index=9
 
-- tunnel from local machine to a remote machine
+# tunnel from local machine to a remote machine
 ssh -L <port_to_expose>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
 
 
-- create SOCKS proxy
+# create SOCKS proxy
 ssh -D <any_port> <dest_user>@<destination_SSH_server_IP>
 
 	# after running the above, you can for example set this in your LAN settings in your browser, enter the details in the SOCKS proxy section, and any site you visit will be forwarded through the
 	# SSH tunnel to the destination specified
 
 
-- Set up a SSH tunnel from the target server for a "local" PC or server to access
+# Set up a SSH tunnel from the target server for a "local" PC or server to access
 ssh -R <any_port>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
 
 	# enter the remote server's IP and any_port in your local browser via remote desktop and you'll be able to remote into the target machine
+
+
+
+---
+SSL
+---
+
+# SSL handshake overview
+# Source: F5 DevCentral - https://www.youtube.com/watch?v=cuR05y_2Gxc
+
+1] client sends a request to the server to establish a connection
+	- client sends a "Hello" message with:
+		- TLS version
+		- Cipher suites it can support
+
+2] server sends a "Hello" message back:
+	- also sends a certificate [containing its public key]
+		- client uses the public key from the server for encryption
+	- server chooses cipher suite to use for client based on clients list
+
+3] client checks certificate for validity
+
+4] server sends a "Hello" done [meaning initial communication has been completed]
+
+5] initiating key exchange - client generates a "pre-master secret" and encrypts it with the public key to send back to the server
+	- client also sends a "change cipher spec" message
+
+6] server uses private key to decrypt pre-master secret
+
+7] client and server calculate the "symmetric encryption key"
+
+8] client sends a "client finished" message, telling the server it is finished create its symmetric encryption key
+
+9] server sends a "change cipher spec" message to client so that both can alter the secret writing sent between them
+	- also sends a finished message for its symmetric key generation
+
+10] communication between server and client is now symmetric
+	- AES encryption as opposed to RSA or DHEC in the first 9 steps for asymmetric communication
+	- data in greater amounts can now flow between client and server
+
+
+
+# TLS 1.3 handshake overview
+# Source: F5 DevCentral - https://www.youtube.com/watch?v=yPdJVvSyMqk
+
+1] client sends a "Hello" message with supported ciphers and key agreements
+	- calculates a key share pre-emptively
+		- will calculate/assume what cipher suite the server will choose based on its list
+
+2] server will respond with "Hello" message
+	- chooses cipher suite
+	- generates its own key share
+
+- Note: if server does not have any of the supported ciphers in the client list
+	- server sends a "Hello" retry to client
+	- if theres still no match in ciphers, server will abort the connection and let the client know
+
+3] server sends above + signed certificate back to client
+
+4] server generates a symmetric key, sends a finished message to client
+
+5] client generates a symmetric key, sends a finished message to server
+
+6] normal traffic between client and server begins
 
 
 
@@ -3691,3 +3967,41 @@ whois
 -----
 
 whois [domain_name]   # will return comprehensive information about that URL/domain (given that domain is publicly registered)
+
+
+
+
+----
+yaml
+----
+
+- Yet Another Markup Language
+	- is a data serialization language that is often used for writing configuration files.
+	- has features that come from Perl, C, XML, HTML, and other programming languages. YAML is also a superset of JSON, so JSON files are valid in YAML.
+	- uses Python-style indentation to indicate nesting
+	- used for defining templates for different kubernetes resources (e.g. deployments, services, custom resource definitions)
+
+
+# YAML mapping field definitions - taken from Marcel Dempers [That DevOps Guy]
+# https://github.com/marcel-dempers/docker-development-youtube-series/blob/master/monitoring/prometheus/kubernetes/1.18.4/prometheus-operator/crd-thanosruler.yaml
+
+# Below are definitions of different fields and what they mean when you look at a Kubernetes template.
+
+
+- apiVersion - defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values.
+						 - value eg. "apiextensions.k8s.io/v1"
+							- More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+
+- kind - a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to.
+			 - Cannot be updated
+			 - value is written In CamelCase, egs. "ReplicationController, CustomResourceDefinition, Pod"
+			 	- More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+
+- spec - Specification of the desired behavior of the object, contains a complete description of the desired state, including:
+			 		- configuration settings provided by the user
+			 		- default values expanded by the system
+			 		- properties initialized or otherwise changed after creation by other ecosystem components (e.g., schedulers, auto-scalers), and is persisted in stable storage with the API object.
+          - More info: https://github.com/kubernetes/community/blob/master/contributors/devel/sig-architecture/api-conventions.md#spec-and-status
+
+
+ ##### MORE DEFINITIONS TO ADD + NOTES ON NESTING #####
