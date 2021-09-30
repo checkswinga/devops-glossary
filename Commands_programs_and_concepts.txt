@@ -1435,79 +1435,6 @@ kafka
 
 
 
-------------------------------------------------------------------------
-kind a software for running kubernetes clusters within docker containers
-------------------------------------------------------------------------
-
-# Sources
-- https://www.youtube.com/watch?v=m-IlbCgSzkc&list=WL&index=1
-
-# Prerequisites
-- docker
-- go (1.11+)
-- kubectl
-
-# Install kind
-- can download binary from Github, place in any PATH (e.g. /usr/local/bin/kind)
-
-# Create kind kubernetescluster
-kind create cluster --name <cluster_name>
-	- this will pull the kind docker image to spin up for creating a single master node cluster
-
-kind get clusters
-	- show running clusters
-
-kind delete cluster
-	- to remove the created cluster
-
-# Check running nodes
-kubectl get nodes
-
-# set kubeconfig to point to your new cluster (can run more than once to add clusters)
-export KUBECONFIG="$(kind get kubeconfig-path --name="<cluster_name>"
-
-
-# Multi-node cluster - its possible to create a kind cluster with worker nodes added
-
-- create a yaml with the following def
-kind: Cluster
-apiVersion: kind.x-k8s.io/v1alpha4
-nodes:
-- role: control-plane
-- role: worker
-- role: worker
-
-
-- create cluster with this yaml definition
-
-kind create cluster --config /path/to/kind.yaml
-
-
-- verify
-
-kind get clusters
-docker ps 					                   # will show running kind containers, one which is your master/control plane as in the first example, and one or more as your worker nodes
-kubectl cluster-info                   # show info about cluster, including the URL to hit it
-kubectl get nodes -o wide  					   # see the nodes not as docker containers but as kind nodes
-
-docker exec -ti <container_ID> bash    # log into any of the kind containers
-which ctr 														 # container runtime binary similar to docker command line
-ctr namespaces list  									 # can see namespaces within the cluster
-ctr namespace k8s.io containers list   # can see all the containers that make up the cluster
-
-
-
--------
-kubectl
--------
-
-# Random useful kubectl commands
-
-kubectl expose deploy <pod> --port <port> --dry-run -o yaml     # Expose a deployment as a service, dry run to check yaml definition
-kubectl -n <namespace> port-forward <pod_name> <port> 			    # Port forward to expose an app as a service
-kubectl scale deploy <deployment_name> --replicas=<number>      # Manually scale a deployment
-
-
 
 ----------
 kubernetes
@@ -1530,8 +1457,8 @@ kubernetes
 
 # Installing a Kubernetes cluster using kubeadm [Centos7]
 # Source: Just Me And Opensource - https://www.youtube.com/watch?v=v6Jh2sZClDY
-#																 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-centos-7.md
-# 															 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-ubuntu-20.md [for install on Ubuntu 20.04]         
+#								 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-centos-7.md
+# 								 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-ubuntu-20.md [for install on Ubuntu 20.04]         
 
 
 For Centos 7 install:
@@ -1630,9 +1557,103 @@ kubectl get cs         # get component status
 
 
 
-# Webhooks
+####### kind - a software for running kubernetes clusters within docker containers ########
+# Sources
+- https://www.youtube.com/watch?v=m-IlbCgSzkc&list=WL&index=1
+
+# Prerequisites
+- docker
+- go (1.11+)
+- kubectl
+
+# Install kind
+- can download binary from Github, place in any PATH (e.g. /usr/local/bin/kind)
+
+1] Create kind kubernetes cluster
+
+kind create cluster --name <cluster_name>
+	- this will pull the kind docker image to spin up for creating a single master node cluster
+
+kind get clusters
+	- show running clusters
+
+kind delete cluster
+	- to remove the created cluster
+
+2] Check running nodes
+kubectl get nodes
+
+3] set kubeconfig to point to your new cluster (can run more than once to add clusters)
+export KUBECONFIG="$(kind get kubeconfig-path --name="<cluster_name>"
+
+
+# Multi-node cluster - its possible to create a kind cluster with worker nodes added
+
+1] create a yaml with the following def
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+
+
+2] create cluster with this yaml definition
+
+kind create cluster --config /path/to/kind.yaml
+
+
+3] verify
+
+kind get clusters
+docker ps 					                   # will show running kind containers, one which is your master/control plane as in the first example, and one or more as your worker nodes
+kubectl cluster-info                   # show info about cluster, including the URL to hit it
+kubectl get nodes -o wide  					   # see the nodes not as docker containers but as kind nodes
+
+docker exec -ti <container_ID> bash    # log into any of the kind containers
+which ctr 														 # container runtime binary similar to docker command line
+ctr namespaces list  									 # can see namespaces within the cluster
+ctr namespace k8s.io containers list   # can see all the containers that make up the cluster
+
+
+
+########## kOS - a frictionless, easy-to-install and use kubernetes distro ##########
+
+# General website - https://k0sproject.io/
+# Getting started steps - https://docs.k0sproject.io/v1.22.2+k0s.0/install/
+# Youtube getting started guide from Just Me and Opensource - https://www.youtube.com/watch?v=aHPGf6FsY7Y
+
+
+
+########## kubectl ##########
+
+
+# Random useful kubectl commands
+
+kubectl expose deploy <pod> --port <port> --dry-run -o yaml     # Expose a deployment as a service, dry run to check yaml definition
+kubectl -n <namespace> port-forward <pod_name> <port> 			    # Port forward to expose an app as a service
+kubectl scale deploy <deployment_name> --replicas=<number>      # Manually scale a deployment
+
+
+
+
+########## kURL - a custom Kubernetes distro creator ############
+
+# Website - https://kurl.sh/
+
+# Demo for installation: Just Me and Opensource - https://www.youtube.com/watch?v=_4edisHDWzs
+
+- the kURL tool helps you to create a Kubernetes cluster which can be customized off the bat with different tools that are more typical/standard that are not provided out of the box right away
+	with a vanilla K8s installation such as monitoring tools [Prometheus], cluster backup and restore mechanism [Velero], certificate management [CertManager], and more. See kurl.sh for more details.
+
+
+
+
+
+
+#### Webhooks ####
 # Source - Marcel Dempers (That DevOps Guy) - https://www.youtube.com/watch?v=1mNYSn2KMZk
-#																						- https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/admissioncontrollers/introduction
+#											- https://github.com/marcel-dempers/docker-development-youtube-series/tree/master/kubernetes/admissioncontrollers/introduction
 
 
 - admission webhooks
@@ -1740,17 +1761,6 @@ EOF
    #### INCOMPLETE ####
 
 
-
------------------------------------------
-kURL - a custom Kubernetes distro creator
------------------------------------------
-
-# Website - https://kurl.sh/
-
-# Demo for installation: Just Me and Opensource - https://www.youtube.com/watch?v=_4edisHDWzs
-
-- the kURL tool helps you to create a Kubernetes cluster which can be customized off the bat with different tools that are more typical/standard that are not provided out of the box right away
-	with a vanilla K8s installation such as monitoring tools [Prometheus], cluster backup and restore mechanism [Velero], certificate management [CertManager], and more. See kurl.sh for more details.
 
 
 
