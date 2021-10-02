@@ -489,8 +489,19 @@ bobrik/socat
 
 docker run -it -v /var/lib/docker:/var/lib/docker <image_ID> bash - check /var/lib/docker/containers/<ID>/<container-id>-json.log
 
-# for a persistent container, ensure auto restarts if machine goes down
+# persistent container, ensure auto restarts if machine goes down
 docker update --restart=always <container_id>
+
+
+# security scan tools
+
+- docker bench security - ### needs updating from internal Confluence ###
+
+- dockscan - https://github.com/kost/dockscan
+	- needs ruby 2.0
+	- installation via gem install
+
+
 
 # sidecar pattern - https://www.magalix.com/blog/the-sidecar-pattern
 
@@ -1617,7 +1628,7 @@ ctr namespace k8s.io containers list   # can see all the containers that make up
 
 
 
-########## kOS - a frictionless, easy-to-install and use kubernetes distro ##########
+########## k0S - a frictionless, easy-to-install-and-use kubernetes distro ##########
 
 # General website - https://k0sproject.io/
 # Getting started steps - https://docs.k0sproject.io/v1.22.2+k0s.0/install/
@@ -1773,11 +1784,11 @@ ldd -d
 
 
 
-------------
-Linux kernel
-------------
+-----
+Linux
+-----
 
-# General
+# Kernel - General info
 # Sources: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
 
 - privilege rings in Linux
@@ -1979,6 +1990,32 @@ cat /dev/rickroll
 
 - should print the char *message a lot
 - Ctrl ^C to close the device, and the log should print that the device is closed
+
+
+
+# Linux processes
+# Source: Engineer Man - https://www.youtube.com/watch?v=TJzltwv7jJs
+
+- fork/exec - when executing any command, Linux "forks" the shell terminal [or parent] process into two: itself and a copy of itself.
+			- it then "execs" by replacing the second [child] process with the command that was entered
+
+- commands:
+
+^C [or Ctrl ^C] - if the child process is still running [i.e. your terminal is still executing a command], this will send a SIGINT to terminate the process
+^Z [or Ctrl ^Z] - sends a TSTP signal to Linux to "suspend" the process [equivalent of "kill -20" on a process]
+
+jobs        	  # see the jobs table for the user. You will also see stopped processes that can be restarted.
+fg          	  # execute in the foreground - if there's one stopped job in the jobs table, this will run it by default
+fg %3       	  # this will run the 3rd job in the jobs table
+bg                # background
+bg %3             # this will run the 3rd job in the jobs table in the background
+kill -15 [pid]    # sends sigterm to terminate the process cleanly
+kill -2 [pid]     # sends sigint to terminate process 
+kill -1 [pid]     # sends sighup to terminate process
+kill -9 [pid]     # sends sigkill to kill the process ungracefully or the "dirty" way
+
+kill -20 [pid]    # stop or suspend a running process
+kill -18 [pid]    # restart a suspended process. An example of how kill sends terminal signals and not necessarily all process killers
 
 
 
@@ -2577,7 +2614,7 @@ perf record -F 49 -a -g -- sleep 30
 	- Can copy files to the host, map PIDs, then run perf script/report:
 		- https://blog.alicegoldfuss.com/making-flamegraphs-with-containerized-java/
 		- http://batey.info/docker-jvm-flamegraphs.html
-	- Can nsenter (-m -u -i -n -p) a "power shell, and then run perf -p PID
+	- Can nsenter (-m -u -i -n -p) a "power" shell, and then run perf -p PID
 	- perf should be fixed to be namespace aware
 
 
@@ -2634,12 +2671,10 @@ Piston
 ps
 --
 
-# Check full process args on Linux:
-ps eww -p <PID>
-
-or
-
-ps -auwwwx | grep <anything>
+ps eww -p <PID>          		# Check full process args on Linux:
+ps -auwwwx | grep <anything>    # Alternative to above
+ps -ef                          # full format listing of all running processes the user has access to
+ps f 1                          # list init process
 
 
 
