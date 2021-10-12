@@ -297,6 +297,76 @@ Group 8: For the love of God, do not use these: (Do Not Include. This is deviati
 
 
 
+-----
+CISSP
+-----
+
+# Source: boson.com CISSP 2021 curriculum (viewable online only via single user licence - $69 USD to buy the digital copy thru the site)
+
+# Notes - these are limited based on content I felt needed to be re-emphasized for the exam. The rest of the content is easier to absorb just going through digital copy online.
+# If time allows, I will try to document more of the content here.
+
+- CISSP - Certified Information Systems Security Professional
+- ISC² - International Information Systems Security Certification Consortium
+
+- the ISC² Code of Ethics
+
+	- Preamble
+
+		1] The safety and welfare of society and the common good, duty to our principals, and to each other, requires that we adhere, and are seen
+		to adhere, to the highest ethical standards of behaviour.
+
+		2] Therefore, strict adherence to this Code is a condition of certification
+
+
+	- The Four Canons of Ethics [in order of importance]
+
+		1] Protect society, the common good, necessary public trust and confidence, and the infrastructure
+
+		2] Act honourably, honestly, justly, responsibly, and legally
+
+		3] Provide diligent and competent service to principals
+
+		4] Advance and protect the profession
+
+
+		- note: if theres ever a conflict between canons, the one that ranks the highest is the one to adhere to first
+
+
+# ISC² CISSP Exam Prep Notes
+
+- expect approx. 15% of the questions to be about security and risk management
+
+
+# EU GDPR [2016]
+
+- provisions
+	- companies must inform authorities of major data breaches within 24 to 72 hours, depending on country 
+	- each EU member nation must create a centralized data protection authority
+	- individuals must have access to their own data
+	- information regarding an individual must be transferrable to another service provider at the individuals request
+	- individuals retain the "right to be forgotten" and have their information deleted if it is no longer required
+
+
+# Import/Export Law
+
+- ITAR - International Traffic in Arms Regulations - limits the export of military and defense items, including information regarding these items.
+- EAR - Export Administration Regulations - applies to civilian goods and services that could have military or information security applications.
+
+
+# Intellectual Property
+
+- IP rights were first recognized by 2 treaties:
+	- Paris Convention for the Protection of Industrial Property [1883]
+	- Berne Convention for the Protection of Literary and Artistic Works [1886]
+
+- IP protections are managed by World Intellectual Property Organization [WIPO]
+	- established 1967, an agency of the U.N.
+
+- Digital Millenium Copyright Act [DMCA], passed in 1998 by U.S. Congress to comply with WIPO treaties
+	- prohibits the circumvention of copyright protections on digital media
+
+
 -------------------------------
 CompTIA A+ Certifcation 220-801
 -------------------------------
@@ -1641,9 +1711,9 @@ ctr namespace k8s.io containers list   # can see all the containers that make up
 
 # Random useful kubectl commands
 
-kubectl expose deploy <pod> --port <port> --dry-run -o yaml     # Expose a deployment as a service, dry run to check yaml definition
-kubectl -n <namespace> port-forward <pod_name> <port> 			    # Port forward to expose an app as a service
-kubectl scale deploy <deployment_name> --replicas=<number>      # Manually scale a deployment
+kubectl expose deploy <pod> --port <port> --dry-run -o yaml > somefile.yaml    # Expose a deployment as a service, dry run to check yaml definition, and can output to a file
+kubectl -n <namespace> port-forward <pod_name> <port> 			               # Port forward to expose an app as a service
+kubectl scale deploy <deployment_name> --replicas=<number>                     # Manually scale a deployment
 
 
 
@@ -1787,6 +1857,39 @@ ldd -d
 -----
 Linux
 -----
+
+# Command-line - special/"heroic" commands
+# Source: Engineer Man - https://www.youtube.com/watch?v=Zuwa8zlfXSY
+
+# 1. redo last command but as root
+sudo !!
+
+# 2. open an editor to run a command
+ctrl+x+e
+
+# 3. create a super fast ram disk
+mkdir -p /mnt/ram
+mount -t tmpfs tmpfs /mnt/ram -o size=8192M
+
+# 4. don't add command to history (note the leading space)
+ ls -l
+
+# 5. fix a really long command that you messed up
+fc
+
+# 6. tunnel with ssh (local port 3337 -> remote host's 127.0.0.1 on port 6379)
+ssh -L 3337:127.0.0.1:6379 root@emkc.org -N
+
+# 7. quickly create folders
+mkdir -p folder/{sub1,sub2}/{sub1,sub2,sub3}
+
+# 8. intercept stdout and log to file
+cat file | tee -a log | cat > /dev/null
+
+# bonus: exit terminal but leave all processes running
+disown -a && exit
+
+
 
 # Kernel - General info
 # Sources: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
@@ -1993,7 +2096,7 @@ cat /dev/rickroll
 
 
 
-# Linux processes
+# Processes
 # Source: Engineer Man - https://www.youtube.com/watch?v=TJzltwv7jJs
 
 - fork/exec - when executing any command, Linux "forks" the shell terminal [or parent] process into two: itself and a copy of itself.
@@ -2152,10 +2255,27 @@ Mac OS X
    		  /usr/libexec/java_home -V
 
 
------------------
-Mounting a Volume
------------------
+-----
+mount
+-----
 
+# RAM disk creation
+# Source: Engineer Man - https://www.youtube.com/watch?v=Zuwa8zlfXSY
+
+mkdir -p /mnt/ram
+mount -t tmpfs tmpfs /mnt/ram -o size=8192M
+cd /mnt/ram
+dd if=/dev/zero of=test.iso bs=1M count=8000
+
+	- "dd" copies a file and converts the data.
+		- In the case above, its being used to test the write speed on the new RAM disk
+	- "if" - input file
+	- "of" - output file
+	- "bs" - block size
+	- "/dev/zero" - produces a continuous stream of NULL (zero value) bytes.
+
+
+# Volume mounting in Linux
 # Source article: https://www.linode.com/docs/platform/block-storage/how-to-use-block-storage-with-your-linode/#add-a-volume-from-the-linode-detail-page
 
 # One-time step for defining the FS type of the volume
@@ -2177,6 +2297,8 @@ FILE_SYSTEM_PATH /mnt/my-volume ext4 defaults,noatime,nofail 0 2
 # if you need to unmount it or reboot your Linode without affecting the volume
 umount /mnt/my-volume
 Remove /etc/fstab entry
+
+
 
 
 
@@ -2683,7 +2805,40 @@ ps f 1                          # list init process
 python
 ------
 
-Threading vs Multiprocessing - both are trying to do the same thing: to run multiple things at the same time.
+# Constructors (quick example below) - used to enter values to variables at the time of instantiating an object
+
+class Customer:
+  def __init__(self, c="", f="", l="")
+  customerID = c
+  firstName = f
+  lastName = l
+  def fullName(self):
+    return self.firstName + " " + self.lastName
+
+aleem = Customer("001", "Aleem", "Janmohamed")
+
+
+# Dictionary (quick example) - used to gather different types of data into one object
+
+def getCustomers():
+	"a": "Some Guy 1",
+	"b": "Some Guy 2",
+	"c": "Some Guy 3",
+	"d": "Some Guy 4",
+	"e": Customer("001", "Aleem", "Janmohamed")    # example of using constructor within a dictionary
+
+def getCustomer(customerID):
+
+customers = getCustomers()
+for customerID in customers:
+  print(customers[customerID].fullName())
+
+
+
+# Threading vs Multiprocessing
+# Source: Engineer Man - https://www.youtube.com/watch?v=ecKWiaHCEKs
+
+- both are trying to do the same thing: to run multiple things at the same time.
 
 Threading:
 - A new thread is spawned within the existing process
@@ -2701,7 +2856,6 @@ Multiprocessing:
 
 
 
-
 ----
 RAID
 ----
@@ -2710,7 +2864,7 @@ RAID
 #																		 - https://www.youtube.com/watch?v=UuUgfCvt9-Q [RAID 5 & 6]
 
 
-- RAID stands for "Redundant Array of Indepdent Disks"
+- RAID stands for "Redundant Array of Independent Disks"
 - used for data loss prevention in the event of hardware failure
 	- data is spread across multiple disks for fault tolerance
 
