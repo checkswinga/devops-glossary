@@ -830,7 +830,7 @@ Filesystems
 
 /etc - system and program configuration files
 
-/home - non-root user hoem directories
+/home - non-root user home directories
 
 /lib
 /lib32
@@ -848,7 +848,9 @@ Filesystems
 
 /root - root user home directory
 
+/var - this directory contains files which may change in size, such as spool and log files.
 
+/var/lib - Variable state information for programs.
 
 
 # Types
@@ -1001,6 +1003,16 @@ firewall-cmd --runtime-to-permanent
 
 
 
+------------
+font flipper
+------------
+
+Site: https://fontflipper.com
+
+- a website that helps you choose/experiment with different fonts for your designs with a Tinder-style UI
+- can download the font you like from Google fonts
+
+
 -------
 Fortify
 -------
@@ -1115,6 +1127,11 @@ git clone --bare <repo_url>
 cd <cloned_repo>.git
 git push --mirror  https://github.com/<new-repo>
 
+
+# Merge - locally merge the contents of some branch into your own branch
+
+git checkout <your_branch>
+git merge <target_branch>
 
 
 # Squash - take two or more commits in a branch and "squash" them together into a single commit
@@ -2132,6 +2149,14 @@ rm -f /etc/localtime
 ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 date
 
+
+--
+ln
+--
+
+- in Linux, creates a hard or soft link to an existing file or directory
+
+ln -s <real_path> <soft_link_to_be_created>
 
 
 
@@ -3329,6 +3354,30 @@ shipa
 -----
 
 Video Source: Making Kubernetes disappear with Shipa - https://www.youtube.com/watch?v=PW44JaAlI_8
+
+
+
+----
+smtp
+----
+
+- Simple Message Transfer Protocol - used for sending emails between computers/devices, usually through SMTP servers
+
+
+# SMTP error codes
+# Source: https://sendgrid.com/blog/smtp-server-response-codes-explained/
+
+250 – This SMTP server response simply means everything went well and your message was delivered to the recipient server.
+421 – Your message was temporarily deferred by the recipient server. This is usually a result of too many connections in a short timeframe or too many messages.
+450 – Your message was not delivered because the other user mailbox was not available. This can happen if the mailbox is locked or is not routable.
+451 – This response is sent when the message simply failed. Often times this is not caused by you, but rather because of a far-end server problem.
+452 – This kind of response is sent back when there isn’t enough system storage to send the message. Your message is deferred until storage opens up and it can then be delivered.
+550 – The message has failed because the other user’s mailbox is unavailable or because the recipient server rejected your message.
+551 – The mailbox your message was intended for does not exist on the recipient server.
+552 – The mailbox your message was sent to does not have enough storage to accept your message.
+553 – You message was not delivered because the name of the mailbox you sent to does not exist.
+554 – This is a very vague message failure response that can refer to any number of problems either on your end or with the recipient server.
+
 
 
 
