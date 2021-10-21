@@ -793,6 +793,69 @@ fail2ban-client status sshd
 
 
 
+
+-----
+fdisk
+-----
+
+#### General ####
+
+- Linux command: partition table manipulator
+	- hard disks can be divided into one or more logical disks called partitions. This division is described in the partition table found in sector 0 of the disk.
+
+
+#### Commands ####
+
+fdisk -l 				 # lists all partitions
+fdisk -l /dev/sda        # lists the partitions on the /dev/sda device
+
+# Remove and add partition
+fdisk /dev/sdb           # displays list of options for the device, type "m" and ENTER to see complete list, e.g. delete a partition, change a partition type, etc.
+	d                    # Delete a partition, will ask you which one
+	2                    # Delete partition #2 for example
+	p                    # Add a primary partition
+	[Enter]				 # Hit Enter to keep the default for the starting disk sector of the partition
+	[number_then_enter]  # Put in an end sector number, example: 35000000 and hit enter
+	Y or N               # for removing a particular signature on the sector, ext4 for example. In the boson labs I chose yes
+	w                    # write the newly updated partition table and exit the fdisk utility prompt
+
+
+# Example of fdisk menu
+
+[root@server ~]# fdisk /dev/sda
+Welcome to fdisk (util-linux 2.23.2).
+
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table
+Building a new DOS disklabel with disk identifier 0x031547c5.
+
+Command (m for help): m
+Command action
+   a   toggle a bootable flag
+   b   edit bsd disklabel
+   c   toggle the dos compatibility flag
+   d   delete a partition
+   g   create a new empty GPT partition table
+   G   create an IRIX (SGI) partition table
+   l   list known partition types
+   m   print this menu
+   n   add a new partition
+   o   create a new empty DOS partition table
+   p   print the partition table
+   q   quit without saving changes
+   s   create a new empty Sun disklabel
+   t   change a partitions system id
+   u   change display/entry units
+   v   verify the partition table
+   w   write table to disk and exit
+   x   extra functionality (experts only)
+
+Command (m for help):
+
+
+
 --------------
 File transfers
 --------------
@@ -825,6 +888,7 @@ Filesystems
 /bin - stores common executables available for everyone, egs. cp rm ls
 
 /boot - kernel and boot configuration
+	  - you may see the boot mount point by running "mount" command, e.g. /dev/sda1
 
 /dev - files which point to both physical and pseudo devices
 
@@ -1186,6 +1250,59 @@ Github
 
 - to use VSCode in a browser to work on a specific repo in Github, go to the repo you want to work on, and hit the "." key
 	- you can use a terminal if you set up Github codespace, option can be found within the VSCode browser editor
+
+
+
+
+---
+GPT
+---
+
+#### General ####
+
+- GPT - GUID Partition Table
+	- the latest standard for defining the partitions on a hard disk
+	- uses globally unique identifiers (GUID) to define the partition, and you can create theoretically unlimited partitions on the hard disk. 
+
+- gdisk - note there are a lot more options for partition types with the gdisk utility than with fdisk [including creating partitions other than just Linux file system]
+
+
+#### Commands ####
+
+sudo gdisk /dev/sdb            # displays partition table scan results of /dev/sdb via gdisk utility
+	l                          # type 'l' to see full list of partition types
+
+
+# Example of gdisk menu
+
+[root@li1961-156 ~]# gdisk /dev/sdb
+GPT fdisk (gdisk) version 0.8.10
+
+Partition table scan:
+  MBR: not present
+  BSD: not present
+  APM: not present
+  GPT: not present
+
+Creating new GPT entries.
+
+Command (? for help): ?
+b       back up GPT data to a file
+c       change a partitions name
+d       delete a partition
+i       show detailed information on a partition
+l       list known partition types
+n       add a new partition
+o       create a new empty GUID partition table (GPT)
+p       print the partition table
+q       quit without saving changes
+r       recovery and transformation options (experts only)
+s       sort partitions
+t       change a partitions type code
+v       verify disk
+w       write table to disk and exit
+x       extra functionality (experts only)
+?       print this menu
 
 
 
@@ -2200,45 +2317,45 @@ lxd
 
 # Basics for listing and running container images
 
-lxc image list        							    							# list images stored locally (docker equivalent command: docker images)
-lxc image list ubuntu: | less  			    							# list of images from the ubuntu: registry
-lxc launch images:ubuntu/18.04 [container_name]     	# run a container called container_name based on the ubuntu 18.04 image
-lxc list  														  							# check running containers
-lxc info [container_name]               							# inspect running container named container_name
-lxc config show [container_name]											# show configuration details of container_name
-lxc stop [container name] 														# stop running container container_name
-lxc delete [container_name]  													# remove running container container_name
-lxc start [container_name]														# start running container container_name
+lxc image list        							      # list images stored locally (docker equivalent command: docker images)
+lxc image list ubuntu: | less  			    		  # list of images from the ubuntu: registry
+lxc launch images:ubuntu/18.04 [container_name]       # run a container called container_name based on the ubuntu 18.04 image
+lxc list  											  # check running containers
+lxc info [container_name]               			  # inspect running container named container_name
+lxc config show [container_name]					  # show configuration details of container_name
+lxc stop [container name] 							  # stop running container container_name
+lxc delete [container_name]  						  # remove running container container_name
+lxc start [container_name]							  # start running container container_name
 lxc delete --force [container_name]                   # force stop and delete container_name
 
 
 # Container interaction commands
 
-lxc exec [container_name] -- free -m                	      # execute free -m within container_name
+lxc exec [container_name] -- free -m                	        # execute free -m within container_name
 lxc config set [container_name] limits.memory 128MB   			# set memory limit on container_name
 lxc exec [container_name] -- apt-get update           			# run apt-get update within container_name
 lxc exec [container_name] -- apt-get install sl -y    			# install sl package within container_name
 lxc exec [container_name] -- /usr/games/sl            			# run sl program within container_name [sl stands for 'Steam Locomotive' - displays a train on-screen when you mistype ls command :D ]
-lxc snapshot [container_name] clean  												# take a snapshot called clean of running container_name, which can be used for restoration if something messes up in the container
-lxc restore [container_name] clean  												# restore the clean snapshot of container_name
+lxc snapshot [container_name] clean  							# take a snapshot called clean of running container_name, which can be used for restoration if something messes up in the container
+lxc restore [container_name] clean  							# restore the clean snapshot of container_name
 lxc file pull [container_name]/etc/hosts .            			# copy a file from container_name to local
 lxc file push hosts [container_name]/etc/hosts        			# copy a file from local to container_name
-lxc file pull [container_name]/var/log/syslog - | less      # check log files in the container
-lxc exec lxdserver:[container_3] bash  				 							# log into remote container on remote lxdserver
-lxc copy lxdserver:[container_3] lxdserver:[container_4]    # create a copy of that container on that same remote
-lxc move lxdserver:[container_4] [container_5]              # move the copied remote container to local and rename it to container_5
-lxc start [container_5]                                     # and then start container_5
+lxc file pull [container_name]/var/log/syslog - | less          # check log files in the container
+lxc exec lxdserver:[container_3] bash  				 			# log into remote container on remote lxdserver
+lxc copy lxdserver:[container_3] lxdserver:[container_4]        # create a copy of that container on that same remote
+lxc move lxdserver:[container_4] [container_5]                  # move the copied remote container to local and rename it to container_5
+lxc start [container_5]                                         # and then start container_5
 
 
 # Image commands
 
-lxc publish [container_name]/clean --alias clean-ubuntu     # publish the snapshot "clean" of container_name to the default registry
-lxc launch clean-ubuntu [container_2]												# launch a new container based on the published image
-lxc remote list                                             # list all remote registries
-lxc list lxdserver:  																			  # list all remote containers on lxdserver
-lxc image list lxdserver:	 																	# list all images on remote lxdserver
+lxc publish [container_name]/clean --alias clean-ubuntu     	# publish the snapshot "clean" of container_name to the default registry
+lxc launch clean-ubuntu [container_2]							# launch a new container based on the published image
+lxc remote list                                                 # list all remote registries
+lxc list lxdserver:  											# list all remote containers on lxdserver
+lxc image list lxdserver:	 									# list all images on remote lxdserver
 lxc launch clean-ubuntu lxdserver:[container_3]       			# create new container called container_3 on remote lxdserver
-lxc image delete clean-ubuntu                               # delete the published image
+lxc image delete clean-ubuntu                                   # delete the published image
 
 
 
@@ -2259,7 +2376,7 @@ Mac OS X
    		sudo launchctl unload /Library/LaunchDaemons/org.jenkins-ci.plist
 		  sudo launchctl load /Library/LaunchDaemons/org.jenkins-ci.plist
 
-   # update URL
+   # update Jenkins URL
    	    sudo defaults write /Library/Preferences/org.jenkins-ci httpPort 8082
    	    sudo defaults write /Library/Preferences/org.jenkins-ci prefix /jenkins
    	    # for brew:
@@ -2269,7 +2386,7 @@ Mac OS X
   					  <string>--prefix=/jenkins</string>
    	       brew services restart jenkins-lts
 
-   # update heap size/permGen
+   # update Jenkins heap size/permGen
         sudo defaults write /Library/Preferences/org.jenkins-ci minPermGen 512m
   		  sudo defaults write /Library/Preferences/org.jenkins-ci permGen 2048m
   		  sudo defaults write /Library/Preferences/org.jenkins-ci minHeapSize 512m
@@ -2280,11 +2397,41 @@ Mac OS X
    		  /usr/libexec/java_home -V
 
 
+------
+mkswap
+mkfs
+lsblk
+------
+
+### General ####
+
+- in Linux, "mkswap" is used to create swap space on a disk/partition
+- "mkfs" is for creating a file system on a partition
+- "lsblk" shows partition information, including the type of FS on each partition
+
+#### Commands ####
+
+# Creating swap space on a partition, followed by creation of an FS
+umount /dev/sdb2               # unmounts a partition [in this case, /dev/sdb2, to prepare for creating swap space on it]
+mkswap /dev/sdb2               # creates swap space on a partition. NOTE: this will wipe the file system signature as well
+mkfs -t <fs_type> /dev/sdb2    # creates a file system, where fs_type can be ext3 for example, on the /dev/sdb2 partition
+lsblk -f                       # verify the partition type
+
+
+
+
 -----
 mount
 -----
 
-# RAM disk creation
+
+#### General command line in Linux/UNIX ####
+
+mount         # shows all partitions on a hard disk (possibly all hard disks attached to a Linux server?) and their mount points
+
+
+
+#### RAM disk creation ####
 # Source: Engineer Man - https://www.youtube.com/watch?v=Zuwa8zlfXSY
 
 mkdir -p /mnt/ram
@@ -2300,26 +2447,28 @@ dd if=/dev/zero of=test.iso bs=1M count=8000
 	- "/dev/zero" - produces a continuous stream of NULL (zero value) bytes.
 
 
-# Volume mounting in Linux
+
+##### Volume mounting in Linux #####
 # Source article: https://www.linode.com/docs/platform/block-storage/how-to-use-block-storage-with-your-linode/#add-a-volume-from-the-linode-detail-page
 
-# One-time step for defining the FS type of the volume
+1] One-time step for defining the FS type of the volume
 mkfs.ext4 $volume_path   # check the file system path of the volume in your cloud console, it will show you the device drive location
 
-# Steps for mounting the volume
+
+2] Steps for mounting the volume
 mkdir /mnt/my-volume
 mount $volume_path /mnt/my-volume
 df -h
 
-# Create entry in /etc/fstab:
+
+3] Create entry in /etc/fstab:
 FILE_SYSTEM_PATH /mnt/my-volume ext4 defaults,noatime,nofail 0 2
 
 * noatime - This will save space and time by preventing writes made to the filesystem for data being read on the volume.
 * nofail - If the volume is not attached, this will allow your server to boot/reboot normally without hanging at dependency failures if the volume is not attached.
 
 
-
-# if you need to unmount it or reboot your Linode without affecting the volume
+4] if you need to unmount it or reboot your Linode without affecting the volume
 umount /mnt/my-volume
 Remove /etc/fstab entry
 
@@ -2679,6 +2828,42 @@ npm config set strict-ssl false
 
 # Remove all node_modules folders on an FS in multiple locations
 npx npkill
+
+
+
+
+------
+parted
+------
+
+- Linux command: allows you to easily manage hard disk partition
+
+parted         					    # check parted version
+sudo parted /dev/sda u s p          # display partition table, where:
+										# u = abbrev. for unit command
+										# s = unit sector [in bytes]
+										# p = abbrev. for print command
+
+
+
+
+----------
+partitions
+----------
+
+*** sections to see also: fdisk, GPT ***
+
+
+# General - notes about partitions in Linux
+
+- Primary partition - a bootable partition and it contains the operating system/s of the computer
+					- generally assigned the first letters in alphabet as the drive letters [e.g. C, D]
+- Extended partition - a partition that is not bootable
+					 - typically contains multiple logical partitions
+	                 - used to store data
+					 - a disk drive can contain multiple primary partitions, but it can contain only a single extended partition
+
+- multiple partitions – a boot system can be created using several primary partitions
 
 
 
@@ -3533,6 +3718,23 @@ SAN - Storage Area Network
 		- disadvantage
 			- fiber channel expensive (alternative iSCSI, cheaper but not as fast)
 			- very expensive in general
+
+
+----
+swap
+----
+
+# General info
+# Source: https://opensource.com/article/18/9/swap-space-linux-systems
+
+- the primary function of swap space is to substitute disk space for RAM memory when real RAM fills up and more space is needed.
+
+
+# Commands
+
+swapon -s       # shows swap info 
+
+
 
 
 -------
