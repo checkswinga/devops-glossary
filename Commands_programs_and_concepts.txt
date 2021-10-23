@@ -303,8 +303,8 @@ CISSP
 
 # Source: boson.com CISSP 2021 curriculum (viewable online only via single user licence - $69 USD to buy the digital copy thru the site)
 
-# Notes - these are limited based on content I felt needed to be re-emphasized for the exam. The rest of the content is easier to absorb just going through digital copy online.
-# If time allows, I will try to document more of the content here.
+# Notes - these are limited based on content I felt needed to be re-emphasized for the exam. The rest of the content should be easier to absorb just going through digital copy online,
+# but I will try to document more of the content that should be highlighted here.
 
 - CISSP - Certified Information Systems Security Professional
 - ISC² - International Information Systems Security Certification Consortium
@@ -365,6 +365,24 @@ CISSP
 
 - Digital Millenium Copyright Act [DMCA], passed in 1998 by U.S. Congress to comply with WIPO treaties
 	- prohibits the circumvention of copyright protections on digital media
+
+
+# Intellectual Property Protections
+
+- patents - protects the holders exclusive right to use, create and sell an invention.
+		  - terms are typically 20 years
+
+- trademarks - typically protect brandings, logos, slogans, anything that creates a distinction between one product and a similar product
+
+- copyrights - protect art, music, literature, source code created by an individual or organization
+			 - infringement is when the above is used without the permission of the owner
+			 - copyright usually includes the year the work was copyrighted
+			 - licenses enable a copyright owner to grant specific uses of the material to others 
+
+- trade secrets - the protection of confidential information about how a product is created.
+
+
+# Intellectual Property Attacks 
 
 
 -------------------------------
@@ -2398,24 +2416,43 @@ Mac OS X
 
 
 ------
-mkswap
-mkfs
+blkid
 lsblk
+mkfs
+mkswap
 ------
 
 ### General ####
 
-- in Linux, "mkswap" is used to create swap space on a disk/partition
-- "mkfs" is for creating a file system on a partition
-- "lsblk" shows partition information, including the type of FS on each partition
+- in Linux,
+	- "blkid" shows attributes of block devices (such as filesystem type)
+	- "lsblk" shows partition information, including the type of FS on each partition
+	- "mkfs" is for creating a file system on a partition
+	- "mkswap" is used to create swap space on a disk/partition
 
-#### Commands ####
 
 # Creating swap space on a partition, followed by creation of an FS
 umount /dev/sdb2               # unmounts a partition [in this case, /dev/sdb2, to prepare for creating swap space on it]
 mkswap /dev/sdb2               # creates swap space on a partition. NOTE: this will wipe the file system signature as well
 mkfs -t <fs_type> /dev/sdb2    # creates a file system, where fs_type can be ext3 for example, on the /dev/sdb2 partition
 lsblk -f                       # verify the partition type
+
+
+#### Command options ####
+
+# lsblk
+lsblk -a                      # include empty devices in the list
+lsblk -d                      # show only the main devices, e.g. /dev/sdb, but don't show /dev/sdb1 and sdb2
+lsblk -m                      # show ownerm group and mode of each device
+lsblk -o NAME,SIZE            # show only name and partition size of each device
+
+# blkid
+blkid -i /dev/sdb1            # display I/O limits on /dev/sdb1
+blkid -p /dev/sdb1            # show additional information about the /dev/sdb1 block device
+blkid -o list                 # show filesystem type and mount points of each block device
+
+
+
 
 
 
@@ -2838,11 +2875,18 @@ parted
 
 - Linux command: allows you to easily manage hard disk partition
 
-parted         					    # check parted version
-sudo parted /dev/sda u s p          # display partition table, where:
-										# u = abbrev. for unit command
-										# s = unit sector [in bytes]
-										# p = abbrev. for print command
+parted         					    # check parted version and enter parted prompt
+
+# while in parted menu
+	select /dev/sdb 				# choose /dev/sdb device for parted utility to use
+	print                           # print partitions on /dev/sdb
+	rm                              # remove a partition, will prompt to choose one. NOTE: make sure to unmount a partition before removing it
+
+
+parted /dev/sda u s p          # display partition table, where:
+									# u = abbrev. for unit command
+									# s = unit sector [in bytes]
+									# p = abbrev. for print command
 
 
 
