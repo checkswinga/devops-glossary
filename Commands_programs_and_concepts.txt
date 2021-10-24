@@ -2010,7 +2010,7 @@ ldd -d
 Linux
 -----
 
-# Command-line - special/"heroic" commands
+#### Command-line - special/"heroic" commands ####
 # Source: Engineer Man - https://www.youtube.com/watch?v=Zuwa8zlfXSY
 
 # 1. redo last command but as root
@@ -2043,8 +2043,22 @@ disown -a && exit
 
 
 
-# Kernel - General info
-# Sources: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
+#### Kernel commands ####
+
+lsmod       # shows the kernel modules loaded into the kernel
+
+modinfo     								# shows information about a specific kernel module
+modinfo -d [kernel_module_name]     		# prints generic info about the module
+modinfo -a [kernel_module_name]     		# prints the author of the module
+modinfo -n [kernel_module_name]     		# prints location of the module
+modinfo -F depends [kernel_module_name]     # prints dependencies of the target module
+
+rmmod [kernel_module_name]                  # removes target module from the kernel
+modprobe [kernel_module_name]               # add module to the running kernel. Note the module should exist under /lib/modules/`uname -r`
+
+
+#### Kernel - General info ####
+#### Sources: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
 
 - privilege rings in Linux
 	- Ring 3 - most outer ring
@@ -2304,6 +2318,8 @@ export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
 eval "$(dircolors /etc/DIR_COLORS)"
 
 
+
+
 ----
 lsof
 ----
@@ -2450,9 +2466,6 @@ lsblk -o NAME,SIZE            # show only name and partition size of each device
 blkid -i /dev/sdb1            # display I/O limits on /dev/sdb1
 blkid -p /dev/sdb1            # show additional information about the /dev/sdb1 block device
 blkid -o list                 # show filesystem type and mount points of each block device
-
-
-
 
 
 
@@ -4365,6 +4378,33 @@ For both check:
 
 - in Chrome or whichever browser, open the console and check the performance tab, see if memory usage and see if it keeps climbing
 - go to memory tab and take a snapshot of the memory values of each page or call
+
+
+
+-----
+uname
+-----
+
+#### General ####
+
+- in Linux, this command shows information about the kernel: name, version, distribution, release date, etc.
+
+
+#### Commands ####
+
+uname         # show kernel name (-s option also does this, hence it is the default option)
+uname -a      # shows all kernel info based on every option that uname has available to it
+uname -i      # prints the hardware platform
+uname -n      # prints system hostname
+uname -o      # prints OS name 
+uname -p      # prints processor info
+uname -r      # prints kernel release
+uname -v      # prints kernel release date
+
+# Alternatives
+
+cat /proc/version      # also prints kernel information
+dmesg | grep Linux     # also prints kernel information
 
 
 
