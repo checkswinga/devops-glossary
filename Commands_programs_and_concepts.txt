@@ -1016,6 +1016,23 @@ ZFS - zed file system
 
 
 
+----
+find
+----
+
+- in Linux, used to find [recursively] files and directories that match a specific pattern or attribute
+
+# find jax2b cached artifacts in maven local repo
+find . | grep jaxb2-plugin | grep 0.8.1 | grep jar
+
+
+# using find with grep
+
+find . -type f -exec grep -iH "rbac" {} \;      # searches for the string "rbac" in current directory and all subdirectories.
+												# using -type flag so the search doesn't print unnecessary "this is a directory" output
+										        # It will also print name of the file matching the string, remove -H flag if this is not necessary
+
+
 
 
 ---------------------------
@@ -1174,6 +1191,20 @@ git clean -df
 
 git commit -am "Your commit message"
 
+	# the long equivalent of the above is:
+	
+	git add [files]
+	# or
+	git add .                               # for prepping all files and folders recursively to be committed to the branch/repo
+
+	git commit -m "Your message here"       # this will commit all the "staged" or prepped files to your repo
+
+    
+    # and then to push to your remote site
+
+    git push -u origin [branch_name]        # where -u = upstream, origin = the default short name for the remote location
+
+
 
 
 # Commit message update (of an existing commit)
@@ -1246,7 +1277,25 @@ git stash list                                  # list all stashes
 git stash apply <index_of_stash_name>           # pop the selected stash from the index list
 
 
-# yum install - install newer version on CentOS7
+# Status - check your local repo to see added, deleted or modified files
+
+git status -s       # show added/deleted/modified/renamed files in short list.
+					# green status - ready to be commited
+					# red status - unstaged. Running 'git commit' successfully will not commit a file with this status
+
+	# types of status
+		' ' = unmodified
+		M = modified
+		A = added
+		D = deleted
+		R = renamed
+		C = copied
+		U = updated but unmerged
+		DD = two files together which are unmerged, and both deleted
+		UU = two files unmerged and both modified. This usually happens when you attempt to merge two branches and the same file from both branches have conflicting lines between them
+
+
+# yum install git - install newer version on CentOS7
 yum -y install https://packages.endpoint.com/rhel/7/os/x86_64/endpoint-repo-1.7-1.x86_64.rpm
 yum install git
 
@@ -1483,6 +1532,50 @@ http pie.dev/image/png > image.png
 http --download pie.dev/image/png
 
 
+
+------------
+if/else/case
+------------
+
+#### shell scripting ####
+
+# case statements - if some value, do this; if another value, do this instead
+
+#!/bin/sh
+CAR="Honda"
+case "$CAR" in
+   "Ferrari") echo "Ferrari is quite expansive."
+   ;;
+   "Jaguar") echo "I like Jaguar."
+   ;;
+   "Honda") echo "Honda is the car of the year."
+   ;;
+esac
+
+
+
+# if statements (using elif and else)
+# if - if a certain statement is true, do something
+# elif - or if another statement is true, do somethin else
+# else - otherwise if nothing else is true, do this
+
+#!/bin/sh
+x=10
+z=20
+if [ $x == $z ]
+then
+   echo "x is same as z"
+elif [ $x -gt $z ]
+then
+   echo "x is more than z"
+elif [ $x -lt $z ]
+then
+   echo "x is less than z"
+else
+   echo "None of them match"
+fi
+
+
 -------
 ingress
 -------
@@ -1601,12 +1694,6 @@ istioctl proxy-status
     	- see https://www.youtube.com/watch?v=KUHzxTCe5Uc @ 26:10
 
 
-----
-jaxb
-----
-
-# find jax2b cached artifacts in maven local repo
-find . | grep jaxb2-plugin | grep 0.8.1 | grep jar
 
 
 -------
@@ -2057,6 +2144,7 @@ rmmod [kernel_module_name]                  # removes target module from the ker
 modprobe [kernel_module_name]               # add module to the running kernel. Note the module should exist under /lib/modules/`uname -r`
 
 
+
 #### Kernel - General info ####
 #### Sources: Engineer Man - https://www.youtube.com/watch?v=CWihl19mJig
 
@@ -2306,6 +2394,46 @@ ln
 - in Linux, creates a hard or soft link to an existing file or directory
 
 ln -s <real_path> <soft_link_to_be_created>
+
+
+
+-----
+loops
+-----
+
+#### shell scripting ####
+
+# for loop (example) - iterating through all files under /etc/ directory and printing to stdout
+
+#!/bin/bash
+echo "Files in the /etc directory are:"
+for f in $(ls /etc/*)
+do
+  echo $f
+done
+
+
+# until loop - do something until certain criteria is met
+
+#!/bin/sh
+a=1
+until [ $a -gt 6 ]
+do
+  echo $a
+  a=$(( a+1 ))
+done
+
+
+# while loop - do something while something is true
+
+#!/bin/bash
+a=0
+while [ $a -le 10 ]
+do
+  echo "Welcome $a times."
+  a=$(( a+1 ))  
+done
+
 
 
 
