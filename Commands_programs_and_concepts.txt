@@ -2605,15 +2605,22 @@ mount
 
 #### General command line in Linux/UNIX ####
 
-mount         # shows all partitions on a hard disk (possibly all hard disks attached to a Linux server?) and their mount points
+mount               # shows all partitions on a hard disk (possibly all hard disks attached to a Linux server?) and their mount points
+umount [fs_path]    # unmount a file system e.g. umount /dev/sdb1
 
+
+#### fstab ####
+cat /etc/fstab      # show the list of partitions detected at boot time. Also shows fs which is mounted on the root partition or /
+
+- format of fstab: <file system>   <dir>   <type>  <options>   <dump>  <pass>
+			   eg. UUID="14314872-abd5-24e7-a850-db36fab2c6a1" /lpo/sda ext4 defaults,noatime 0 0
 
 
 #### RAM disk creation ####
 # Source: Engineer Man - https://www.youtube.com/watch?v=Zuwa8zlfXSY
 
 mkdir -p /mnt/ram
-mount -t tmpfs tmpfs /mnt/ram -o size=8192M
+mount -t tmpfs tmpfs /mnt/ram -o size=8192M         # mount tmpfs device onto /mnt/ram directory, which will create a new FS
 cd /mnt/ram
 dd if=/dev/zero of=test.iso bs=1M count=8000
 
