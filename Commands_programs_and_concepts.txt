@@ -534,6 +534,24 @@ DHCP
 
 
 ---
+DNS
+---
+
+# Sources:
+# Powercert Animated Videos - https://www.youtube.com/watch?v=mpQZVYPuDGU
+# https://support.dnsimple.com/articles/differences-between-a-cname-alias-url/
+
+- Domain Name Service - resolves names to numbers [domain names to IP addresses]
+
+
+- The "A record" maps a name to one or more IP addresses when the IP are known and stable.
+- The "CNAME" record maps a name to another name. It should only be used when there are no other records on that name.
+- The "ALIAS" record maps a name to another name, but can coexist with other records on that name.
+- The "URL record" redirects the name to the target name using the HTTP 301 status code.
+
+
+
+---
 DMZ
 ---
 
@@ -899,11 +917,13 @@ Filesystems
 - file systems divide the storage space on a drive into virtual compartments known as "clusters"
 - maintain an index of where individual files are located
 
-
-
 # Linux file system directory assignment meanings
 
-/bin - stores common executables available for everyone, egs. cp rm ls
+# Sources:
+# Engineer Man: https://www.youtube.com/watch?v=UFIoRLqhFpo
+# Fireship: https://www.youtube.com/watch?v=42iQKuQodW4
+
+/bin - stores common/essential executables available for everyone, egs. cp rm ls
 
 /boot - kernel and boot configuration
 	  - you may see the boot mount point by running "mount" command, e.g. /dev/sda1
@@ -929,6 +949,8 @@ Filesystems
 /proc - virtual filesystem for resources, processes and more
 
 /root - root user home directory
+
+/sbin - essential executables for super user (root)
 
 /var - this directory contains files which may change in size, such as spool and log files.
 
@@ -1126,13 +1148,68 @@ GIT
 
 
 ### Commands and configs ###
-# Sources: Fireship - https://www.youtube.com/watch?v=ecK3EnyGD8o
-#					 git-scm - https://git-scm.com
-#          General experience :D
+
+# Sources
+# Fireship - https://www.youtube.com/watch?v=ecK3EnyGD8o
+# git-scm - https://git-scm.com
+# General experience :D
+
+
+# General usage - once you install git onto your Linux, Mac or Windows machine, below is the typical process when working with the git client to
+# update and check-in files to a source code repository hosted on Github, Bitbucket or any other remote Git-based source control application
+
+# 1) Getting Started
+mkdir git_workspace             # Create a workspace on your local or server machine
+git clone [git_repo_url]        # Clones a entire copy of the target remote repository onto your local
+cd [repp_name]                  # Go into locally cloned copy of the repo
+git remote -v 					# Shows remote repo URL (this will sohw the fetch and pull remote repo URL, which sometimes can be different)
+
+
+# 2) Everyday commands
+
+git pull                        # Syncs your local repository with the remote repository. Note: ALWAYS run git pull before you start making updates or are about to commit/push updates
+git status -s                   # check to see which files have been added/modified/deleted
+git branch                      # Shows the current working branch + lists previous working branches
+
+git checkout [branch_name]      # Switches your working branch to a different one
+OR
+git checkout -b [branch_name]   # Create new branch based on current working branch and switches to it
+
+git diff                        # See differences made between latest version committed and local updates (all files)
+OR
+git diff [filename]             # See differences made between latest version committed and local updates (single file or folder)
+
+git add [filename(s)]           # prepare filename(s) to be committed to repo
+OR
+git add .                       # prepare all files and folders in parent and subfolders to be committed
+
+git commit -m "Your msg" 		# commit files into repo with your commit message on what was updated
+git push -u origin [branch_name]    # push files into remote to the target branch (which matches your working branch locally).
+
+
+# 3) Other useful commnads
+
+git log                        # see the repo's commit history
+git log [filemame/foldername]  # see a target file or folder's commit history
+
+git reset                      # reverts the "git add" command. Will un-prep the files originally prepped to be committed. Useful if you need to make more changes or do not want
+							   # to add specific files for committing.
+
+git branch -m [current_branch_name] [new_branch_name]        # Rename a branch
+git merge [branch_to_merge_files_from]                       # Merge the target branch into your working branch
+
+git stash save [stash_name]   								 # Saves all files currently in added/modified/deleted state, which are not yet prepped for committing, into a stash,
+															 # which can later be restored
+git stash pop [stash_name]									 # Restores all files from the target stash
+
+git config --global user.name "John Doe"                     # Globally configure the username you will use for updates to any GIT repo
+git config --global user.email johndoe@example.com           # Globally configure the email address you will use for updates to any GIT repo
+
+
 
 # .gitattributes - use .gitattributes within a repo to define file behaviours/attributes. Eg below of contents within a .gitattributes file:
 
-*               text=auto
+*           text=auto
 *.txt		text
 *.vcproj	text eol=crlf
 *.sh		text eol=lf
@@ -1243,8 +1320,12 @@ git push --mirror  https://github.com/<new-repo>
 
 # Merge - locally merge the contents of some branch into your own branch
 
+git checkout <target_branch>
+git pull
 git checkout <your_branch>
+git pull
 git merge <target_branch>
+
 
 
 # Squash - take two or more commits in a branch and "squash" them together into a single commit
@@ -3565,13 +3646,23 @@ redis
 RPM
 ---
 
-- RPM install
-   - set response - RESP_FILE=<app>-environment.response; export RESP_FILE
-   - intialize rpmdb - rpm --initdb --dbpath /path/to/rpm_db
-   - install - rpm --dbpath /path/to/rpm_db --prefix /install_path/ --nodeps -Uvh /path/to/rpm/ebm-wca-1.0.0-1.x86_64.rpm
-   - query package - rpm -qi <rpm_name> --dbpath /path/to/rpm_db
-   - check pkgmap - rpm -V <rpm_name> --dbpath /path/to/rpm_db
-   - uninstall rpm - rpm -ev pkg_name --dbpath /path/to/rpm_db
+- Redhat Package Manager - the package manager used on RHEL OS (along with yum)
+
+#### General commands #####
+
+RESP_FILE=<app>-environment.response; export RESP_FILE    # set response file for an RPM - 
+
+rpm --initdb --dbpath /path/to/rpm_db   # intialize rpmdb, which stores info about all RPMs installed. This is custom vs. rpmdb which is configured at the OS level
+rpm --dbpath /path/to/rpm_db --prefix /install_path/ --nodeps -Uvh /path/to/rpm/ebm-wca-1.0.0-1.x86_64.rpm   # install RPM into prefix path
+																											 # write into target RPM db and upgrade it if package already exists
+																											 # skip testing any dependencies
+rpm -qi [rpm_name] --dbpath /path/to/rpm_db    # query package
+rpm -V [rpm_name] --dbpath /path/to/rpm_db     # check pkgmap
+rpm -ev pkg_name --dbpath /path/to/rpm_db      # uninstall rpm
+rpm -qlpv [rpm_name.rpm]                       # list files in an RPM
+rpm -ql [installed_package_name]  			   # list files in an installed RPM package
+rpm -q --scripts [installed_package_name]	   # check scriptlets of an installed package
+
 
 
 
@@ -4514,6 +4605,71 @@ For both check:
 - in Chrome or whichever browser, open the console and check the performance tab, see if memory usage and see if it keeps climbing
 - go to memory tab and take a snapshot of the memory values of each page or call
 
+
+
+------
+ulimit
+------
+
+- in Linux, set or report the resource limit of the current user.
+
+# Source: https://www.thegeekdiary.com/understanding-etc-security-limits-conf-file-to-set-ulimit/
+# Eg. of /etc/security/limits.conf - on the Linux OS, this is where default settings for ulimits are kept
+
+#[domain]        [type]  [item]  [value]
+
+*               -       core             [value]
+*               -       data             [value]
+*               -       priority         [value]
+*               -       fsize            [value]
+*               soft    sigpending       [value] eg:57344
+*               hard    sigpending       [value] eg:57444
+*               -       memlock          [value]
+*               -       nofile           [value] eg:1024
+*               -       msgqueue         [value] eg:819200
+*               -       locks            [value]
+*               soft    core             [value]
+*               hard    nofile           [value]
+@[group]        hard    nproc            [value]
+[user]          soft    nproc            [value]
+%[group]        hard    nproc            [value]
+[user]          hard    nproc            [value]
+@[group]        -       maxlogins        [value]
+[user]          hard    cpu              [value]
+[user]          soft    cpu              [value]
+[user]          hard    locks            [value]
+some_user       soft    nproc            16384          # eg of a max no. of processes setting for some user
+
+
+- [domain] can be:
+	- an user name
+	- a group name, with @group syntax
+	- the wildcard *, for default entry
+	- the wildcard %, can be also used with %group syntax, for maxlogin limit
+
+- [type] can have the two values:
+	  “soft” for enforcing the soft limits
+	  “hard” for enforcing hard limits
+
+- [item] can be one of the following:
+	  core – limits the core file size (KB)
+	  data – max data size (KB)
+	  fsize – maximum filesize (KB)
+	  memlock – max locked-in-memory address space (KB)
+	  nofile – max number of open files
+	  rss – max resident set size (KB)
+	  stack – max stack size (KB)
+	  cpu – max CPU time (MIN)
+	  nproc – max number of processes
+	  as – address space limit (KB)
+	  maxlogins – max number of logins for this user
+	  maxsyslogins – max number of logins on the system
+	  priority – the priority to run user process with
+	  locks – max number of file locks the user can hold
+	  sigpending – max number of pending signals
+	  msgqueue – max memory used by POSIX message queues (bytes)
+	  nice – max nice priority allowed to raise to values: [-20, 19]
+	  rtprio – max realtime priority
 
 
 -----
