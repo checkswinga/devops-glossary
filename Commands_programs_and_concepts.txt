@@ -4611,10 +4611,52 @@ For both check:
 ulimit
 ------
 
-- in Linux, set or report the resource limit of the current user.
+# Sources
+# https://www.thegeekdiary.com/understanding-etc-security-limits-conf-file-to-set-ulimit/
+# https://ss64.com/bash/ulimit.html
 
-# Source: https://www.thegeekdiary.com/understanding-etc-security-limits-conf-file-to-set-ulimit/
-# Eg. of /etc/security/limits.conf - on the Linux OS, this is where default settings for ulimits are kept
+
+- UNIX/Linux
+	- set or report the resource limit of the current user.
+	- user limits - limit the use of system-wide resources.
+
+
+- Syntax
+      ulimit [-HS] -a
+      ulimit [-HS] [-bcdefiklmnpqrstuvxPRT] [limit]
+
+
+Key 	limits item 	description
+-S   					Set a soft limit for the given resource.
+-H   					Set a hard limit for the given resource.
+
+-a   					All current limits are reported.
+-b   	?				Maximum socket buffer size.
+-c   	core 			Maximum size of core files created. 
+-d   	data 			Maximum size of a process'' data segment.                  
+-e   	priority		Maximum scheduling priority ("nice") 
+-f   	fsize 			Maximum size of files created by the shell(default option).
+-i   	sigpending 		Maximum number of pending signals.
+-k   	?  				Maximum number of kqueues that may be allocated.
+-l   	memlock 		Maximum size that can be locked into memory. 
+-m      rss 			Maximum resident set size (ignored in Linux 2.4.30 and higher)
+-n   	nofile 			Maximum number of open file descriptors. 
+-p      ? 				Pipe buffer size.
+-P 		maxlogins		Maximum number of pseudoterminals.
+-q      msgqueue 		Maximum number of bytes in POSIX message queues.
+-r   	rtprio 			Maximum real-time scheduling priority.
+-R      ? 				Maximum time a real-time process can run before blocking, in microseconds.
+-s      stack 			Maximum stack size. 
+-t      cpu 			Maximum amount of cpu time in seconds.
+-T      ? 				Maximum number of threads.
+-u   	noproc 			Maximum number of processes available to a single user.
+-v   	? 				Maximum amount of virtual memory available to the process.
+-x   	locks			Maximum number of file locks.
+
+
+# Permament ulimit settings - where default settings for ulimits are kept on the OS
+
+- in "/etc/security/limits.conf"
 
 #[domain]        [type]  [item]  [value]
 
@@ -4670,6 +4712,16 @@ some_user       soft    nproc            16384          # eg of a max no. of pro
 	  msgqueue – max memory used by POSIX message queues (bytes)
 	  nice – max nice priority allowed to raise to values: [-20, 19]
 	  rtprio – max realtime priority
+
+
+
+# Temporary settings via command line - examples
+
+ulimit -Sn [number] 		# set soft limit for number of processes for the logged in user
+ulimit -Hn [number]         # set hard limit for number of processes for the logged in user
+ulimit -Sn 					# verify soft limit for number of processes for the logged in user
+ulimit -Hn 					# verify hard limit for number of processes for the logged in user
+
 
 
 -----
