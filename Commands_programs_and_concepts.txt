@@ -925,14 +925,14 @@ Filesystems
 
 /bin - stores common/essential executables available for everyone, egs. cp rm ls
 
-/boot - kernel and boot configuration
+/boot - kernel and boot configuration needed to boot the system
 	  - you may see the boot mount point by running "mount" command, e.g. /dev/sda1
 
-/dev - files which point to both physical and pseudo devices
+/dev - device files: files which point to both physical and pseudo devices
 
-/etc - system and program configuration files
+/etc - editable text config: system and program configuration files
 
-/home - non-root user home directories
+/home - non-root user home directories for user data
 
 /lib
 /lib32
@@ -944,7 +944,7 @@ Filesystems
 
 /mnt - place to mount various file systems
 
-/opt - various software
+/opt - optional/add-on software: various software
 
 /proc - virtual filesystem for resources, processes and more
 
@@ -952,9 +952,16 @@ Filesystems
 
 /sbin - essential executables for super user (root)
 
+/tmp - temporary files not persisted between system reboots
+
+/usr/bin - non-essential installed binaries
+
+/usr/local/bin - locally compiled binaries
+
 /var - this directory contains files which may change in size, such as spool and log files.
 
 /var/lib - Variable state information for programs.
+
 
 
 # Types
@@ -1035,6 +1042,42 @@ ZFS - zed file system
 - integrated volume manager to control storage hardware
 	- provides increased data protection
 - available for Linux, FreeBSD and TrueOS
+
+
+
+# General commands
+
+- in Linux,
+	- "blkid" shows attributes of block devices (such as filesystem type)
+	- "lsblk" shows partition information, including the type of FS on each partition
+	- "mkfs" is for creating a file system on a partition
+	- "mkswap" is used to create swap space on a disk/partition
+
+
+# Creating swap space on a partition, followed by creation of an FS
+umount /dev/sdb2               # unmounts a partition [in this case, /dev/sdb2, to prepare for creating swap space on it]
+mkswap /dev/sdb2               # creates swap space on a partition. NOTE: this will wipe the file system signature as well
+mkfs -t <fs_type> /dev/sdb2    # creates a file system, where fs_type can be ext3 for example, on the /dev/sdb2 partition
+lsblk -f                       # verify the partition type
+
+
+#### Command options ####
+
+# lsblk
+lsblk -a                      # include empty devices in the list
+lsblk -d                      # show only the main devices, e.g. /dev/sdb, but don't show /dev/sdb1 and sdb2
+lsblk -m                      # show ownerm group and mode of each device
+lsblk -o NAME,SIZE            # show only name and partition size of each device
+
+# blkid
+blkid -i /dev/sdb1            # display I/O limits on /dev/sdb1
+blkid -p /dev/sdb1            # show additional information about the /dev/sdb1 block device
+blkid -o list                 
+   OR
+cat /proc/mounts 			  # show filesystem type and mount points of each block device
+
+
+df -h                         # show general info about mounted filesystems (e.g. available and used space)
 
 
 
@@ -2640,44 +2683,6 @@ Mac OS X
    		  /usr/libexec/java_home -V
 
 
-------
-blkid
-lsblk
-mkfs
-mkswap
-------
-
-### General ####
-
-- in Linux,
-	- "blkid" shows attributes of block devices (such as filesystem type)
-	- "lsblk" shows partition information, including the type of FS on each partition
-	- "mkfs" is for creating a file system on a partition
-	- "mkswap" is used to create swap space on a disk/partition
-
-
-# Creating swap space on a partition, followed by creation of an FS
-umount /dev/sdb2               # unmounts a partition [in this case, /dev/sdb2, to prepare for creating swap space on it]
-mkswap /dev/sdb2               # creates swap space on a partition. NOTE: this will wipe the file system signature as well
-mkfs -t <fs_type> /dev/sdb2    # creates a file system, where fs_type can be ext3 for example, on the /dev/sdb2 partition
-lsblk -f                       # verify the partition type
-
-
-#### Command options ####
-
-# lsblk
-lsblk -a                      # include empty devices in the list
-lsblk -d                      # show only the main devices, e.g. /dev/sdb, but don't show /dev/sdb1 and sdb2
-lsblk -m                      # show ownerm group and mode of each device
-lsblk -o NAME,SIZE            # show only name and partition size of each device
-
-# blkid
-blkid -i /dev/sdb1            # display I/O limits on /dev/sdb1
-blkid -p /dev/sdb1            # show additional information about the /dev/sdb1 block device
-blkid -o list                 # show filesystem type and mount points of each block device
-
-
-
 
 -----
 mount
@@ -3104,12 +3109,14 @@ parted
 
 - Linux command: allows you to easily manage hard disk partition
 
-parted         					    # check parted version and enter parted prompt
+parted         					# check parted version and enter parted prompt
+parted -l 					   # list partiions
+
 
 # while in parted menu
-	select /dev/sdb 				# choose /dev/sdb device for parted utility to use
-	print                           # print partitions on /dev/sdb
-	rm                              # remove a partition, will prompt to choose one. NOTE: make sure to unmount a partition before removing it
+	select /dev/sdb 			# choose /dev/sdb device for parted utility to use
+	print                       # print partitions on /dev/sdb
+	rm                          # remove a partition, will prompt to choose one. NOTE: make sure to unmount a partition before removing it
 
 
 parted /dev/sda u s p          # display partition table, where:
@@ -3127,7 +3134,7 @@ partitions
 *** sections to see also: fdisk, GPT ***
 
 
-# General - notes about partitions in Linux
+#### General - notes about partitions in Linux ####
 
 - Primary partition - a bootable partition and it contains the operating system/s of the computer
 					- generally assigned the first letters in alphabet as the drive letters [e.g. C, D]
@@ -3138,6 +3145,42 @@ partitions
 
 - multiple partitions – a boot system can be created using several primary partitions
 
+
+
+#### Partitions file ####
+# Sources:
+	# boson
+	# https://www.networkworld.com/article/3297916/examining-partitions-on-linux-systems.html
+
+
+cat /proc/partitions 			# see table of partitioned devices and their major minor numbers
+								# Major number: defines device type
+								# Minor number: defines unique instance of the device type
+
+# Eg. /proc/partitions
+major minor  #blocks  name
+   8        0  117220824 sda
+   8        1  117219328 sda1
+  11        0    1048575 sr0
+   8       16  488386584 sdb
+   8       17     512000 sdb1
+   8       18  487872512 sdb2
+
+
+# List of major numbers for devices - see https://www.kernel.org/doc/Documentation/admin-guide/devices.txt
+
+
+#### Other partition utilities ####
+
+# Commands to bring up editors or display/modify partitions
+
+cfdisk           
+sfdisk -l -uM 
+fdisk -l 
+df                       # shows disk usage
+lsscsi                   # lists SCSI devices on a system
+smartctl -i [device]     # print drive info about a device
+ls /dev/disk/by-id       # determine model and serial number of a disk
 
 
 
