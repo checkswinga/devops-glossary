@@ -1077,7 +1077,36 @@ blkid -o list
 cat /proc/mounts 			  # show filesystem type and mount points of each block device
 
 
+# df
 df -h                         # show general info about mounted filesystems (e.g. available and used space)
+
+
+# fsck - file system checker for errors, can use to repair as well
+
+umount /dev/sdb1 			  # unmount sdb1 fs to run next command
+fsck /dev/sdb1                # check for errors on the /dev/sdb1 fs (note: can be used on any unmounted fs)
+fsck -a /dev/sdb1             # check and auto-repair if errors. can use -y option as well if available on OS
+fsck -M /dev/sdb1             # check mounted file system - not recommended
+ls /sbin/fsck*                # check for fs specific command options to run with fsck
+fsck -t [fs_type] [fs] 		  # check specific fs type
+fsck /dev/sdb1 -f             # force fs check and generate report
+
+
+# tune2fs - allows the system administrator to adjust various tunable filesystem parameters on Linux ext2, ext3, or ext4 filesystems.
+
+tune2fs -l /dev/sdb1
+tune2fs -l /dev/sdb1 | grep -i mount     # check when FS was mounted, options used, max # the fs can be mounted, etc.
+tune2fs -c 20 /dev/sdb1                  # change max number of times fs can be mounted
+tune2fs -l /dev/sdb1 | grep -i name      # see volume label
+tune2fs -l /dev/sdb1 | grep -i check     # when was fs was checked last
+tune2fs -i 5d /dev/sdb1                  # check fs every 5 days
+
+
+# e2label - set a label for a volume
+
+e2label /dev/sdb1         # check for label of a volume or partition
+e2label /dev/sdb1 Data    # set name "Data" for sdb1 device
+
 
 
 
@@ -2077,6 +2106,9 @@ ctr namespace k8s.io containers list   # can see all the containers that make up
 kubectl expose deploy <pod> --port <port> --dry-run -o yaml > somefile.yaml    # Expose a deployment as a service, dry run to check yaml definition, and can output to a file
 kubectl -n <namespace> port-forward <pod_name> <port> 			               # Port forward to expose an app as a service
 kubectl scale deploy <deployment_name> --replicas=<number>                     # Manually scale a deployment
+kubectl rollout restart sts/<sts_name>                                         # Rolling restart of stateful set pods of name sts_name
+kubectl rollout restart deployments/<deploy_name>                              # Rolling restart of deployments of name deploy_name
+kubectl get pods | grep Evicted | awk '{print $1}' | xargs kubectl delete pod  # Delete all pods in namespace which are in Evicted state
 
 
 
@@ -2975,12 +3007,18 @@ networking - general
 
 
 
+# Linux commands
+
+route -n        # find routing table of server
+nestat -rn      # find routing table of server
+ip route        # find routing table of server
+
+
 
 # Misc
 
 - default gateway - IP address of your router or modem/router combo that your computer connects to
 - subnet mask - defines which parts of the IP address refers to the network and host
-- 
 
 
 
