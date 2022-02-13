@@ -1630,6 +1630,7 @@ folder/
 	templates/NOTES.txt # OPTIONAL: plan text file containing short usage notes  
 
 
+
 ------
 httpie
 ------
@@ -2716,6 +2717,27 @@ Mac OS X
 
 
 
+--
+mc
+--
+
+- midnight commander - graphical file manager for UNIX/Linux OS.
+
+
+# Install
+
+yum install mc      # RHEL-based OS'
+
+
+# Navigating the GUI - see https://linuxcommand.org/lc3_adv_mc.php
+
+- type 'mc' and ENTER to enter mc graphical interface
+- can still type out UNIX/Linux commands and at the same time, use mouse to click directly on files in the directory you are in
+- click on file and press 'F3' to view contents 
+- for an RPM file, "double click" on RPM, click the cpio file and press "F3" to view the contents
+
+
+
 -----
 mount
 -----
@@ -3724,7 +3746,7 @@ redis
 
 
 ---
-RPM
+rpm
 ---
 
 - Redhat Package Manager - the package manager used on RHEL OS (along with yum)
@@ -3737,12 +3759,15 @@ rpm --initdb --dbpath /path/to/rpm_db   # intialize rpmdb, which stores info abo
 rpm --dbpath /path/to/rpm_db --prefix /install_path/ --nodeps -Uvh /path/to/rpm/ebm-wca-1.0.0-1.x86_64.rpm   # install RPM into prefix path
 																											 # write into target RPM db and upgrade it if package already exists
 																											 # skip testing any dependencies
+rpm -q [pkg_name]                              # show some detail about a package
 rpm -qi [rpm_name] --dbpath /path/to/rpm_db    # query package
 rpm -V [rpm_name] --dbpath /path/to/rpm_db     # check pkgmap
 rpm -ev pkg_name --dbpath /path/to/rpm_db      # uninstall rpm
 rpm -qlpv [rpm_name.rpm]                       # list files in an RPM
 rpm -ql [installed_package_name]  			   # list files in an installed RPM package
 rpm -q --scripts [installed_package_name]	   # check scriptlets of an installed package
+
+rpm2cpio squid-3.5.20-12.el7.x86_64.rpm | cpio -idmv     # converts squid rpm to cpio archive
 
 
 
@@ -4963,3 +4988,31 @@ yaml
 
 
  ##### MORE DEFINITIONS TO ADD + NOTES ON NESTING #####
+
+
+
+
+---
+yum
+---
+
+- package manager for RHEL7 and below Linux OS'' (or CentOS 7 and below). Can still be used on CentOS8, RHEL8, Rocky Linux
+
+# Install a package on RHEL-based Linux (e.g. httpd)
+
+yum install httpd        # install via yum package manager (can use dnf on CentOS 8/RHEL 8 and up, Rocky Linux). Will also install its dependencies
+yum list httpd           # check httpd is installed, shows a little detail about the package
+yum update httpd         # check for and install updates to the http package
+yum remove httpd         # remove httpd package and all its dependenies
+yum info httpd           # show more details about httpd package
+yum deplist httpd        # show dependencies list for http package
+yum downloader squid     # download squid package RPM
+
+reqoquery --list httpd   # list all files in httpd package (NOTE: need yum-utils package to be able to run) 
+
+
+# yum configuration
+
+cat /etc/yum.conf             # view current yum configurations
+ls -latr /etc/yum.repos.d     # this is where yum repo information is kept, also referenced by yum.conf
+
