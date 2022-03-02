@@ -84,6 +84,23 @@ Ansible
 
 
 
+---
+apt
+---
+
+- Linux Ubuntu''s package manager - various other commands are used under apt that can be used to install packages, check details of installed packages, etc.
+
+apt install [package]          # install package to OS (along with its dependencies). E.g. apt install apache
+
+apt-get install [package]      # install package to OS (along with its dependencies)
+apt-get remove [package]       # remove installed package from OS
+apt-get autoremove [package]   # remove installed package's dependencies
+
+apt-cache show [package]       # show package details
+
+dpkg -S [package]              # find package details, location of installed package files
+
+
 
 ---
 AWS
@@ -248,6 +265,9 @@ Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=_NX99ad2FUA
 certificates
 ------------
 
+
+### keytool and openssl ###
+
 # Download and import website certs into JAVA store (eg. google's certs for dl.google.com/android repo):
 
 openssl s_client -connect google.com:443 -showcerts | openssl x509 -out certfile.txt
@@ -261,6 +281,11 @@ keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-8-o
 # check cacerts store
 
 keytool -list -v -keystore /path/to/cacerts
+
+
+# Remove certificate entry from keystore - from https://docs.oracle.com/cd/E19798-01/821-1751/ghleq/index.html
+
+keytool -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file} -storepass ${keystore.pass}
 
 
 
@@ -1126,6 +1151,8 @@ find . -type f -exec grep -iH "rbac" {} \;      # searches for the string "rbac"
 												# using -type flag so the search doesn't print unnecessary "this is a directory" output
 										        # It will also print name of the file matching the string, remove -H flag if this is not necessary
 
+# using find to search for all csv files in current folder (without going into subfolders) and removing them if they are older than 1 day (1440 minutes = 1 day)
+find . -maxdepth 1 -type f -mmin 1440 -name "*.csv.*" -exec rm -f {} \;
 
 
 
