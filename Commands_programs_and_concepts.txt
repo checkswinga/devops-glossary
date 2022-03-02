@@ -2766,6 +2766,18 @@ yum install mc      # RHEL-based OS'
 
 
 -----
+mkdir
+-----
+
+- Linux: creates a directory
+
+mkdir -p /var/www/html/repos/{base,centosplus,extras,updates}      # create directories under var (-p flag creates if any directories in command do not exist).
+																   # base, centosplus, extras and updates will all be created under repos directory
+
+
+
+
+-----
 mount
 -----
 
@@ -3098,16 +3110,37 @@ ip route        # find routing table of server
 nginx
 -----
 
-# stop nginx
+# Install nginx on Linux CentOS
+
+yum install -y epel-release       # install epel repo (includes gpg keys for package signing and repository information. Gives OS access to a wider range of available packages to install)
+yum install -y nginx              # install nginx (epel repo above is a dependency)
+
+
+# Enable nginx as a service
+systemctl start nginx             # start nginx service
+systemctl enable nginx            # enable auto restart if system reboots
+systemctl status nginx            # check status of nginx service
+
+
+# firewall rules to allow http/https traffic
+firewall-cmd --zone=public --permanent --add-service=http
+firewall-cmd --zone=public --permanent --add-service=https
+firewall-cmd --reload
+
+- start firefox within Ubuntu and in address bar, type "localhost" and hit Enter to see default webpage running from nginx
+
+
+# stop nginx (manual)
   nginx -s stop
 
-# start nginx
+# start nginx (manual)
   ./nginx
 
 
 # Concept in K8s
 - ingress.yaml -> service.yaml -> application-deploy.yaml
 	- ingress has the routing rules, service pods act as the load balancers to the application pods/nodes
+
 
 
 -----------
@@ -3769,6 +3802,55 @@ redis
 - plugins - can install add-on module plugins to help with structuring, searching, etc.
 - cli - has its own command line (naturally...)
 
+
+
+
+--------
+reposync
+--------
+
+- Linux (CentOS): syncs local with remote repos
+
+mkdir -p /var/www/html/repos/{base,centosplus,extras,updates}         # create directories necessary for syncing
+
+
+# Commands to sync local with packages stored in the remote repo locations
+
+reposync -g -l -d -m --repoid=base --newest-only --download-metadata --download_path=/var/www/html/repos/
+reposync -g -l -d -m --repoid=centosplus --newest-only --download-metadata --download_path=/var/www/html/repos/
+reposync -g -l -d -m --repoid=extras --newest-only --download-metadata --download_path=/var/www/html/repos/
+reposync -g -l -d -m --repoid=updates --newest-only --download-metadata --download_path=/var/www/html/repos/
+
+
+# Verify packages are pulled down (similar for centosplus, extras and updates)
+
+ls -l /var/www/html/repos/base/Packages/
+
+
+# Create comps.xml 
+touch /var/www/html/repos/centosplus/comps.xml
+touch /var/www/html/repos/extras/comps.xml
+touch /var/www/html/repos/updates/comps.xml
+touch /var/www/html/repos/base/comps.xml
+
+
+# Create new repodata for the local repos
+createrepo -g comps.xml /var/www/html/repos/base/
+
+
+# Create a script to do this on the regular
+vi /etc/cron.daily/updaterepos
+
+    #### content below ####
+	#!/bin/bash
+	LOCAL_REPOS=”base centosplus extras updates”
+	for REPO in ${LOCAL_REPOS}; do
+	reposync -g -l -d -m --repoid=$REPO --newest-only --download-metadata --download_path=/var/www/html/repos/
+	createrepo -g comps.xml /var/www/html/repos/$REPO/
+	done
+    #### end content #####
+
+chmod 755 /etc/cron.daily/updaterepos
 
 
 
