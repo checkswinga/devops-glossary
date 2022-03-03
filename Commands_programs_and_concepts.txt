@@ -2644,6 +2644,17 @@ lsof -i <protocol>    # check which processes are listening on specific protocol
 
 
 
+---
+Lua
+---
+
+# Source: Fireship - https://www.youtube.com/watch?v=jUuqBZwwkQw
+
+- Lua is a lightweight dynamic scripting language often embedded into other programs like World of Warcraft and Roblox.
+- Its minimal syntax makes it easier to learn than Python, while being much more performant than other interpreted languages. 
+
+
+	
 
 ---
 lxd
@@ -4963,6 +4974,42 @@ uname -v      # prints kernel release date
 
 cat /proc/version      # also prints kernel information
 dmesg | grep Linux     # also prints kernel information
+
+
+
+---------------
+user management
+---------------
+
+#### Linux ####
+
+# Users
+useradd [user_id]         			# add user to OS
+passwd [user_id]          			# set password for new user
+usermod  -e 12/12/2020 [user_id] 	# set expiration date for the new user's password
+usermod -L [user_id]                # lock user account
+chage -d 0 [user_id]  				# force user's password into expired state
+userdel [user_id]					# delete user from OS
+
+# Groups
+groupadd -g 10000 plabuser  		# add group with name "plabuser" with group ID 10000
+usermod -aG plabuser [user_id]      # add user to plabuser group
+id [user_id]  						# show user and its primary group
+groupmod -n plab plabuser           # change the name of a group (in this case from plabuser to plab)
+groupdel plab 						# delete group plab
+
+
+# Password info
+cat /etc/passwd 					# Show all users, their groups and their passwords (encrypted)
+cat /etc/shadow  					# Show all users plaintext password (viewable ONLY by root user)
+cat /etc/group 						# Show passwords for groups
+ls -latr /etc/skel                  # See default profiles that all new users will inherit upon creation
+
+# Lockdown
+touch /etc/nologin 					# Run this and only root will be able to login to the system. Should be a 0 byte file (no content)
+
+
+
 
 
 
