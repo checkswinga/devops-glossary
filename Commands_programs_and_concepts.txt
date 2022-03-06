@@ -4981,7 +4981,7 @@ dmesg | grep Linux     # also prints kernel information
 user management
 ---------------
 
-#### Linux ####
+####### Linux ########
 
 # Users
 useradd [user_id]         			# add user to OS
@@ -5008,6 +5008,27 @@ ls -latr /etc/skel                  # See default profiles that all new users wi
 # Lockdown
 touch /etc/nologin 					# Run this and only root will be able to login to the system. Should be a 0 byte file (no content)
 
+
+
+# last command
+
+last               		# displays history of logins of all users on the system
+last [user_id]     		# displays history of logins of target user on the system
+last -F [user_id]  		# dispalys complete timing of login timing of target user
+
+
+# w, who, whoami
+
+who        		# displays the name of currently logged in user, the user's terminal, the login time of the user and host or IP from where the user is logged in
+who -u     		# show list of all logged-in users
+who -q -H  		# show the number of logged-in users
+who -r    		# show runlevel of the system
+who -a          # show complete detail of the logged-in user
+
+
+w               # show complete detail of the logged-in user (alternative to who)
+w -s            # supress output for login time, JCPU and PCPU columns
+w [user_id] 	# show complete detail of the target user
 
 
 
@@ -5106,7 +5127,6 @@ whois
 -----
 
 whois [domain_name]   # will return comprehensive information about that URL/domain (given that domain is publicly registered)
-
 
 
 
