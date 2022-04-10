@@ -183,11 +183,17 @@ AWS
 - App Engine Standard - for hosting NodeJS applications, easily scalable
 
 
+
 -------
 backups
 -------
 
-Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=o-83E6levzM&list=WL&index=3
+Sources:
+- PowerCert Animated Videos - https://www.youtube.com/watch?v=o-83E6levzM
+- Jeff Geerling - https://www.youtube.com/watch?v=S0KZ5iXTkzg
+
+
+#### General ####
 
 - fault tolerance - the prevention of data loss if a component fails
 - disaster recovery - the process of rebuilding an organizations data after a disaster
@@ -195,17 +201,97 @@ Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=o-83E6levzM&
 
 Comparison             Data thats backed up           Restore Procedure
 
-- full                 All data (longest)							Full backup only (fastest)
+- full                 All data (longest)		  	  Full backup only (fastest)
 
-- incremental          Data thats been changed				Full and incremetals (in the correct order) (longest)
-											 since last full or incr.
-											 backup (fastest)
+- incremental          Data thats been changed		  Full and incremetals (in the correct order) (longest)
+											  		  since last full or incr.
+											 		  backup (fastest)
 
-- differential				 Data thats been changed				Full and last differential (medium)
-											 since the last full backup
-											 (medium)
+- differential		   Data thats been changed		  Full and last differential (medium)
+											 		  since the last full backup
+											 		  (medium)
 
 
+#### Example Strategy ####
+
+- the "3-2-1 method"
+	- 3 copies
+	- 2 different media
+	- 1 offsite
+
+- Data Categories
+	- photos
+		- 1 on local
+		- 2 on NAS
+		- 3 on cloud
+
+	- music
+		- 1 on local 
+		- 2 on NAS
+		- 3 on cloud
+
+	- videos
+		- 1 on NAS
+		- 2 on backup NAS
+		- 3 on cloud (eg. AWS Glacier - cheap storage). Mostly for major emergencies only.
+
+	- documents
+		- 1 on local
+		- 2 on NAS
+		- 3 on dropbox
+
+	- local files
+		- 1 on local
+		- 2 on NAS
+		- 3 on ????
+	
+	- source code
+		- 1 on local
+		- 2 on NAS via Gickup (see https://github.com/cooperspencer/gickup)
+		- 3 on Github
+
+
+ #### Online tools to assist with above ####
+ 	- rclone - rclone.org
+ 	- arq - https://www.arqbackup.com
+ 	- restic - restic.net
+ 	- borg - borgbackup.readthedocs.io
+ 	- crashplan - https://www.crashplan.com
+
+
+
+#### Aleem's current ####
+
+- Data Categories
+	- photos
+		- 1 on local (WD 1TB)
+		- 2 on second local (Seagate 1TB)
+		- 3 on OneDrive
+
+	- music
+		- 1 on local (WD 1TB)
+		- 2 on second local (Seagate 1TB)
+		- 3 on OneDrive
+
+	- videos
+		- 1 on local (WD 1TB)
+		- 2 on second local (Seagate 1TB)
+		- 3 on OneDrive
+
+	- documents
+		- 1 on local
+		- 2 on 2nd local
+		- 3 on OneDrive
+
+	- local files
+		- 1 on local
+		- 2 on 2nd local
+		- 3 on OneDrive
+	
+	- source code
+		- 1 on local
+		- 2 on Github
+		- 3 ?????
 
 ------
 base64
@@ -215,6 +301,36 @@ base64
 
 echo -n "password123" | base64 -i -     # Output: cFSzf3skacQrIrR=
 
+
+
+
+----
+bash
+----
+
+- UNIX/Linux - a UNIX shell and command language (replacement for Bourne shell). Runs and processes commands as text when logged into a Linux machine/server via terminal
+
+- order of execution upon bash login to a terminal: /etc/profile > ~/.bash_profile > ~/.bash_login > ~/.profile. 
+	- the bash_profile executes the bashrc file.
+	- if .bash_profile does not exist, .bash_login is read. If .bash_login does not exist, .profile is read instead.
+
+#### profiles ####
+
+cat /etc/profile       # shows contents of system level settings and attributes for any user's profile e.g. PS1 setting, default size of command history to display, umask settings, etc.
+					   # Note: bash reads /etc/profile if invoked interactively using --login option, or invoked as sh.
+					   # applies to all shells, including bash
+
+cat /etc/bashrc        # contains system-wide definitions for shell functionns and aliases, similar to /etc/profile. Applies only to bash whereas profile applies to ALL shells
+
+cat ~/.bash_profile    # user configuration file in which the user environment can be configured. By default, some configuration is already defined, 
+					   # but it can be changed or altered as per requirements.
+					   
+
+
+# scripts - light notes
+
+bash ./some_script.sh     # one method used to execute a bash shell script
+./some_script.sh          # another method to execute a bash shell script
 
 ------
 cables
@@ -286,6 +402,23 @@ keytool -list -v -keystore /path/to/cacerts
 # Remove certificate entry from keystore - from https://docs.oracle.com/cd/E19798-01/821-1751/ghleq/index.html
 
 keytool -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file} -storepass ${keystore.pass}
+
+
+
+---------
+chkconfig
+---------
+
+- used to:
+	- list current startup information of services or any particular service
+	- updating runlevel settings of service
+	- adding or removing service from management
+
+
+### Commands ###
+
+chkconfig --list           # list running system-level services
+
 
 
 
@@ -482,6 +615,11 @@ ps -ef | grep cron
 curl/wget
 ---------
 
+- (UNIX/Linux) a tool for transferring data to or from a server. Supports multiple protocols
+
+
+#### Commands ####
+
 # Download a file (eg. Artifactory, using credentials)
 curl -u <user>:<password> http://artifactory_url:8081/artifactory/path/to/package/something.rpm -o ./something.rpm
 
@@ -493,6 +631,26 @@ wget --no-parent -r http://WEBSITE.com/DIRECTORY
 
 # set insecure
 echo insecure >> $HOME/.curlrc
+
+
+#### References and tools ####
+
+https://reqbin.com/curl - excellent site for testing different curl commands (e.g. with POST, GET, POST JSON, PUT, DELETE, etc)
+
+
+
+----
+date
+----
+
+- (Linux) used to display system date and time
+
+
+### Commands ###
+
+date                # default format: Tue Oct 10 22:55:01 PDT 2017
+date "+%Y-%m-%d"    # format displays as "YY-MM-DD". Good for putting into filenames.
+
 
 
 ---------------
@@ -1553,6 +1711,47 @@ x       extra functionality (experts only)
 
 
 
+----
+grep
+----
+
+- Linux/UNIX - search for and print lines matching a pattern
+
+
+#### Command examples ####
+
+# grep
+
+grep yum /etc/yum.conf               # Search for the word  "yum" in yum.conf
+grep -n "old" /etc/yum.conf          # Search for the word "old" in yum.conf. Print the line number where the word is found.
+grep -c "old" /etc/yum.conf          # Print the number of occurrences only of "old". Good (maybe better) alternative to wc -l
+grep -o "y" /etc/yum.conf | wc -w    # Count the number of words that start with "y" in yum.conf
+grep -v "yum" /etc/yum.conf          # NON-matching: find/print all lines that do not have the word "yum"
+grep -n "^$" /etc/yum.conf           # List all blank lines with their line numbers
+
+
+# egrep - extended grep
+
+ls | egrep "yum" /etc/yum.conf       # egrep is needed when using pipe (|). egrep is deprecated, can also use grep -E
+egrep -c '^1|01$' /etc/yum.conf      # Count number of lines that start with 1 and end in 01 in yum.conf
+egrep 'Fedora|yum' /etc/yum.conf     # Search for both Fedora and yum simultaneously in yum.conf
+
+
+# fgrep - fixed grep, does not interpret regex special characters
+
+fgrep -c 'yum' /etc/yum.conf            # Will return same result as grep or egrep
+fgrep -c 'yum|Fedora' /etc/yum.conf     # This will not return a result because it reads | literally
+
+
+
+
+### Misc ###
+
+- GREP_COLORS - "https://linuxaria.com/pills/coloring-grep-to-easier-research"
+
+
+
+
 ------
 groovy
 ------
@@ -1766,6 +1965,28 @@ ingress
 	- SSL termination
 	- routing
 	- load balancing
+
+
+------
+init.d
+------
+
+- /etc/init.d - contains a number of start/stop scripts for various services on your system.
+
+- usage:
+	/etc/init.d/[command] OPTION
+
+	- where OPTION can be any of the following:
+		- start
+		- stop
+		- reload
+		- restart
+		- force-reload
+
+
+### related ####
+
+cat /etc/inittab           # view runlevels of different programs
 
 
 
@@ -2849,6 +3070,24 @@ Remove /etc/fstab entry
 
 
 
+#### Re-mount existing volume after fstab update ####
+
+- If you add an entry in fstab for an existing volume that''s already mounted, ensure you unmount the volume after adding to fstab.
+
+1] Entry to add in fstab:
+
+/dev/sdb1  /home  ext4  defaults,usrquota  1  1
+
+
+2] Commands to remount the FS
+
+umount /dev/sdb1
+df -h
+mount /dev/sdb1
+mount -o remount /path       # remount the file system path previously mounted before fstab update. E.g. "mount -o remount /home" if its part of /dev/sdb1
+
+
+NOTE: see quotacheck section for managing disk quotas
 
 
 --------
@@ -3046,7 +3285,7 @@ networking - general
 
 
 
-# Hubs vs. Switches vs. Routers
+###### Hubs vs. Switches vs. Routers ######
 # Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
 
 - hub - connect all network devices together
@@ -3072,29 +3311,29 @@ networking - general
 				 - used to connect networks
 
 
-# IPv4 and IPv6 Dual Stack
+##### IPv4 and IPv6 Dual Stack #####
 - IPv4 and IPv6 together is referred to as "dual stack"
 	- IPv4 addresses are running out and are being migrated to IPv6
 	- dual stack connectivity allows your ISP to process IPv4 and IPv6 data simultaneously
 
 
 
-# Linux commands
-
+#### Linux commands ####
+ 
 route -n        # find routing table of server
 nestat -rn      # find routing table of server
 ip route        # find routing table of server
 
 
 
-# Misc
+#### Misc ####
 
 - default gateway - IP address of your router or modem/router combo that your computer connects to
 - subnet mask - defines which parts of the IP address refers to the network and host
 
 
 
-# Port Forwarding
+##### Port Forwarding #####
 # Source: https://www.youtube.com/watch?v=2G1ueMDgwxw
 
 - definition: allows computers over the internet to connect to a specfic computer or service within a private network
@@ -3115,6 +3354,17 @@ ip route        # find routing table of server
 			- source computer will try to hit the router IP:port -> router forwards to internal IP:port 
 
 	
+
+#### TCP wrapper (Linux) ####
+
+- For access control, "inetd" and "xinetd" files use the TCP_WRAPPER service. 
+- The xinetd binary file has built-in support for the TCP_WRAPPERS. TCP_WRAPPERS is configured in two different files. These files are:
+
+	/etc/hosts.allow
+	/etc/hosts.deny
+
+#######updates needed to above section#######
+
 
 
 -----
@@ -3510,6 +3760,65 @@ Multiprocessing:
 - Memory is not shared between processes
 - Mutexes not necessary (unless threading in the new process)
 - One GIL (Global Interpreter Lock) for each process
+
+
+
+-----
+quota
+-----
+
+- in Linux, "quota" displays disk usage and limits. Additional quota commands below to view more quota details
+
+
+
+#### quotacheck - Definition and details - source: https://linux.die.net/man/8/quotacheck ####
+
+- examines each filesystem, builds a table of current disk usage, and compares this table against that recorded in the disk quota file for the filesystem
+	 (this step is ommitted if option -c is specified). 
+	 - If any inconsistencies are detected, both the quota file and the current system copy of the incorrect quotas are updated (the latter only occurs if an active filesystem
+	   is checked which is not advised). By default, only user quotas are checked. quotacheck expects each filesystem to be checked to have quota files named [a]quota.user and
+	   [a]quota.group located at the root of the associated filesystem. If a file is not present, quotacheck will create it.
+
+- If the quota file is corrupted, quotacheck tries to save as much data as possible. Rescuing data may need user intervention.
+- With no additional options quotacheck will simply exit in such a situation. When in interactive mode (option -i) , the user is asked for advice. Advice can also be provided from command line (see option -n) , which is useful when quotacheck is run automatically (ie. from script) and failure is unacceptable.
+
+- "quotacheck" should be run each time the system boots and mounts non-valid filesystems. This is most likely to happen after a system crash.
+
+- It is strongly recommended to run quotacheck with quotas turned off for the filesystem. Otherwise, possible damage or loss to data in the quota files can result.
+- It is also unwise to run quotacheck on a live filesystem as actual usage may change during the scan. To prevent this, quotacheck tries to remount the filesystem read-only before starting the scan. After the scan is done it remounts the filesystem read-write. You can disable this with option -m. You can also make quotacheck ignore the failure to remount the filesystem read-only with option -M.
+
+
+# Enable quotacheck for the FS 
+
+quotacheck -cug /home
+	- -c option creates the quote files for each filesystem that has quota enabled
+	- -u option creates these files for a user quota
+	- -g option creates these files for a group quota
+
+
+# List the files put into the file-table via quotacheck command above
+
+quotacheck -avug
+	- -a option checks for locally mounted filesystems that have quota enabled. 
+	- -v option is for displaying verbose status.
+	- -u option is for user quota
+	- -g option is for group quota
+
+
+# Update the quota for a user
+
+edquota [user_id]
+
+# Output: edit window for the target user's quota #####
+Disk quotas for user [user_id] (uid @@@@):
+  Filesystem      		blocks  	soft     hard     inodes     soft     hard
+  /dev/sdb1                  0         0        0          0        0        0 
+
+- you can use vi to modify the above values
+
+
+repquota /dev/sdb1      # view quota report for target filesystem
+quota -u [user_id]  	# view quota statistics for a user
 
 
 
@@ -4021,8 +4330,18 @@ kubectl delete secret mysecret     # deletes secret - the only way to "edit" an 
 sed
 ---
 
-# Simple search and replace
-sed -i -e 's/few/asd/g' hello.txt
+- Linux/UNIX - search and replace tool
+
+
+#### Examples ####
+
+sed -i -e 's/few/asd/g' hello.txt     # Simple search and replace
+sed '/^#/ d ' yumtest.conf            # Remove all commented lines from yumtest.conf
+sed '/^  / d' yumtest.conf            # Remove all blank lines from yumtest.conf
+
+sed -e '/^$/ d'  -e 's/Fedora/Linux/g'  yumtest.conf     # Remove all blank lines and also replace all occurences of Fedora with Linux
+
+
 
 
 ----
@@ -4336,6 +4655,22 @@ ID			Name																	Description
 4				Not used/user-definable								For special purposes.
 5				Full mode															Same as runlevel 3 + display manager.
 6				Reboot																Reboots the device.
+
+
+
+
+---
+tee
+---
+
+- Linux/UNIX - reads from standard input and writes to standard output or to a file
+
+
+#### Examples ####
+
+df -h | tee disk_usage.txt                       # df -h output gets written into disk_usage.txt
+command | tee file1.out file2.out file3.out      # write command output to multiple files
+
 
 
 
@@ -5110,6 +5445,117 @@ Vagrant.configure(2) do |config|
 end
 
 # END VAGRANTFILE
+
+
+--
+vi
+--
+
+- [Linux] a command line editor for files
+
+To start VI:
+$ vi <filename>
+Vi has 2 modes: input mode (where you just get to type into your file), and command mode. Keep reading.
+
+
+### Quick guide ###
+
+:w    # To save work
+
+:q    # To quit
+
+:wq   # Save and quit
+ZZ    # also save and quit
+:x    # also save and quit (not available on some OS')
+
+:e! somefile.txt     # close current file without saving and open new file called "somefile.txt"
+
+# Moving around:
+h     # left
+j     # down
+k     # up
+l     # right
+0     # beginning of line
+$     # end of line (shift??)
+^     # start of line (shift??)
+H 	  # top of screen
+L  	  # bottom of screen
+G 	  # bottom of file
+<n>G  # the n'th line of the file
+3j    # Move down 3 lines
+4k    # Move up 4 lines
+
+1 then Shift+H    # Move to beginning of file
+Shift+G           # Bottom of file
+
+
+# Search (note: can use regex)
+/tomorrow     # Search forwards for the word tomorrow
+?tomorrow     # Search backwards for the word tomorrow
+
+# Search and replace
+:%s/left/LEFT/g    # replace all occurences of left with LEFT
+
+w forward a word, counting punctuation
+b backward a word, counting punctuation
+W forward a word, not counting punctuation
+B backward a word, not counting punctuation
+
+^F <ctrl>F forward a screen
+^B <ctrl>B backward a screen
+
+
+:noh    # shuts off highlighting
+
+
+- When invoked, VI is in command mode. You can return to command mode at any time by pressing the [ESC] key. The [ESC] key is also used to cancel a
+  partially-entered command.
+
+# To enter insert mode (actually enter text):
+i inserts at (before) current cursor position
+I inserts at beginning of current line
+a appends following current cursor position
+A appends to end of current line
+o opens up a new line after the current line
+O opens up a new line previous to the current line
+^V <ctrl>V  To quote a character (insert a non-printing character)
+
+To delete text:
+x deletes a single character (at the cursor)
+d<unit> deletes curent textual unit, taken from above. So,
+dw deletes word, up to punctuation
+dW deletes word, ignoring punctuation
+
+D$           # deletes from cursor to end of line
+dd or D      # delete a line
+S            # delete a line and go into insert mode in the deleted line
+dL deletes to bottom of screen
+dG deletes from current cursor position to end of file
+dd deletes current line (entirely)
+
+# Copy and paste
+y[unit]     # copy
+yy          # copy (or yank) current line to buffer
+yw          # copy (or yank) word
+Y copy to end of line (or y$)
+
+p paste, following the cursor.
+P paste, preceding the cursor.
+
+To change text:
+c<unit> marks unit for overwrite, puts you in insert mode. So,
+cw change current word
+C change to end of line
+cc change current line (entirely)
+r replace current (single) character
+~ changes case of current character
+Other useful stuff:
+J joins current line to line below
+/<string> searches forward for <string>
+n reexecutes last search
+N same thing, but other direction
+?<string> searches backward for <string>
+^L <ctrl>L refreshes the screen
 
 
 --------
