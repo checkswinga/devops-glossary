@@ -293,6 +293,7 @@ Comparison             Data thats backed up           Restore Procedure
 		- 2 on Github
 		- 3 ?????
 
+
 ------
 base64
 ------
@@ -623,14 +624,22 @@ curl/wget
 # Download a file (eg. Artifactory, using credentials)
 curl -u <user>:<password> http://artifactory_url:8081/artifactory/path/to/package/something.rpm -o ./something.rpm
 
+
 # Upload a file (eg. to Artifactory w/ creds)
 curl -X PUT -u <user>:<password> -T something.rpm "http://artifactory_url:8081/artifactory/path/to/package/something.rpm"
+
 
 # recursive download with wget
 wget --no-parent -r http://WEBSITE.com/DIRECTORY
 
+
 # set insecure
 echo insecure >> $HOME/.curlrc
+
+
+# curl with telnet (in case telnet not available)
+curl -v telnet://someurl.com:[port]
+
 
 
 #### References and tools ####
@@ -1743,6 +1752,8 @@ fgrep -c 'yum' /etc/yum.conf            # Will return same result as grep or egr
 fgrep -c 'yum|Fedora' /etc/yum.conf     # This will not return a result because it reads | literally
 
 
+# multiple grep
+grep "some_text" file.txt | grep "some_more_text" | egrep "this|that|theother"
 
 
 ### Misc ###
@@ -2111,6 +2122,17 @@ Jenkins
 	- Remove the elements authorizationStrategy and securityRealm
 	- Start Jenkins
 
+
+# Decrypt secret from Credentials
+
+- In your Jenkins instance
+	- go to Credentials -> Your_secret -> Global credentials (unrestricted) -> Update (Your_secret)
+	- right click inside "Secret" field -> Inspect
+	- copy the value inside the _.secret input name entry (e.g. should be like this: {AQAAABAAAAAwJABqfeWZl6KviKrG/uq1JcSwL1ru1/82OSGQkS3JreDRp54r7fBoAwEiO/+D8uCASaD1UTH0GAyet8z+YZIzZQ==} )
+    - open a new tab and go to: <your Jenkins instance URL>/script
+	- Paste the following script with your secret value into the console and click Run:
+		- println hudson.util.Secret.decrypt("{AQAAABAAAAAwJABqfeWZl6KviKrG/uq1JcSwL1ru1/82OSGQkS3JreDRp54r7fBoAwEiO/+D8uCASaD1UTH0GAyet8z+YZIzZQ==}")
+	- you will see the decrypted value printed if it ran successfully
 
 
 
@@ -5573,6 +5595,26 @@ whois
 -----
 
 whois [domain_name]   # will return comprehensive information about that URL/domain (given that domain is publicly registered)
+
+
+
+-------
+Windows
+-------
+
+# Windows Spotlight images retrieval
+
+- location: C:\Users\Buildmaster\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets>
+	- from command prompt, cd to the above and then:
+
+		cp * D:/new_folder     						# or some other drive/location
+		for i in $( ls ); do mv $i $i.jpg; done     # UNIX sh: rename all the files to jpg
+
+		OR
+
+		ren * *.jpg  								# rename all files to jpg files with Powershell
+
+
 
 
 
