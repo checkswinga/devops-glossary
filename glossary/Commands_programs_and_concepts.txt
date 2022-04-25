@@ -84,6 +84,24 @@ Ansible
 
 
 
+-----------------
+Apache web server
+-----------------
+
+# Install and run on CentOS Linux
+
+yum install -y httpd           # update httpd yum package
+systemctl start httpd
+systemctl status httpd
+systemctl enable httpd
+firewall-cmd --zone=public --permanent --add-service=http
+firewall-cmd --zone=public --permanent --add-service=https
+
+
+### needs minor updates ###
+
+
+
 ---
 apt
 ---
@@ -552,6 +570,21 @@ CompTIA A+ Certifcation 220-801
 
 
 
+----
+cpio
+----
+
+- (Linux/UNIX) - a tool for creating and extracting archives, or copying files from one place to another
+
+
+#### Commands ####
+
+ls | cpio -ov > text.cpio        # List files in current dir and put result into cpio archive
+cpio -iv < text.cpio             # Extract cpio archive into current directory. Note if the current dir contains
+								 # the same file names as in the archive, the files will not be extracted.
+
+
+
 -------
 crontab
 -------
@@ -1002,7 +1035,7 @@ docker compose up          # will run all of the container images that were buil
 
 
 ------------------------------
-Fail2ban - for blocking access
+fail2ban - for blocking access
 ------------------------------
 
 - Source article: https://www.digitalocean.com/community/tutorials/how-to-protect-ssh-with-fail2ban-on-centos-7
@@ -1387,6 +1420,28 @@ firewall-cmd --add-rich-rule='rule family="ipv4" source address="192.168.122.103
 
 # set all temporary or runtime firewalld configurations permanently ***
 firewall-cmd --runtime-to-permanent
+
+
+
+# Zones list
+
+drop: The lowest level of trust. All incoming connections are dropped without reply and only outgoing connections are possible.
+
+block: Similar to the above, but instead of simply dropping connections, incoming requests are rejected with an icmp-host-prohibited or icmp6-adm-prohibited message.
+
+public: Represents public, untrusted networks. You don’t trust other computers but may allow selected incoming connections on a case-by-case basis.
+
+external: External networks in the event that you are using the firewall as your gateway. It is configured for NAT masquerading so that your internal network remains private but reachable.
+
+internal: The other side of the external zone, used for the internal portion of a gateway. The computers are fairly trustworthy and some additional services are available.
+
+dmz: Used for computers located in a DMZ (isolated computers that will not have access to the rest of your network). Only certain incoming connections are allowed.
+
+work: Used for work machines. Trust most of the computers in the network. A few more services might be allowed.
+
+home: A home environment. It generally implies that you trust most of the other computers and that a few more services will be accepted.
+
+trusted: Trust all of the machines in the network. The most open of the available options and should be used sparingly.
 
 
 
@@ -2814,13 +2869,42 @@ ln -s /usr/share/zoneinfo/America/Toronto /etc/localtime
 date
 
 
+
+------
+locate
+------
+
+- (Linux/UNIX) - searches the location of files from a specific database
+			   - e.g. it can display all the directies on the system that has a certain name as part of the filepath
+
+#### commands ####
+
+locate /etc            		# find all directories that has /etc in the filepath
+locate -S              		# show the database that locate uses to find files and directories
+				       		# e.g. /var/lib/mlocate/mlocate.db
+				       		# some db names show as mlocate or slocate, depending on the Linux distro
+
+updatedb               		# updates the locate database
+cat /etc/updatedb.conf      # show contents of updatedb conf file
+
+
+
+
+
 --
 ln
 --
 
 - in Linux, creates a hard or soft link to an existing file or directory
+- Symbolic links: It is a pointer to the source file. It can point to a source file on the local or remote filesystem.
+- Hard links: It is another directory entry for the source file and carries those same properties, such as file permissions, of the source file.
+			  If you delete one file, the other file remains intact. A hard link must exist in the same local filesystem.
+
+
+#### Commands ####
 
 ln -s <real_path> <soft_link_to_be_created>
+ln <real_path> <hard_link_to_be_created>
 
 
 
@@ -2860,6 +2944,20 @@ do
   echo "Welcome $a times."
   a=$(( a+1 ))  
 done
+
+
+
+--
+ls
+--
+
+- (Linux/UNIX) - list files in current directory
+
+
+#### Commands ####
+
+ls [!Aa]*         # list all files that don't start with an 'a' or 'A'
+ls D[eo]*         # list all files that start with 'D' and with second letter 'e' or 'o'
 
 
 
@@ -5190,6 +5288,22 @@ For both check:
 
 
 
+----
+type
+----
+
+- (Linux/UNIX) - allows you to locate special commands such as shell built-ins
+
+
+#### commands ####
+
+type type             # show type for "type" command. Output: type is a shell builtin
+type yum              # yum is /usr/bin/yum
+
+
+
+
+
 ------
 ulimit
 ------
@@ -5587,6 +5701,39 @@ webhooks
 Source: https://www.youtube.com/watch?v=rUaDIH5ZXB8&list=WL&index=2
 
 Definition: http messages that are sent in response to an event to a third party service (e.g. you can configure a webhook in Github to send messages to Jenkins based on push events to a given repository)
+
+
+
+
+-------
+whereis
+-------
+
+- (Linux/UNIX) - allow you to locate more information than just the location of the command
+
+
+#### commands ####
+
+whereis ls            # shows location and more details of the "ls" command
+
+
+
+
+-----
+which
+-----
+
+- (Linux/UNIX) - shows the full path of shell commands
+	- exception: shell builtins (see "type" section)
+		- e.g. type - if you run "which type", it will not return the path since it is a shell builtin program
+
+
+#### Commands ####
+
+which yum 				 # show default path of yum
+which -a yum             # show path(s) of yum  (e.g. you might see /usr/bin/yum and /bin/yum, two different locations)
+
+
 
 
 
