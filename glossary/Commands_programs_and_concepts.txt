@@ -1469,6 +1469,25 @@ Fortify
 ./fortifyclient -url https://fortify_url.com/ssc -authtoken xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx uploadFPR -file ../something.fpr -project "project_name" -version "latest"
 
 
+
+---------------
+getfacl/setfacl
+---------------
+
+# Sources: https://www.computerhope.com/unix/usetfacl.htm
+
+- Linux/UNIX - getfacl - displays the file name, owner, the group, and the ACL (Access Control List)
+			 - setfacl - modifies the access control list of a file or files.
+
+
+#### Commands ####
+
+getfacl /some/path          								# get access control list for target directory
+getfacl /path/to/file 										# get access control list for target file
+setfacl -Rm g:logfsg:r-x d:g:logfsg:r-x /some/path 			# set default ACL for specific directory (recursively) to a particular group (logfsg)
+
+
+
 ---
 GIT
 ---
@@ -1926,6 +1945,30 @@ folder/
 	crds/								# Custom Resource Definitions
 	templates/					# A dir of templates when combined with values generate valid K8s manifest files
 	templates/NOTES.txt # OPTIONAL: plan text file containing short usage notes  
+
+
+
+
+--------
+hostname
+--------
+
+- Linux/UNIX - identifies the name/domain name of a system on a network
+
+
+
+#### Commands ###
+
+hostname            # displays hostname
+hostname -s         # displays short version of hostname
+hostname -f         # displays fully qualified domain name (FQDN)
+
+cat /etc/hostname   # you can see the hostname configured here
+
+hostnamectl         # view detailed info about the host/hostname
+
+hostnamectl set-hostname plablinux2 			# change the hostname to plablinux2. Requires reboot of system
+
 
 
 
@@ -2600,9 +2643,9 @@ ldd -d
 
 
 
------
-Linux
------
+--------------
+Linux [system]
+--------------
 
 #### Command-line - special/"heroic" commands ####
 # Source: Engineer Man - https://www.youtube.com/watch?v=Zuwa8zlfXSY
@@ -2857,7 +2900,8 @@ cat /dev/rickroll
 
 
 
-# Processes
+#### Processes ####
+
 # Sources
 	# Engineer Man - https://www.youtube.com/watch?v=TJzltwv7jJs
 	# boson.com CompTIA Linux labs
@@ -2867,7 +2911,7 @@ cat /dev/rickroll
 				- then it "execs" by replacing the second [child] process with the command that was entered
 
 
-#### commands ####
+#### process commands ####
 
 ^C [or Ctrl ^C] - if the child process is still running [i.e. your terminal is still executing a command], this will send a SIGINT to terminate the process
 ^Z [or Ctrl ^Z] - sends a TSTP signal to Linux to "suspend" the process [equivalent of "kill -20" on a process]
@@ -2912,6 +2956,15 @@ killall -9 firefox     # kill all processes which contain firefox in the command
 
 
 # ps (see ps section)
+
+
+
+### Reboot commands ###
+
+init 6                  # Reboots and starts back up to run level 6
+systemctl reboot        # Reboots via systemctl
+shutdown -r 			# -r flag denotes reboot
+
 
 
 ---------
@@ -3599,6 +3652,22 @@ renice -n 2 -p [pid]
 
 # change nice value for all running processes for a user
 renice -n 2 -u [user] 
+
+
+
+-----
+nmcli
+-----
+
+- Linux/UNIX - network manager cli. Controls NetworkManager program and reports on network status.
+			 - can also be used to manage hostname of system
+
+
+#### Commands ####
+
+nmcli general hostname           			# View current hostname of system
+sudo nmcli general hostname plablinux02     # Change hostname to plablinux02
+
 
 
 
