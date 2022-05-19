@@ -436,7 +436,10 @@ chkconfig
 
 ### Commands ###
 
-chkconfig --list           # list running system-level services
+chkconfig --list              			# list running system-level services
+chkconfig --del netconsole    			# remove the "netconsole" system-level service
+chkconfig --add netconsole    			# add the "netconsole" system-level service
+chkconfig --level 4 netconsole on       # configure "netconsole" at run level 4
 
 
 
@@ -690,8 +693,11 @@ date
 
 ### Commands ###
 
-date                # default format: Tue Oct 10 22:55:01 PDT 2017
-date "+%Y-%m-%d"    # format displays as "YY-MM-DD". Good for putting into filenames.
+date                		# default format: Tue Oct 10 22:55:01 PDT 2017
+date "+%Y-%m-%d"    		# format displays as "YY-MM-DD". Good for putting into filenames.
+date +%D -s 2019-12-20		# set the date to Dec 20 2019
+date +%T -s 23:00:00 -u     # set the time to 11pm, using UTC format (-u flag)
+
 
 
 
@@ -1979,6 +1985,25 @@ http --download pie.dev/image/png
 
 
 
+
+-------
+hwclock
+-------
+
+- Linux/UNIX - displays/modifies the current time that the hardware clock on the computer shows
+
+
+#### Commands ####
+
+hwclock             							# display current time on hardware clock (same output with -r or --show flag)
+hwclock -w 										# set the hwclock to the current system time
+hwclock --set --date 12/19/2018  				# set the hwclock date manually
+hwclock --set --date "12/20/2018 23:10:00"		# set the hwclock date and time manually
+hwclock -s 										# copy hardware time to system time
+
+
+
+
 ------------
 if/else/case
 ------------
@@ -2052,7 +2077,7 @@ init.d
 
 ### related ####
 
-cat /etc/inittab           # view runlevels of different programs
+cat /etc/inittab           # view runlevels of different programs. Is no longer used by systemd, which uses targets instead of runlevels
 
 
 
@@ -2833,29 +2858,60 @@ cat /dev/rickroll
 
 
 # Processes
-# Source: Engineer Man - https://www.youtube.com/watch?v=TJzltwv7jJs
+# Sources
+	# Engineer Man - https://www.youtube.com/watch?v=TJzltwv7jJs
+	# boson.com CompTIA Linux labs
 
-- fork/exec - when executing any command, Linux "forks" the shell terminal [or parent] process into two: itself and a copy of itself.
-			- it then "execs" by replacing the second [child] process with the command that was entered
+- fork/exec - when executing any command
+				- Linux "forks" the shell terminal [or parent] process into two: itself and a copy of itself.
+				- then it "execs" by replacing the second [child] process with the command that was entered
 
-- commands:
+
+#### commands ####
 
 ^C [or Ctrl ^C] - if the child process is still running [i.e. your terminal is still executing a command], this will send a SIGINT to terminate the process
 ^Z [or Ctrl ^Z] - sends a TSTP signal to Linux to "suspend" the process [equivalent of "kill -20" on a process]
 
-jobs        	  # see the jobs table for the user. You will also see stopped processes that can be restarted.
+
+# jobs
+
+jobs        	  # see the jobs table for the user (background processes). You will also see stopped processes that can be restarted.
+
+
+# fg
+
 fg          	  # execute in the foreground - if there's one stopped job in the jobs table, this will run it by default
 fg %3       	  # this will run the 3rd job in the jobs table
+fg 2  			  # this will bring the 2nd job in the jobs list (background) to the foreground
+
+
+# bg
+
 bg                # background
 bg %3             # this will run the 3rd job in the jobs table in the background
+
+
+# kill
+
 kill -15 [pid]    # sends sigterm to terminate the process cleanly
 kill -2 [pid]     # sends sigint to terminate process 
 kill -1 [pid]     # sends sighup to terminate process
 kill -9 [pid]     # sends sigkill to kill the process ungracefully or the "dirty" way
-
 kill -20 [pid]    # stop or suspend a running process
 kill -18 [pid]    # restart a suspended process. An example of how kill sends terminal signals and not necessarily all process killers
 
+
+# pidof
+
+pidof firefox          # lists all process IDs containing firefox in the command
+
+
+# killall
+
+killall -9 firefox     # kill all processes which contain firefox in the command
+
+
+# ps (see ps section)
 
 
 ---------
@@ -3604,6 +3660,7 @@ npx npkill
 
 
 
+
 ------
 parted
 ------
@@ -3820,8 +3877,12 @@ Piston
 ps
 --
 
-ps eww -p <PID>          		# Check full process args on Linux:
-ps -auwwwx | grep <anything>    # Alternative to above
+ps eww -p [PID]          		# Check full process args on Linux
+ps -auwwwx | grep [anything]    # Alternative to above
+									# -a lists all running processes
+									# -u: Lists the user who is running the process
+									# -x: Lists all running processes even if they are not part of the current terminal session
+									# grep for specific criteria
 ps -ef                          # full format listing of all running processes the user has access to
 ps f 1                          # list init process
 
@@ -4174,6 +4235,36 @@ Raspberry Pi
 
 
 
+
+
+---------------------
+reboots and runlevels
+---------------------
+
+- Linux/UNIX - prints the previous and current SysV runlevel (if known)
+
+
+#### Commands ####
+
+runlevel          		# prints runlevel  e.g. N 5, which means previous runlevel not known and current runlevel is 5
+telinit 3         		# switches the runlevel of the system to 3
+init 6          	    # shuts down and reboots system into runlevel 6
+
+shutdown -h +10 	    # schedule shutdown of the system to occur in 10 minutes
+shutdown -c             # cancel scheduled shutdown
+shutdown -r 11:00       # reboot the system at 11am (system time).
+						# With no parameter, wait time is 1 minute
+
+reboot                  # reboots system
+
+wall “This system will be rebooted at 11:00 AM.”       # broadcast to users system will reboot at 11:00am
+
+
+service vmtoolsd.service stop      # stop the vmtoolsd service (redirects to systemctl)
+
+
+
+
 ----------
 References 
 ----------
@@ -4317,6 +4408,7 @@ rpm -ql [installed_package_name]  			   # list files in an installed RPM package
 rpm -q --scripts [installed_package_name]	   # check scriptlets of an installed package
 
 rpm2cpio squid-3.5.20-12.el7.x86_64.rpm | cpio -idmv     # converts squid rpm to cpio archive
+
 
 
 
@@ -4748,15 +4840,24 @@ WantedBy=multi-user.target
 
 
 2) Save the file in /etc/systemd/system/
+	- note: /lib/systemd/system/ contains all the service files
 
 
 3) See below the different commands to manage the service
 
-systemctl start somename 
-systemctl stop somename
-systemctl enable somename 							
-systemctl disable somename 				# If service is disabled, service will not start upon system boot/reboot
-systemctl list unit-files         # Lists all services and their status'. See following link for possible statuses: https://www.freedesktop.org/software/systemd/man/systemctl.html
+systemctl start [service] 
+systemctl stop [service]
+systemctl reload [service]
+systemctl restart [service]
+systemctl reload-or-restart [service]
+systemctl enable [service] 							
+systemctl disable [service] 	  # If service is disabled, service will not start upon system boot/reboot
+systemctl is-active [service]
+systemctl is-enabled [service]
+systemctl daemon-reload           # Reload systemctl daemon after
+systemctl list-units
+systemctl list unit-files         # Lists all services and their status'
+								  # See following link for possible statuses: https://www.freedesktop.org/software/systemd/man/systemctl.html
 
 
 
@@ -5200,6 +5301,47 @@ az aks get-credentials -n aks-getting-started -g aks-getting-started
 
 
 
+
+-----------
+timedatectl
+-----------
+
+- Linux/UNIX - used to control system date and time. Can also be used to check whether NTP synchronization enabled (i.e. for automatically setting the time)
+
+
+#### Commands ####
+
+
+timedatectl 				# check date and time settings of the system
+timedatectl set-ntp no  	# stops the time synchronization with the NTP server (which allows you to set the time manually)
+
+
+
+#### Other ####
+
+# localtime/timezone settings
+
+ls /usr/share/zoneinfo/        			# list all time zones
+cp America/Chicago /etc/localtime		# change the time zone to Chicago time
+
+
+# ntp settings - minor updates required*******
+
+- Network Time Protocol (NTP) is used to set and synchronize the clocks of one or more systems that are on a network
+	- Synchronizes the PC clock with local or NTP servers
+	- Adjusts the rate of the kernel’s clock-tick to track time accurately
+	- Synchronizes time with the other NTP clients
+
+
+yum install ntp                         # install ntp package (may require yum or dnf update first)
+cat /etc/ntp.conf                       # ntp daemon's configuration file
+ntpq -n pool.ntp.org                    # The ntpq command prompt is displayed and prints list of known peers
+	peers 								# See peers list
+
+
+
+
+
 ----------
 traceroute
 ----------
@@ -5445,6 +5587,23 @@ uname -v      # prints kernel release date
 
 cat /proc/version      # also prints kernel information
 dmesg | grep Linux     # also prints kernel information
+
+
+
+-----------
+update-rc.d
+-----------
+
+- Linux Ubuntu - activate, deactivate or modify a service startup.
+			   - replacement for "chkconfig" utility 
+
+
+#### Commands ####
+
+sudo update-rc.d -f apache2 remove          # Remove apache2 service
+sudo update-rc.d apache2 defaults           # Add apache2 service to list of programs to startup on boot
+sudo update-rc.d apache2 defaults 90 90     # Define the start and kill priority (respectively) of apache2 service
+
 
 
 
