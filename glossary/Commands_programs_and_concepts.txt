@@ -1,4 +1,37 @@
 -------
+anacron
+-------
+
+- Linux/UNIX - works like cron, except if scheduled time is reached and system is not up to run the job, anacron will trigger as soon
+			   as the system is up and running.
+			 - equivalency:
+			 	- Autosys job on hold - anacron
+			 	- Autosys job on ice - cron
+
+
+#### Commands ####
+
+cat /etc/anacrontab             # see anacrontab commands and timings configured
+
+
+
+
+#### Files and directories ####
+
+/var/spool/anacron 				# contains its own set of daily, weekly, monthly crontab files
+	- cron.daily
+	- cron.monthly
+	- cron.weekly
+
+grep START /etc/anacrontab  	# view start timings allowed for all jobs regardless of their configuration (START_HOURS_RANGE env variable)
+
+grep RANDOM /etc/anacrontab   	# view random delay setting for anacrontab for all jobs (used to prevent overload if anacrontab has several
+								  jobs configured to run at the same time)
+
+
+
+
+-------
 Android
 -------
 
@@ -117,6 +150,36 @@ apt-get autoremove [package]   # remove installed package's dependencies
 apt-cache show [package]       # show package details
 
 dpkg -S [package]              # find package details, location of installed package files
+
+
+
+
+--
+at
+--
+
+- Linux/UNIX - used to schedule a job for later execution (executes ONCE as opposed to cron)
+
+
+#### Commands ####
+
+yum install at           # or dnf install at, to install at package
+at 7:15AM tomorrow       # bring up at command line prompt to enter command to run at 7:15AM tomorrow morning
+	at> command1
+	at> command2
+	at> command3 		 # enter in a command and hit enter to put in next command, as many as you want
+
+at -l                    # see how many jobs are in the at queue
+at -d 2 				 # delete job #2 in the at queue
+atq 					 # similar to at -l
+atrm 3 					 # delete job #3 in at queue (similar to at -d)
+
+
+#### Files ####
+
+/etc/at.allow 			 # configures list of users to allow access to run and configure at commands
+/etc/at.deny  			 # configures list of users to deny access for to run and configure at commands
+
 
 
 
@@ -592,9 +655,18 @@ cpio -iv < text.cpio             # Extract cpio archive into current directory. 
 crontab
 -------
 
+- Linux/UNIX - used to schedule recurring periodic activities
+			 - The cron command uses text files that contain commands to execute them. These files are known as crontabs. These files must be located in a directory named /var/spool/cron
+			 - "cron" is not a program in itself. It consists of two components:
+			 	- "crond" is the daemon that executes the commands
+			 	- "crontab" is a table manipulation program accesses the crontab files.
+
+
 # Sources:
 - https://crontab.guru - translate any cron entry and tells you what its timing interval is
 - https://www.youtube.com/watch?v=QEdHAwHfGPc - Engineer Mans cron video
+- boson.com CompTIA Linux+ labs
+
 
 # Of the 5 stars:
 - 1st - minute (0 - 59)
@@ -603,7 +675,10 @@ crontab
 - 4th - month (1 - 12)
 - 5th - day of the week (0 - 6) (Sunday to Saturday; 7 is also Sunday on some systems)
 
-# Format
+
+
+#### Format ####
+
 * * * * * [user] [command]
 
 # Quick examples
@@ -636,15 +711,32 @@ crontab
 0 23 1-7 * 3 /path/to/script
 
 
-# Edit crontab
-crontab -e
+#### Commands ####
 
-# List crontab
-crontab -l
+rpm -q cronie cronie-anacron           # Verify if cron packages are installed
+yum install cronie cronie-anacron      # or dnf install for Rocky Linux. Install if packages not present
+ls -l /var/spool/cron 				   # Check if any crontabs are present
 
-# Run crontab (Debian/Ubuntu)
-service cron start
-ps -ef | grep cron
+service crond status 				   # Check if cron service is running
+service cron start   				   # Start crontab service (if not already running)
+
+cat /etc/crontab 					   # See all current commands and timings configured
+crontab -l 							   # Check crontab for current user
+crontab -l -u root 					   # Check crontab for a specific user
+crontab -e 							   # Edit crontab for current user
+
+
+
+
+#### Files ####
+
+/etc/cron.allow 			 # configures list of users to allow access to run and configure cron commands
+/etc/cron.deny  			 # configures list of users to deny access for to run and configure cron commands
+
+/etc/cron.hourly/ 			 # Note that the values in crontab can be used to execute the scripts in the following directories:
+/etc/cron.daily/
+/etc/cron.weekly/
+/etc/cron.monthly/ 
 
 
 
@@ -676,6 +768,13 @@ echo insecure >> $HOME/.curlrc
 # curl with telnet (in case telnet not available)
 curl -v telnet://someurl.com:[port]
 
+# show the request/response time duration of the curl command from the host to the destination
+time curl <URL> 		
+
+	- "real" or total or elapsed (wall clock time) is the time from start to finish of the call.
+		- it is the time from the moment you hit the Enter key until the moment the curl command is completed.
+	- "user" - amount of CPU time spent in user mode.
+	- system or "sys" - amount of CPU time spent in kernel mode.
 
 
 #### References and tools ####
@@ -2124,6 +2223,22 @@ cat /etc/inittab           # view runlevels of different programs. Is no longer 
 
 
 
+
+------
+iostat
+------
+
+- Linux/UNIX - displays the CPU and input/output statistics for devices and partitions
+
+
+#### Commands ####
+
+iostat                     # display the CPU and input/output statistics for devices and partitions
+iostat -c 			       # display only CPU utilization
+
+
+
+
 --------
 ipconfig
 --------
@@ -2904,7 +3019,7 @@ cat /dev/rickroll
 
 # Sources
 	# Engineer Man - https://www.youtube.com/watch?v=TJzltwv7jJs
-	# boson.com CompTIA Linux labs
+	# boson.com CompTIA Linux+ labs
 
 - fork/exec - when executing any command
 				- Linux "forks" the shell terminal [or parent] process into two: itself and a copy of itself.
@@ -3317,6 +3432,23 @@ mount -o remount /path       # remount the file system path previously mounted b
 
 
 NOTE: see quotacheck section for managing disk quotas
+
+
+
+------
+mpstat
+------
+
+- Linux/UNIX - displays CPU information. Useful when you have a system with multiple CPUs.
+
+
+#### Commands ####
+
+mpstat               # shows consolidated cpu usage (of all cpus in the same line)
+mpstat -P ALL  		 # shows consolidated + individual cpu usage
+
+
+
 
 
 --------
@@ -3811,6 +3943,29 @@ ls /dev/disk/by-id       # determine model and serial number of a disk
 
 
 
+
+----
+perf
+----
+
+- Linux/UNIX - measure the CPU performance of specific commands 
+
+
+
+#### Commands ####
+
+perf stat cp -r some_folder some_destination/      # show performance stats for the cp -r command
+perf stat -a -- sleep 10                           # show system wide cpu profile/stats (note: run as root)
+perf stat -p [PID] 								   # show CPU performance for specific process
+
+perf record -e cycles:u -a -- sleep 10  		   # measure the CPU performance for a specific time period and record it (run as root)
+perf report  									   # view recorded report from above command (run as root)
+
+perf top -e cpu-clock 							   # display all cpu-clock related events (real-time). Run as root
+
+
+
+
 --------------------
 performance analysis
 --------------------
@@ -3831,15 +3986,16 @@ performance analysis
 
 dmesg | tail    		# shows kernel errors
 free -m [or -g]			# memory usage
-iostat -xz 1				# disk I/O
+iostat -xz 1			# disk I/O
 mpstat -P ALL 1			# CPU balance
-netstat -s 					# shows statistics by protocol (network)
-pidstat 1						# process usage
-sar -n DEV 1				# network I/O
-sar -n TCP,ETCP, 1  # TCP stats
-top 								# overview of processes (hit 1 to see CPU usage). Note: does not show container ID
-uptime     					# shows time passed since last reboot of server
-vmstat 1						# overall stats by time
+netstat -s 				# shows statistics by protocol (network)
+pidstat 1				# process usage
+perf stat cp -r some_folder some_destination/      # show performance stats for the cp -r command
+sar -n DEV 1			# network I/O
+sar -n TCP,ETCP, 1  	# TCP stats
+top 					# overview of processes (hit 1 to see CPU usage). Note: does not show container ID
+uptime     				# shows time passed since last reboot of server
+vmstat 1				# overall stats by time
 
 
 # Advanced tools
@@ -3955,6 +4111,7 @@ ps -auwwwx | grep [anything]    # Alternative to above
 ps -ef                          # full format listing of all running processes the user has access to
 ps f 1                          # list init process
 
+ps -eo pcpu,pid,user | sort -k 1 -r | head -10  		# show top 10 processes using the most CPU on a system
 
 
 
@@ -4477,6 +4634,25 @@ rpm -ql [installed_package_name]  			   # list files in an installed RPM package
 rpm -q --scripts [installed_package_name]	   # check scriptlets of an installed package
 
 rpm2cpio squid-3.5.20-12.el7.x86_64.rpm | cpio -idmv     # converts squid rpm to cpio archive
+
+
+
+
+
+---
+sar
+---
+
+- Linux/UNIX - displays the average statistics for the time since the system was started (in 5 second intervals by default)
+	- aka "System Activity Report"
+
+
+#### Commands ####
+
+sar                    						  # shows consolidated cpu usage stats
+sar -u 2 10 		   						  # display the CPU utilization every two seconds 10 times
+sar -o plab.file 10 10 >/dev/null 2>&1 &  	  # create CPU report of utilization check every 10 seconds (up to 10 checks)
+sar -f plab.file 							  # view report
 
 
 
@@ -5410,6 +5586,21 @@ ntpq -n pool.ntp.org                    # The ntpq command prompt is displayed a
 
 
 
+---
+top
+---
+
+- Linux/UNIX - provides a dynamic real-time view of a running system (for processes including cpu and mem usage, total number of processes running, etc)
+
+
+#### Commands ####
+
+top              # show real-time view of all running processes (updates every second)
+top -u root      # show for root user only
+	shift + P    # sort by CPU utilization
+
+
+
 
 ----------
 traceroute
@@ -5920,6 +6111,23 @@ n reexecutes last search
 N same thing, but other direction
 ?<string> searches backward for <string>
 ^L <ctrl>L refreshes the screen
+
+
+
+------
+vmstat
+------
+
+- Linux/UNIX - display various information, such as CPU, swap, and memory utilization
+
+
+
+#### Commands ####
+
+vmstat 						# generates reasonably good information for CPU. It generates information for CPU user time, system time, idle time, and wait time.
+vmstat -s 					# shows same info more comprehensively
+
+
 
 
 --------
