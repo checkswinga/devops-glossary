@@ -414,6 +414,13 @@ cat ~/.bash_profile    # user configuration file in which the user environment c
 bash ./some_script.sh     # one method used to execute a bash shell script
 ./some_script.sh          # another method to execute a bash shell script
 
+
+# if
+
+- flags and other stuff - https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
+
+
+
 ------
 cables
 ------
@@ -506,13 +513,43 @@ chkconfig --level 4 netconsole on       # configure "netconsole" at run level 4
 
 
 
+-----------------
+chmod/chgrp/chown
+-----------------
 
-=======
+- Linux/UNIX - change file mode bits (permissions), group ownership and user ownership
+
+
+#### Commands ####
+
+chmod 750 [file]          # change permissions for file (read/write/execute for user, read/execute for group, no perms for other)
+chmod -R 750 [dir]		  # change perms for directory recursively
+chmod g+x [file]  		  # grant primary group for current user execute access to file
+
+chmod 4750 [file] 		  # same as 1st command except implement sticky bit for user (i.e. only the user that owns the file (or root) can execute it)
+
+	- output: -rwsr-xr-x. 1 root root 33544 Dec 13  2019 file
+
+chgrp adm file1.txt 	  # change group for file1.txt to adm
+chown adm file1.txt 	  # change owner for file1.txt to adm
+
+
+#### NEEDS MORE INFO ####
+
+
+
+
+
+
+-------
 ciphers
-=======
+-------
 
-Cipher groups
--------------
+- (in computing) - an algorithm for performing encryption or decryption—a series of well-defined steps that can be followed as a procedure (wikipedia)
+
+
+#### Cipher groups ####
+
 
 Group 1: These cipher suites have perfect forward secrecy (ECDHE) and authenticated encryption (GCM):
 	E.g.: ECDHE-RSA-AES128-GCM-SHA256, ECDHE-RSA-AES256-GCM-SHA384
@@ -626,6 +663,26 @@ CISSP
 
 
 # Intellectual Property Attacks 
+
+
+
+-----
+cntlm
+-----
+
+- Linux/UNIX/MacOS/Windows - a proxy client mainly used to connect to a proxy server in order to allow connectivity not directly allowed
+						   - authenticating HTTP(S) proxy with TCP/IP tunneling and acceleration (man pages)
+						   - last updated in 2013
+						   - various alternatives available: squid, charles proxy (for MacOS)
+
+
+#### Commands ####
+
+cntlm -H -u username -d domainname          # generate hash for password to put into cntlm.conf/cntlm.ini
+
+
+#### NEEDS UPDATES ####
+
 
 
 -------------------------------
@@ -871,6 +928,9 @@ DNS
 # Powercert Animated Videos - https://www.youtube.com/watch?v=mpQZVYPuDGU
 # https://support.dnsimple.com/articles/differences-between-a-cname-alias-url/
 
+
+#### General ####
+
 - Domain Name Service - resolves names to numbers [domain names to IP addresses]
 
 
@@ -878,6 +938,77 @@ DNS
 - The "CNAME" record maps a name to another name. It should only be used when there are no other records on that name.
 - The "ALIAS" record maps a name to another name, but can coexist with other records on that name.
 - The "URL record" redirects the name to the target name using the HTTP 301 status code.
+
+
+
+#### Configure DNS server on Windows ####
+
+1] Go to "Server Manager" dashboard
+
+2] From the right pane, click Add roles and features.
+
+3] On the Before you begin page of the Add Roles and Features Wizard, click Next.
+
+4] On the Select Installation Type page, keep the default selection and click Next.
+
+5] On the Select destination server page, keep the default selection and click Next.
+
+6] On the Select server role page, select DNS Server. The Add features that are required for DNS Server? dialog box is displayed. Click Add Features.
+
+7] On the Select server roles page, DNS Server is now selected. Click Next.
+
+8] On the Select features page, keep the default selection and click Next.
+
+9] On the DNS Server page, click Next.
+
+10] On the Confirm installation selections page, click Install.
+
+11] Installation of DNS server starts. After installation is completed, click Close. Close the Server Manager window.
+
+
+#### Configure client-side DNS on Linux ####
+
+1] Click Applications, select System Tools, and then select Settings.
+
+2] From the Settings window, click Network in the left pane and then click the icon next to ON in the Wired section.
+
+3] In the Wired dialog box, click the IPv4 tab.
+
+4] Select Manual and provide the following details:
+
+- address: 192.168.0.2
+- netmask: 255.255.255.0
+- gateway: 192.168.0.1
+- dns: 192.168.0.1
+
+5] Close settings window
+
+
+#### Query Remote DNS servers on Linux with getent, host and dig ####
+
+getent hosts localhost       			# list the entry for the localhost in the /etc/hosts file
+getent hosts 127.0.0.1 		 			# perform reverse name resolution (i.e. get DNS name associated with an IP address)
+getent passwd | cut -d: -f1 | sort      # list usernames in alphabetical order
+
+host localhost 							# resolve localhost DNS name
+
+dig 127.0.0.1 							# reverse lookup of localhost IP with more detail than host command
+dig 127.0.0.1 							# forward lookup of localhost with more detail than host command
+
+
+# files
+
+/etc/hosts 							# contains manual entries of hostnames and associated IPs
+/etc/resolv.conf 					# stores info about nameservers and DNS servers that lookup will use to resolve names/IPs
+/etc/nsswitch.conf  				# defines the order in which the name resolution is to be performed
+									# order:
+										# files: defines the /etc/hosts file
+										# dns: defines the DNS
+										# myhostname: 
+
+
+
+
 
 
 
@@ -905,8 +1036,19 @@ docker
 
 # sharing namespaces: https://www.guidodiepen.nl/2017/04/accessing-container-contents-from-another-container/
 
-# exposing docker port with bobrik/socat container:
+# exposing docker port with bobrik/socat container (e.g. to make accessible from Jenkins)
 docker run -d -v /var/run/docker.sock:/var/run/docker.sock -p 2376:2375 bobrik/socat TCP4-LISTEN:2375,fork,reuseaddr UNIX-CONNECT:/var/run/docker.sock
+
+
+# publish a port (convention: -p [host_port]:[container_port])
+
+docker run -d -p 80:80 [image] 
+
+
+# run container with proxy settings within container
+
+docker run -d -e HTTP_PROXY=http://localhost:3128/ -e HTTPS_PROXY=http://localhost:3128/ [image]
+
 
 # bobrik/socat container as a service:
 docker service create --mode=global --name socat \
@@ -1460,6 +1602,10 @@ find . -type f -exec grep -iH "rbac" {} \;      # searches for the string "rbac"
 find . -maxdepth 1 -type f -mmin 1440 -name "*.csv.*" -exec rm -f {} \;
 
 
+# search for 1 occurrence of "linux" in all files/subdirectories under "/" using xargs
+find / -type f | xargs -n 1 grep -H linux
+
+
 
 ---------------------------
 firewalld (on CentOS/RHEL7)
@@ -1584,6 +1730,19 @@ getfacl/setfacl
 getfacl /some/path          								# get access control list for target directory
 getfacl /path/to/file 										# get access control list for target file
 setfacl -Rm g:logfsg:r-x d:g:logfsg:r-x /some/path 			# set default ACL for specific directory (recursively) to a particular group (logfsg)
+
+setfacl -b /data/plab.txt                                       # removes all applied ACLs from specified file (or directory)
+setfacl --set u::rwx,g::r-x,o::- plab 							# set ACL for a directory "plab" (750)
+setfacl -d --set u::rwx,u:administrator:rwx,u:matt:rx,g::rx,g:administrator:rx,o::- plab    # set default ACL for dir "plab"
+
+getfacl -d plab | setfacl -d --set-file=- plabnew               # apply ACL from dir "plab" to new dir "plabnew"
+getfacl -R plab > plab.facl 									# put ACL for "plab" into an facl file
+setfacl --restore plab.facl 									# restore ACL for "plab"
+
+
+#### files ####
+
+cat /boot/config-3.10.0-957.1.3.el7.x86_64 | grep _ACL      	# check if kernel supports ACL
 
 
 
@@ -2236,6 +2395,30 @@ iostat
 iostat                     # display the CPU and input/output statistics for devices and partitions
 iostat -c 			       # display only CPU utilization
 
+
+
+
+--
+ip
+--
+
+# Sources
+	# https://linuxize.com/post/linux-ip-command/
+	# https://linux.die.net/man/8/ip
+
+- Linux/UNIX - show/manipulate routing, devices, policy routing and tunnels
+			 - associated Linux package: iproute2
+
+
+#### Commands ####
+
+ip addr               					# shows all IP address associated with the device logged into
+ip route 			  					# shows all network routes available to the device
+ip route add 192.168.0.250 dev eth0  	# add route to a specific host (where dev = physical device, eth0 = network interface, likely main 											# ethernet card)
+ip route del 192.168.0.250 dev eth0  	# delete route to a specific host
+ip route add 192.168.0.0/24 dev eth0    # add network to routing table
+
+ip link set dev {DEVICE} {up|down} 		# bring device online/offline
 
 
 
@@ -3645,6 +3828,42 @@ networking - general
 
 
 
+#### Configure IP on CentOS ####
+
+1] On CentOS gui, go to Applications -> System Tools -> Settings
+2] Click Network in left nav
+3] Click gear icon next to "Wired"
+4] Click IPv4
+5] Configure the following and Apply:
+	- Address: 192.168.0.2
+	- Netmask: 255.255.255.0
+	- Gateway: 192.168.0.250
+
+
+#### Define static routes on Linux ####
+
+vi /etc/sysconfig/network-scripts/route-eth0       # create and vi into file for the specific network interface
+
+- Add the following:
+# begin
+	default 192.168.0.250 dev eth0
+	10.10.0.0/24 via 192.168.0.250 dev eth0
+	172.17.1.0/24 via 192.168.0.250 dev eth0
+# end
+
+	- 192.168.0.250 is the default gateway
+	- 10.10.0.0/24 is one static route
+	- 172.17.1.0/24 is another static route
+
+
+
+#### hosts file ####
+
+/etc/hosts            # file that contains ip to dns name association
+	- format inside file: [ip_address] [hostname]
+	- then the system will be able to recognize the hostname and associate it with the ip_address
+
+
 
 ###### Hubs vs. Switches vs. Routers ######
 # Source: https://www.youtube.com/watch?v=1z0ULvg_pW8
@@ -4083,6 +4302,25 @@ Identify bottlenecks:
 
 
 
+
+----
+ping
+----
+
+- Linux/UNIX/Windows CLI - a simple utility used to check whether a network is available and if a host is reachable.
+
+
+#### Commands ####
+
+ping [ip_address]  				# check if destination is alive [or reachable] or not
+ping -c 5 [ip_address] 			# will ping every second, 5 times total
+
+ping6 [ip_address] 				# ping IPv6 ip_address of the destination
+
+
+
+
+
 ------
 Piston
 ------
@@ -4461,6 +4699,21 @@ Raspberry Pi
 
 
 
+---
+RDP
+---
+
+- remote desktop protocol - a service that gives ability to be connected to remotely (instead of directly on the device)
+
+#### Connect to Windows machine from Linux (CentOS) ####
+
+yum install "@X Window System" xorg-x11-xauth xorg-x11-fonts-* xorg-x11-utils -y
+													# install XWindows/desktop dependencies/components
+yum install freerdp -y      						# install freerdp
+xfreerdp -g 800x600 -u administrator 192.168.0.1 	# connect to Windows machine (note the devices are on the same network so internal IP is used)
+
+
+
 
 
 ---------------------
@@ -4487,6 +4740,24 @@ wall “This system will be rebooted at 11:00 AM.”       # broadcast to users 
 
 
 service vmtoolsd.service stop      # stop the vmtoolsd service (redirects to systemctl)
+
+
+
+
+---------
+redirects
+---------
+
+- Linux/UNIX - e.g. redirecting command output to a file
+
+
+#### Commands ####
+
+find / -iname *.txt > find.txt              # search for all txt files under "/" and redirect findings to a file (ignore case)
+find / -iname *.conf >> find.txt 			# search for all conf files under "/" and append findings to a file (ignore case, create file if not exist)
+list 2>test.txt 							# redirect error output (in this case of non-existent cmd) to test.txt
+
+ls -l /dev | more  							# list all files under /dev and use more pagination (hit spacebar to continue through results)
 
 
 
@@ -4950,6 +5221,35 @@ SSL
 
 
 
+
+----
+stat
+----
+
+- Linux/UNIX - displays detailed information about given files or file systems
+
+
+#### Commands ####
+
+stat /bin/passwd  				# show detailed info on passwd file (inlcuding permissions, size, modification time, etc)
+
+
+
+#### Sample output ####
+
+stat file.txt
+
+  File: file.txt
+  Size: 4030      	Blocks: 8          IO Block: 4096   regular file
+Device: 801h/2049d	Inode: 13633379    Links: 1
+Access: (0644/-rw-r--r--)  Uid: ( 1000/   linuxize)   Gid: ( 1000/   linuxize)
+Access: 2019-11-06 09:52:17.991979701 +0100
+Modify: 2019-11-06 09:52:17.971979713 +0100
+Change: 2019-11-06 09:52:17.971979713 +0100
+ Birth: -
+
+
+
 -------
 Storage
 -------
@@ -5018,6 +5318,79 @@ swap
 # Commands
 
 swapon -s       # shows swap info 
+
+
+
+------
+syslog
+------
+
+- Linux/UNIX - read and/or clear kernel message ring buffer; set console_loglevel
+
+- comprises of two key processes: 'rsyslogd' and 'klogd'.
+	- 'rsyslogd' process is responsible for logging events from user processes. 
+	- 'klogd' process is used for logging events from the kernel.
+
+
+#### /etc/rsyslog.conf - config for rsyslogd ####
+
+- 'Modules' - contains various configuration directives that are loaded when the module is loaded.
+- 'Global directives' - apply to the rsyslogd daemon and start with $. One line contains one global directive.
+- 'Rules' - defines the cooperation of selector and action. A selector filters messages based on facility and priority. An action defines what needs to be done with the filtered messages.
+- 'Templates' - specify the format a user may need. You can also use them for dynamic file name generation.
+- 'Filter conditions' - can use one of the three types of filter conditions: RainerScript-based filters, severity and facility-based selectors, and property-based filters
+- 'Output channels' - defines the type of output a user wants
+
+
+#### Commands ####
+
+ps ax | egrep -i "(syslogd|klogd)"  				# ensure both syslogd and klogd are running
+netstat -anp | grep -i ":514" /etc/rsyslog.conf 	# check whether port 514 configured rsyslog to log events 
+
+/usr/sbin/logrotate             					# the logrotate command
+logrotate -s /var/log/logstatus /etc/logrotate.conf # run logrotate and write status to a file
+/etc/cron.daily/logrotate                           # shell script that executes the logrotate command on a daily basis
+
+
+#### logger commands ####
+
+logger -i -p mail.err "Error Message" 				# log "Error Message" to the /var/log/maillog file with the process ID, user account, and time stamp for the error message
+logger System reboot 								# log System reboot message (for tracking of when system reboots occurred)
+
+
+#### journalctl commands ####
+
+- journalctl - replacement for syslog
+
+journalctl 						# runs/views journal (hit q to go back to command prompt)
+journalctl -b 					# view boot messages only
+journalctl -p crit 				# view the logs filtered based on priority
+journalctl --since=2018-12-01 	# view logs starting from a certain timestamp
+
+
+
+
+#### Files/directories/configs ####
+
+/var/log  						# system log files directory
+	- boot.log
+	- cron
+	- yum.log
+
+/etc/logrotate.conf 			# config file for logrotate daemon
+	- maintains:
+		- when to rotate log files
+		- what to do after rotating old log files
+		- the naming convention for the rotated log files
+
+/etc/logrotate.d/samba 			# log rotation information for the samba package
+
+/etc/logrotate.d 				# contains the log rotation information for installed packages
+
+/var/log/maillog 				# mail log file
+
+/etc/systemd/journald.conf  	# contains the configuration settings for journald
+
 
 
 
@@ -5547,6 +5920,21 @@ az aks get-credentials -n aks-getting-started -g aks-getting-started
 
 
 
+------------
+thread dumps
+------------
+
+# Using jstack - e.g. can be used for capturing a thread dump for:
+
+- during a performance load test
+- after or during an app crash
+
+
+$JAVA_HOME/bin/jstack -l [PID]>thread-dump-$(date +%m-%d_%H%M%S)_`hostname`_`whoami`
+
+
+
+
 -----------
 timedatectl
 -----------
@@ -5606,33 +5994,42 @@ top -u root      # show for root user only
 traceroute
 ----------
 
-- definition: a command-line utility used to show the exact route that is taken by data packets as they travel across the internet to their desiination
-	- helps to find bottlenecks in routes
+- Linux/UNIX - a command-line utility used to show the exact route that is taken by data packets as they travel across the internet to their destination
+			 - helps to find bottlenecks in routes
+			 - vs. ping - tells you general connnectivity to destination and amount of time. traceroute shows more info.
+			 - Linux/MacOS CLI command is "traceroute", Windows is "tracert"
+			 - note: traceroute requires root, tracepath does not
 
-- vs. ping - tells you general connnectivity to destination and amount of time. traceroute shows more info.
-
-- eg. of command usage
-
-	tracert google.com      # Windows cmd (also available in Linux) to show trace to google.com
-
-		- sends 3 data packets to each router on its way to the destination
-			- helps isolate false issues [instead of sending just 1 packet]
-		- router sends back the 3 data packets with info about that router:
-				- number of hops to router
-				- time/duration of round trip
-						- increases with each hop since each hop is further and further, towards destination
-						- network slowness: if theres a big difference between hops, could indicate a problem or the distance between two particular hops/routers is very large
-						- request timed out: indicates problem or
-							- if the trace still goes all the way through and request timed out happens at one hop/router, it could be because that router wasnt configured to return info back to the source
-				- IP of router
 
 - time to live [TTL] - the max number of hops a trace will do [can be modified]
-										 - prevents data packets from traveling endlessly around the internet
-										 	- e.g. misconfigured routers tied together in a loop that receive a trace with no TTL might endlessly pass data packets and slow down a network
+					 - prevents data packets from traveling endlessly around the internet
+					 - e.g. misconfigured routers tied together in a loop that receive a trace with no TTL might endlessly pass data packets and slow down a network
 
-	tracert -h 4 google.com    # set max hops to 4 - if destination is further than 4 hops, destination will not be reached
 
-- Linux/MacOS CLI equivalent is "traceroute"
+#### Commands ####
+
+tracert google.com      # show trace to google.com (Windows)
+
+	- sends 3 data packets to each router on its way to the destination
+		- helps isolate false issues [instead of sending just 1 packet]
+	- router sends back the 3 data packets with info about that router:
+			- number of hops to router
+			- time/duration of round trip
+					- increases with each hop since each hop is further and further, towards destination
+					- network slowness: if theres a big difference between hops, could indicate a problem or the distance between two particular hops/routers is very large
+					- request timed out: indicates problem or
+						- if the trace still goes all the way through and request timed out happens at one hop/router, it could be because that router wasnt configured to return info back to the source
+			- IP of router
+
+tracert -h 4 google.com    # set max hops to 4 - if destination is further than 4 hops, destination will not be reached
+
+
+
+
+traceroute [ip_address]            # trace the path from host to a destination, may take multiple hops
+traceroute6 [ip_address]            # trace the path from host to an IPv6 destination, may take multiple hops
+
+
 
 
 
@@ -5671,7 +6068,7 @@ For both check:
 
 
 
-***Generating Thread Dumps for troubleshooting performance issues***
+***Generating Thread Dumps for troubleshooting performance issues*** (see also thread dumps section)
 
 1.	Identify the process ID (pid) of the tomcat process running JIRA by executing the following command: 
 2.	ps aux | grep jira
@@ -5820,6 +6217,22 @@ ulimit -Sn [number] 		# set soft limit for number of processes for the logged in
 ulimit -Hn [number]         # set hard limit for number of processes for the logged in user
 ulimit -Sn 					# verify soft limit for number of processes for the logged in user
 ulimit -Hn 					# verify hard limit for number of processes for the logged in user
+
+
+
+-----
+umask
+-----
+
+- Linux/UNIX - sets default permissions for newly created files and directories
+
+
+#### Commands ####
+
+umask  				# check umask of current directory
+umask 777 			# set umask of current directory to rwx permission for user, group and other
+
+
 
 
 
