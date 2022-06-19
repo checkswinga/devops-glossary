@@ -398,26 +398,82 @@ bash
 
 #### profiles ####
 
-cat /etc/profile       # shows contents of system level settings and attributes for any user's profile e.g. PS1 setting, default size of command history to display, umask settings, etc.
+/etc/profile           # shows contents of system level settings and attributes for any user's profile e.g. PS1 setting, default size of command history to display, umask settings, etc.
 					   # Note: bash reads /etc/profile if invoked interactively using --login option, or invoked as sh.
 					   # applies to all shells, including bash
 
-cat /etc/bashrc        # contains system-wide definitions for shell functionns and aliases, similar to /etc/profile. Applies only to bash whereas profile applies to ALL shells
+/etc/bashrc        	   # contains system-wide definitions for shell functionns and aliases, similar to /etc/profile. Applies only to bash whereas profile applies to ALL shells
+OR
+/etc/bash.bashrc
 
-cat ~/.bash_profile    # user configuration file in which the user environment can be configured. By default, some configuration is already defined, 
-					   # but it can be changed or altered as per requirements.
+~/.bash_profile   	  	# user configuration file in which the user environment can be configured. By default, some configuration is already defined, 
+					    # but it can be changed or altered as per requirements.
+
+~/.bash_logout - triggered when the user is logging off
 					   
 
+#### login order of execution ####
 
-# scripts - light notes
+~/.bash_profile, ~/.bash_login, ~/.profile - however, if one script, let’s say ~/bash_profile is not found, the next one is executed.
+
+
+#### .bash_logout ####
+
+- if it doesnt exist, you can create it with the contents below:
+
+#BEGIN
+#!/bin/bash
+# ~/.bash_logout: executed by bash(1) when login shell exits.
+echo 'logout'; sleep 2s
+if [ "$SHLVL" = 1 ]; then
+history -c
+cat /dev/null > ~/.bash_history
+[ -x /usr/bin/clear_console ] && /usr/bin/clear_console -q
+fi
+You can use the vi ~/.bash_logout command to create the .bash_logout file.
+#END
+
+
+
+#### scripts - light notes ####
 
 bash ./some_script.sh     # one method used to execute a bash shell script
 ./some_script.sh          # another method to execute a bash shell script
 
 
-# if
+
+#### commands ####
+
+. ~/.bashrc 			  # source env variables from bashrc
+source ~/.bashrc 		  # source env variables from bashrc
+
+
+
+#### if ####
 
 - flags and other stuff - https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
+
+
+
+
+#### functions ####
+
+# Example 1
+
+1] Type the following in a bash shell and hit enter after each line:
+
+function temp ()
+{
+echo "this is a temp function";
+ls -l /etc;
+}
+
+
+2] Run the following:
+
+temp
+
+3] You should see the function execute the "echo" and "ls" statements
 
 
 
@@ -471,7 +527,7 @@ certificates
 ------------
 
 
-### keytool and openssl ###
+#### keytool and openssl ####
 
 # Download and import website certs into JAVA store (eg. google's certs for dl.google.com/android repo):
 
@@ -483,6 +539,7 @@ OR
 keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts
 keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/cacerts
 
+
 # check cacerts store
 
 keytool -list -v -keystore /path/to/cacerts
@@ -491,6 +548,66 @@ keytool -list -v -keystore /path/to/cacerts
 # Remove certificate entry from keystore - from https://docs.oracle.com/cd/E19798-01/821-1751/ghleq/index.html
 
 keytool -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file} -storepass ${keystore.pass}
+
+
+# Create a self-signed certificate
+
+1] rpm -qa | grep -i openssl 							# check if openssl is installed
+
+2] mkdir -p /etc/ssl/private/some_dir   				# create a dir to store the private key in
+
+3] chmod -R 700 /etc/ssl/private/some_dir  				# lock down the permissions to the dir
+
+4] cd /etc/ssl/private/some_dir  						# go to the directory 
+
+5] openssl genrsa -des3 -out something.key 2048 		# generate private key
+
+	- Enter passphrase:
+	- Confirm passphrase: 
+
+6] openssl rsa -in something.key -out something.key  			# remove passphrase from private key
+
+	- Enter passphrase:
+
+
+
+7] openssl req -new -days 3650 -key something.key -out something.csr  	# generate certificate signing request (CSR)
+
+	- Country Name:
+	- State/Province:
+	- City:
+	- Org Name:
+	- Org Unit Name:
+	- Common Name: 
+	- Email Address:
+	- Challenge password: 
+	- Optional company name: 
+
+
+8] openssl x509 -in plab.csr -out something.crt -req -signkey something.key -days 3650  	# generate certificate file (CRT)
+
+
+
+
+
+-------------
+chattr/lsattr
+-------------
+
+- Linux/UNIX - change [and list] the attributes of a file in a directory
+
+
+#### Sources ####
+
+- full list of attributes meanings - https://man7.org/linux/man-pages/man1/chattr.1.html
+
+
+
+#### Commands ####
+
+chattr +i file.txt   				# make file immutable, even from root user (e.g. cannot delete)
+lsattr file.txt  					# list attributes for file.txt
+chattr -i file.txt 					# remove immutability on file.txt
 
 
 
@@ -529,6 +646,8 @@ chmod g+x [file]  		  # grant primary group for current user execute access to f
 chmod 4750 [file] 		  # same as 1st command except implement sticky bit for user (i.e. only the user that owns the file (or root) can execute it)
 
 	- output: -rwsr-xr-x. 1 root root 33544 Dec 13  2019 file
+
+chmod g+ws [file_or_dir]  # set sticky bit at group level (sgid) for file or dir
 
 chgrp adm file1.txt 	  # change group for file1.txt to adm
 chown adm file1.txt 	  # change owner for file1.txt to adm
@@ -797,6 +916,83 @@ crontab -e 							   # Edit crontab for current user
 
 
 
+----
+CUPS
+----
+
+- Linux/UNIX - Common UNIX Printing System - acts as a print spooler, scheduler, print job manager, and can store information for numerous local or network printers.
+
+
+#### Commands ####
+
+/etc/init.d/cups status  			# check status of cups service (need sudo or run as root)
+service cups restart  				# restart cups service (especially if any config updates - need sudo or run as root)
+usermod -aG lpadmin [user]  		# add user to lpadmin group so that you can perform admin tasks on the cups user interface
+
+lp -d [printer_name] -o media=legal -o sides=two-sided-long-edge /etc/cups/cupsd.conf       # print cupsd.conf file contents
+lpq -P [printer_name] [user] 		# monitor printer queue
+cancel -a [printer_name]  				# cancel all jobs in the printer queue
+
+
+#### Files/configs ####
+
+/etc/cups/cupsd.conf  				# cups configuration 
+/var/log/cups/error_log 			# contains errors for printers
+/var/log/cups/access_log 			# access log for printers via 
+
+
+#### Add printer through cups web interface ####
+
+1a] Update /etc/cups/cupsd.conf under "Only listen for connections from the local machine" section with the following:
+
+Listen [machine_IP]:631
+
+
+1b] Ensure /etc/cups/cupsd.conf has "Web Interface setting" set to "Yes"
+
+
+2] Restart cups service
+
+service cups restart
+
+
+3] Go to http://localhost:631 in a browser window and perform the following:
+
+	- click Administration tab
+	- click Add Printers under Printers section
+	- Enter user and password to continue [either root or different user if they are part of lpadmin group]
+	- Choose from list of printers
+	- Type the following:
+		- Connection: http://localhost:631/[printer_name]
+		- Name:
+		- Location:
+	- Select "Share this printer" checkbox, and then click Continue
+	- Select printer model
+	- Go through default options for the printer and continue to see successful setup of printer
+	- You will see maintenance and administration page now published for this [and other] printers
+
+
+4] Try printing a page
+
+lp -d [printer_name] -o media=legal -o sides=two-sided-long-edge /etc/cups/cupsd.conf       # print cupsd.conf file contents
+
+
+5] Monitor print queue
+
+lpq -P [printer_name] [user]
+
+
+6] From the maintenance dropdown in the UI, you can also:
+
+- Print Test Page
+- Pause Printer
+- Reject Jobs
+- Move All Jobs
+- Cancel All Jobs
+
+
+
+
 ---------
 curl/wget
 ---------
@@ -837,6 +1033,20 @@ time curl <URL>
 #### References and tools ####
 
 https://reqbin.com/curl - excellent site for testing different curl commands (e.g. with POST, GET, POST JSON, PUT, DELETE, etc)
+
+
+
+---
+cut
+---
+
+- Linux/UNIX - Print selected parts of lines from a file to standard output
+
+
+#### Commands ####
+
+cut -d: -f 1 /etc/passwd 			# display only the first column of the passwd file
+
 
 
 
@@ -894,6 +1104,28 @@ deno
 
 
 
+---------
+denyhosts
+---------
+
+- Linux - Python-based firewall that monitors SSH and can deny intruding IPs from attempting to connect
+
+
+#### Commands ####
+
+apt-get install denyhosts  				# install denyhosts on Ubuntu (need root)
+/etc/init.d/denyhosts restart  			# restart denyhosts service (need root)
+systemctl status denyhosts  			# check status of denyhosts service
+
+
+
+#### Files and configs ####
+
+/etc/hosts.allow  						# config file for IPs to allow
+/etc/hosts.deny  						# config file for IPs to deny
+
+
+
 ----
 DHCP
 ----
@@ -916,6 +1148,20 @@ DHCP
 - reservation - ensures that a specific computer or device [identified by its MAC address] will always be given the same IP address
 						  - can configure this in DHCP settings on a DHCP server
 						  - typically given to special devices such as network printers, servers, routers, etc.
+
+
+
+-----
+dmesg
+-----
+
+- Linux/UNIX - print or control the kernel ring buffer
+
+
+#### Commands ####
+
+dmesg  						# displays all the kernel messages
+dmesg | grep -i memory 		# check amount of physical memory on system
 
 
 
@@ -1281,6 +1527,48 @@ docker compose up          # will run all of the container images that were buil
 
 
 
+---------------------
+environment variables
+---------------------
+
+- Linux/UNIX - name/value pair settings that apply at the user or OS level
+
+
+#### Command examples ####
+
+printenv            # prints full or partial environment.
+printenv HOSTNAME   # print value of single env variable (HOSTNAME in this case)
+env 				# prints all exported environment.
+
+set 				# prints the name and value of each shell variable available. Can also be parameterized to set or change variables
+unset VAR  			# unset an env variable 
+
+export VAR 								# export a local variable and make an env variable
+export -n VAR 							# convert env variable to a local variable
+export -p  								# view all exported environment variables for current shell
+export PATH=$PATH:/usr/local/bin 		# add a path to PATH in order to easily find executables
+
+echo $VAR 			# show the value of a variable
+
+source ~/.bashrc    # set environment variables configured in .bashrc
+
+
+
+
+------
+expand
+------
+
+- Linux/UNIX - read a file but convert tabs to spaces
+
+expand file.txt  			 					# show content of file.txt converting any tabs to spaces
+expand --tab=20 newfile.txt 					# increase the number of spaces from 1 to 20 for each tab found
+expand --tab=20 newfile.txt > newfile1.txt 		# redirect the output into a file
+
+unexpand newfile1.txt  							# convert the spaces back to tabs from a file which has been expanded
+
+
+
 ------------------------------
 fail2ban - for blocking access
 ------------------------------
@@ -1536,12 +1824,15 @@ lsblk -f                       # verify the partition type
 #### Command options ####
 
 # lsblk
+
 lsblk -a                      # include empty devices in the list
 lsblk -d                      # show only the main devices, e.g. /dev/sdb, but don't show /dev/sdb1 and sdb2
 lsblk -m                      # show ownerm group and mode of each device
 lsblk -o NAME,SIZE            # show only name and partition size of each device
 
+
 # blkid
+
 blkid -i /dev/sdb1            # display I/O limits on /dev/sdb1
 blkid -p /dev/sdb1            # show additional information about the /dev/sdb1 block device
 blkid -o list                 
@@ -1549,8 +1840,32 @@ blkid -o list
 cat /proc/mounts 			  # show filesystem type and mount points of each block device
 
 
-# df
-df -h                         # show general info about mounted filesystems (e.g. available and used space)
+# debugfs - file system debugger
+
+debugfs /dev/sdb1 			  # open debugfs prompt for checking /dev/sdb1
+	? 						  # see list of commands that can be used
+	q  						  # quit debugfs command line
+
+
+# df - file system disk usage 
+
+df -h                         # show general info about mounted filesystems (e.g. available and used space in MB)
+df -i  						  # display info on inodes (can combine with h flag as well)
+df . 						  # determine partition of current working directory
+
+
+# du - file space usage
+
+du  						  # check disk usage of every file and directory within current working directory
+du -ah [directory]			  # get the size of the directory in KB, MB, or GB
+du -mh [directory] 			  # summary of disk usage of directories and subdirectories in Megabytes (MB)
+du -sh [directory]			  # display total size of directory
+
+
+# dumpe2fs - dump ext2/ext3/ext4 file system information
+
+dumpe2fs -h /dev/sdb1 		  # view the super block and blocks group information of an extended filesystem
+
 
 
 # fsck - file system checker for errors, can use to repair as well
@@ -1562,6 +1877,7 @@ fsck -M /dev/sdb1             # check mounted file system - not recommended
 ls /sbin/fsck*                # check for fs specific command options to run with fsck
 fsck -t [fs_type] [fs] 		  # check specific fs type
 fsck /dev/sdb1 -f             # force fs check and generate report
+fsck -fv /dev/sdb1  		  # get verbose output
 
 
 # tune2fs - allows the system administrator to adjust various tunable filesystem parameters on Linux ext2, ext3, or ext4 filesystems.
@@ -1572,6 +1888,8 @@ tune2fs -c 20 /dev/sdb1                  # change max number of times fs can be 
 tune2fs -l /dev/sdb1 | grep -i name      # see volume label
 tune2fs -l /dev/sdb1 | grep -i check     # when was fs was checked last
 tune2fs -i 5d /dev/sdb1                  # check fs every 5 days
+tune2fs -i 0 -c 0 /dev/sdb1 			 # switch off the maximum mount count and also perform interval tests on /dev/sdb1 (0 seconds between intervals)
+tune2fs -L Main /dev/sdb1 				 # create volume label "Main" for /dev/sdb1
 
 
 # e2label - set a label for a volume
@@ -1592,18 +1910,33 @@ find
 find . | grep jaxb2-plugin | grep 0.8.1 | grep jar
 
 
-# using find with grep
+# grep - using find with grep
 
 find . -type f -exec grep -iH "rbac" {} \;      # searches for the string "rbac" in current directory and all subdirectories.
 												# using -type flag so the search doesn't print unnecessary "this is a directory" output
 										        # It will also print name of the file matching the string, remove -H flag if this is not necessary
 
-# using find to search for all csv files in current folder (without going into subfolders) and removing them if they are older than 1 day (1440 minutes = 1 day)
+# exec rm files - using find to search for all csv files in current folder (without going into subfolders) and removing them if they are older than 1 day (1440 minutes = 1 day)
+
 find . -maxdepth 1 -type f -mmin 1440 -name "*.csv.*" -exec rm -f {} \;
 
 
 # search for 1 occurrence of "linux" in all files/subdirectories under "/" using xargs
+
 find / -type f | xargs -n 1 grep -H linux
+
+
+# search for all files which have sticky bit set at user level (SUID) owned by root. Also command for searching SGID and for both at the same time.
+
+find / -user root -perm -4000 -print
+find / -group root -perm -2000 -print
+find / -perm -4000 -o -perm -2000 -print
+
+
+# print the symbolic and octal values of all files/dirs within current working dir
+
+find . -printf “%M %m %f\n”
+
 
 
 
@@ -1712,6 +2045,51 @@ Fortify
 
 # upload command:
 ./fortifyclient -url https://fortify_url.com/ssc -authtoken xxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxx uploadFPR -file ../something.fpr -project "project_name" -version "latest"
+
+
+
+---
+fmt
+---
+
+- Linux/UNIX - simple optimal text formatter. Reformat each paragraph in the FILE(s), writing to standard output
+
+
+
+#### Commands ####
+
+fmt -u newfile1.txt  			# one space between words, two after sentences
+
+
+
+----
+free
+----
+
+- Linux/UNIX - Display amount of free and used memory in the system
+
+
+#### Commands ####
+
+free -m 				# memory usage in MB
+free -g 4  				# show mem usage in GB, update every 4 seconds
+free -l 				# show the high and low mem usage statistics 
+
+
+
+
+-----
+fuser
+-----
+
+- Linux/UNIX -  displays the list of processes that are using files and sockets
+
+
+#### Commands ####
+
+fuser -all  			# displays for all users
+fuser . 				# display only for processes from the current directory
+fuser -v ./ 			# with more detail
 
 
 
@@ -2006,6 +2384,54 @@ Github
 
 
 
+
+---
+gpg
+---
+
+- Linux/UNIX - GNU Privacy Guard - encryption and signing tool
+
+# Sources:
+# - boson.com CompTIA Linux+ labs
+# - http://blog.chapagain.com.np/gpg-revoking-your-public-key-and-notifiying-key-server/
+
+#### Commands ####
+
+gpg --list-keys 					# list all keys from keyring
+
+gpg --gen-key 						# generate pgp key pair [run with sudo or as root]
+	- options
+		- 1] RSA and RSA (default)
+		- 2] DSA and Elgamal
+		- 3] DSA [sign only]
+		- 4] RSA [sign only]
+	- key size: 2048 is default
+	- key validity: 0 is default [infinite years]
+	- Real Name: [type in a name for the key]
+	- Email address: [type in email address]
+	- Comments: [type in comments for key]
+	- type 'o' to confirm
+	- Enter passphrase
+
+gpg --fingerprint [Real Name]   								 # check fingerprint, public key and UID of pgp key
+gpg --export-secret-keys --armor admin > admin_private.asc 		 # take a backup of the key
+gpg --export --armor admin > admin-pub.asc  					 # put public key into file to share
+
+gpg --output revoke.asc --gen-revoke admin  					 # revoke a pgp key
+gpg --import revoke.asc 										 # import pgp revocation certificate into keyring
+
+gpg --keyserver pgp.something.com --search-keys admin  			 # search for pgp public key "admin" on remote server, which has been revoked locally
+gpg --keyserver pgp.something.com --send-keys key-ID 			 # revoke pgp key on the remote server
+ 
+
+
+
+#### files, dirs and configs ####
+
+~/.gnupg/
+
+
+
 ---
 GPT
 ---
@@ -2181,6 +2607,86 @@ class GroovyTut {
 
 groovy groovytut.groovy       # execute groovytut.groovy script
 
+
+
+
+----
+grub
+----
+
+- Linux/UNIX - complete program for loading and managing the boot process
+
+
+#### Commands ####
+
+update-grub  						# update grub (after config update). Run with root.
+
+
+#### files and configs ####
+
+/etc/default/grub 					# contains boot settings. NOTE: CRITICAL file - any typos will cause system not to boot
+	- GRUB_DEFAULT=0 				# value of 0 makes it so current OS is the one to boot to upon system restart on a dual boot system
+	- GRUB_TIMEOUT=5  				# means boot up will wait 5 seconds before booting this OS
+
+	- GRUB_DEFAULT=saved
+	- GRUB_SAVEDEFAULT=true  		# means system will boot to last OS in the list. Both of these settings needs to be adjacent to each other in file
+
+/boot/grub  						# grub boot directory
+/boot/grub/grub.cfg 				# config that gets updated when you reload grub from changes made in /etc/default/grub
+
+
+
+--------------------
+gzip/bzip/xz and tar
+--------------------
+
+- Linux/UNIX - compress, archive or expand files
+
+
+#### Commands ####
+
+# gzip
+
+gzip [file_or_dir] 					# create zip archive for file(s) or directory. Can include as many files as gzip can handle
+gzip -l [file_or_dir].gz			# list files within gzip archive 
+gzip -d [file_or_dir].gz 			# extract gzip file
+gzip -9 [file_or_dir] 				# use highest compression. 0-9, 9 being the highest but the slowest to complete
+
+
+# bzip
+bzip2 [file_or_dir]                 # all gzip commands above work the same using bzip2
+
+
+# xz - better compression
+
+xz [file_or_dir]                 # all gzip commands above work the same using xz
+
+
+# tar - tape archiver
+
+tar czvf something.tar [file_or_dir]    	# create tar file and package in files and/or directories
+tar czvf something.tar.gz [file_or_dir] 	# create tar gzip file and package in files and/or directories
+tar xzvf something.tar.gz 					# decompress tar.gz
+
+tar cjvf something.tar.bz2 [file_or_dir]  	# with j flag since we're creating a bz2 (bzip) 
+tar tjvf something.tar.bz2 [file_or_dir]    # view contents of archive
+
+tar cJvf something.tar.xz [file_or_dir]  	# create tar.xz archive (J flag)
+
+
+
+----
+head
+----
+
+- Linux/UNIX - show certain number of lines from a file (default: first 10 lines)
+
+
+#### Commands ####
+
+head /etc/yum.conf  					# show first 10 lines in yum.conf
+head -n20 /etc/yum.conf 				# show first 20 lines in yum.conf
+head -n5 /etc/yum.conf /etc/passwd 		# show first 5 lines in yum.conf and then passwd file
 
 
 
@@ -2467,6 +2973,9 @@ sudo iptables -A INPUT -s 116.0.0.0/8 -j DROP
 iptables -A INPUT -m state --state NEW -m tcp -p tcp --dport 5667 -j ACCEPT
 service iptables save
 
+# set rule for allowing incoming connections to port 22 from specific ip range
+iptables -A INPUT -s 192.168.0.0/24 -p tcp --dport 22 -j ACCEPT
+
 
 
 -----
@@ -2554,6 +3063,23 @@ Jenkins
 	- Paste the following script with your secret value into the console and click Run:
 		- println hudson.util.Secret.decrypt("{AQAAABAAAAAwJABqfeWZl6KviKrG/uq1JcSwL1ru1/82OSGQkS3JreDRp54r7fBoAwEiO/+D8uCASaD1UTH0GAyet8z+YZIzZQ==}")
 	- you will see the decrypted value printed if it ran successfully
+
+
+
+----
+join
+----
+
+- Linux/UNIX - join lines of two files on a common field
+
+
+#### Commands ####
+
+join -j2 file1.txt file2.txt 			# join common fields from two files together
+
+
+##### NEEDS MORE EXPLANATION/CONTENT #####
+
 
 
 
@@ -3365,7 +3891,8 @@ ls
 
 ls [!Aa]*         # list all files that don't start with an 'a' or 'A'
 ls D[eo]*         # list all files that start with 'D' and with second letter 'e' or 'o'
-
+ls -la 			  # list all files (with details) in current dir + files/dirs with a '.' in front of them
+ls -latr 		  # same as above except sort by time (latest will show up at bottom of result)
 
 
 
@@ -3724,12 +4251,22 @@ nc -vv 127.0.0.1 1234
 netstat
 -------
 
-netstat -tupln   # display network connections, tcp and udp, show which processes are using which sockets (need root for p option), -l is for listening sockets
+netstat -tupln    # display network connections, tcp and udp, show which processes are using which sockets (need root for p option), -l is for listening sockets
+netstat -npl 	  # check both internet connections and processes running on ports not connecting externally
+netstat --tcp -n  # display the active TCP connections
+
+
+#### flags ####
 
 -n - show only numbers, not names [i.e. DNS names, which takes time to calculate when not using the -n switch]
 -a - show active connections, where TCP and UDP are listening
 -b - show which program is creating the connection [e.g. you'll see something like chrome.exe]
 -f - shows FQDN in foreign address column
+-s - show protocol statistics (usage for tcp, udp, etc.)
+-t - show active TCP connections
+-u - show active UDP connections
+-w - show active raw connections
+-x - show active UNIX socket connections
 -? - show all options
 
 
@@ -3998,11 +4535,45 @@ nice [command]
 # start process with a specific nice value (2 in this case)
 nice -n 2 [command]
 
-# change nice value of a running process
+# change nice value of a running/active process
 renice -n 2 -p [pid]
 
 # change nice value for all running processes for a user
 renice -n 2 -u [user] 
+
+
+
+--
+nl
+--
+
+- Linux/UNIX - number the lines in a file and print to stdout
+
+
+#### Commands ####
+
+nl -ba /etc/yum.conf  			# number the blank lines as well as non-blank lines in a file
+
+
+
+
+
+
+
+----
+nmap
+----
+
+- Linux/UNIX - Network exploration tool and security / port scanner
+
+
+#### Commands ####
+
+yum install nmap 			# install nmap [CentOS]
+nmap 192.168.0.1 			# shows the open ports with the protocols for the target IP
+nmap -O 192.168.0.1 		# also show system info on the target IP
+nmap -sP 192.168.0.0/24  	# scan a subnet
+
 
 
 
@@ -4077,6 +4648,64 @@ npm config set strict-ssl false
 # Remove all node_modules folders on an FS in multiple locations
 npx npkill
 
+
+
+--
+od
+--
+
+- Linux/UNIX - used to convert the content of input in different formats (octal format is the default format)
+
+
+#### Commands ####
+
+od -t c file.txt 				# displays the ASCII characters
+
+
+
+
+---
+PAM
+---
+
+- Linux/UNIX - Pluggable Authentication Modules - a mechanism to integrate multiple low-level authentication schemes into a high-level API (wiki)
+
+
+#### Commands ####
+
+ldd /usr/sbin/sshd | grep libpam.so   				# check to see if a package is PAM-aware, such as sshd in this case
+
+
+
+#### Files and configs ####
+
+/etc/pam.conf
+/etc/pam.d/ 						# where all PAM rules are configured for different programs
+/lib/libpam.so.*
+/usr/lib/libpam.so.*
+
+
+#### How to deny root SSH access ####
+
+1] Add to pam.conf the following line:
+auth required pam_listfile.so \
+        onerr=succeed  item=user  sense=deny  file=/etc/ssh/deniedusers
+
+2] Add to /etc/pam.d/login the following line:
+auth required pam_listfile.so \
+        onerr=succeed  item=user  sense=deny  file=/etc/ssh/deniedusers
+
+
+3] Add to /etc/ssh/deniedusers the following:
+root
+
+
+4] Lock down deniedusers file:
+
+chmod 600 /etc/ssh/deniedusers
+
+
+5] Test attempt to ssh to root to the target server from another machine
 
 
 
@@ -4162,6 +4791,20 @@ ls /dev/disk/by-id       # determine model and serial number of a disk
 
 
 
+-----
+paste
+-----
+
+- Linux/UNIX - join files horizontally (parallel merging) by outputting lines consisting of lines from each file specified,
+			   separated by tab as delimiter, to the standard output
+
+
+#### commands ####
+
+paste file1.txt file2.txt 			# print contents of files side by side (vertically)
+paste -s fruits.txt rates.txt 		# print contents of files one after another (horizontally)
+
+
 
 ----
 perf
@@ -4205,6 +4848,8 @@ performance analysis
 
 dmesg | tail    		# shows kernel errors
 free -m [or -g]			# memory usage
+free -g 4  				# show mem usage every 4 seconds
+free -l 				# show the high and low mem usage statistics 
 iostat -xz 1			# disk I/O
 mpstat -P ALL 1			# CPU balance
 netstat -s 				# shows statistics by protocol (network)
@@ -4222,6 +4867,11 @@ vmstat 1				# overall stats by time
 iosnoop					# disk I/O events w/ latency
 btrfsdist				# latency histogram
 zfsslower 1			# file system latency is a better pain indicator than disk latency
+
+
+# BPF (Berkeley Packet Filter)
+runqlat -p <PID> 10 1						 # show queue latency, 10 lines, update every second
+runqlat --pidnss -m 						 # show per namespace
 
 
 # Namespaces - limit what you can see, whereas cgroups limit what you can use
@@ -4288,9 +4938,18 @@ funccount '*ovl*'							 # show kernel function calls (overlay)
 kprobe -s 'p:ovl_fill_merge ctx=%di name=+0(%si):string'   # look into more
 
 
-# BPF (Berkeley Packet Filter)
-runqlat -p <PID> 10 1						 # show queue latency, 10 lines, update every second
-runqlat --pidnss -m 						 # show per namespace
+
+# /proc directory 
+
+ls -l /proc  					# see all running processes 
+ls | grep '[0-9]' | wc -l  		# count the number of processes (with PIDs as names only)
+echo $$  						# check process ID of current shell
+
+cd /proc/[PID] 				 	# go into a specific process' directory
+	cat stat 					# provides process info
+	cat status 					# provides process info, more human readable
+	cat maps  					# view the virtual regions being used
+
 
 
 #### Summary ####
@@ -4299,6 +4958,23 @@ Identify bottlenecks:
 1. in the host vs. container, using system metrics
 2. in application code on contaienrs, using CPU flame graphs
 3. deeper in the kernel, using tracing tools
+
+
+
+----
+perl
+----
+
+- Practical Extraction and Report Language
+
+- Linux/UNIX - optimized for scanning arbitrary text files, extracting information from those text files, and printing reports based on that information
+
+- Note: perl is far more comprehensive than notes shown here
+
+
+#### Commands ####
+
+perl -p -i -e 's/ip1/ip2/g' file.txt 			# use perl like sed to replace globally. In this case, using ip1 and ip2 since sed won't work for doing IP address replacement
 
 
 
@@ -4336,9 +5012,31 @@ Piston
 ### To be filled in with more details at a later date if a useful place to apply it is found ###
 
 
+
 --
-ps
+pr
 --
+
+- Linux/UNIX - convert a text file into a more appropriately formatted file with the headers, pagination, and column fills
+
+
+#### Commands ####
+
+pr -d /etc/yum.conf 			# add double space between lines
+
+
+---------
+ps/pstree
+---------
+
+- Linux/UNIX - displays processes running
+			 - pstree will display in a tree-like structure
+
+
+#### Commands ####
+
+
+# ps
 
 ps eww -p [PID]          		# Check full process args on Linux
 ps -auwwwx | grep [anything]    # Alternative to above
@@ -4346,10 +5044,36 @@ ps -auwwwx | grep [anything]    # Alternative to above
 									# -u: Lists the user who is running the process
 									# -x: Lists all running processes even if they are not part of the current terminal session
 									# grep for specific criteria
+
+ps -A   						# view all active processes (similar to -e flag)
 ps -ef                          # full format listing of all running processes the user has access to
-ps f 1                          # list init process
+ps -e --forest  				# check how processes are linked with each other
+ps f 1                          # list init process. NOTE: can also check multiple PIDs in the same line [ps f 1 115 2616]
+ps -fu root 					# check processes for specific user (root in this case)
 
 ps -eo pcpu,pid,user | sort -k 1 -r | head -10  		# show top 10 processes using the most CPU on a system
+ps -eo comm,etime,user | grep [proc_command] 			# display the execution time of a process
+
+ps -l 							# show detailed info about running processes, including priority
+
+ps -p 15457 -o pid,ppid,fgroup  						# show pid, ppid and FS group for a specific process
+
+ps aux | sort -k 6 -n | more 							# sort process list by the 6th field, numerically. au means in BSD format
+
+ps -fL -C [proc_command] 								# display all the process threads of a process
+
+ps -p 15457 -o comm=				  					# display the process name by using its PID
+
+
+# pstree
+
+pstree 							# display all processes in tree-like structure
+pstree -a 						# view the list of arguments for the processes in the process tree
+pstree -p 						# display the PID for each process in the process tree
+pstree -np  					# sort the child processes under the parent PID in the process tree
+pstree -u  						# display the uid changes of a process in the process tree
+pstree -H 15457 				# highlight the process in the process tree
+
 
 
 
@@ -4779,6 +5503,10 @@ References
 - https://www.youtube.com/watch?v=uEVmD6n8Il0 - NodeJS deployment strategies [Fireship]
 
 
+# Info
+- https://serverfault.com/questions/660160/openssh-difference-between-internal-sftp-and-sftp-server  # Explanation on diff between internal-sftp and sftp-server
+
+
 
 -----
 Regex
@@ -5072,12 +5800,115 @@ sed -e '/^$/ d'  -e 's/Fedora/Linux/g'  yumtest.conf     # Remove all blank line
 
 
 
+--------
+sendmail
+--------
+
+- Linux/UNIX - widely used mail transport agent (MTA). sends mail from one machine to another.
+
+
+#### Commands ####
+
+yum install -y sendmail sendmail-cf
+
+alternatives --config mta  					# shows menu to switch from postfix (default mail client) to different one
+
+make all -C /etc/mail/ 						# run anytime there's a change to sendmail.cf that needs to be rebuilt into the .cf file
+
+systemctl restart sendmail 					# restart sendmail service
+
+newaliases 									# load new aliases from /etc/aliases so sendmail is aware of them
+
+mail 										# check current user's mail
+mailq 										# check current user's mail queue
+mail -s "Test " admin@practicelabs.com      # create an email from command prompt, send to the specified address.
+											# -s flag specifies subject line
+
+
+#### Files/directories/configs ####
+
+/etc/mail  								# dir containing databases and configs for mail service
+
+/etc/mail/sendmail.cf 					# config file for sendmail-cf. Should not be edited
+
+/etc/mail/sendmail.mc 					# editable config for sendmail, can be used to rebuild sendmail.cf
+
+/etc/aliases 							# specifies which account mail sent to an alias should really be delivered to.
+										# eg. mail to the ftp account would be sent to root's mailbox if this config is in there [ftp: root].
+
+$HOME/.forward   						# contains addresses to forward mail to if the account receives mail
+	- \root, admin@practicelabs.com 	# eg. this entry in the file would save mail to root's home and then forward to admin@practicelabs.com
+
+
+
+
+-------
+SELinux
+-------
+
+- Linux/UNIX - provides general support for the enforcement of many kinds of mandatory access control policies, 
+			   including those based on the concepts of Type Enforcement (reg trademark), Role-Based Access Control, and Multi-Level Security
+
+- three different modes
+	Enforcing: If an event occurs against the defined policy of SELinux, then the event is blocked and logged.
+	Permissive: If an event occurs against the defined policy of SELinux, then the event is not blocked, however it is logged.
+	Disabled: If an event occurs against the defined policy of SELinux, then the event is neither blocked nor logged.
+
+- security context on object [ls -Z]
+	SELinux user
+	Role
+	Type
+	Level
+
+	- eg. ls -Z on a file might yield the below [SELinux user in this case is system_u]
+		-rw------- root root system_u:object_r:admin_home_t:s0 file.txt
+
+
+#### policies ####
+
+- When a user is mapped to "unconfined_u", SELinux does not block access for the user.
+
+
+
+#### Commands ####
+
+getenforce 			# check current status of SELinux policies enforcement
+sestatus 			# get an overview of the SELinux configuration
+setenforce 0 		# set SELinux to permissive mode [1 = Enforcing]
+semanage login -l	# view a list of mappings between SELinux and Linux user accounts
+
+ls -Z [file] 				# check SELinux security context of file
+ps -eZ | grep something  	# check SELinux security context for a process
+id -Z  						# check SELinux security context for current user
+
+
+#### Files and configs ####
+
+/etc/selinux/config  		# config file for SELinux
+
+
+
+#### supporting tools ####
+
+yum install policycoreutils-gui  			# install policycoreutils GUI to make managing SELinux easier
+											# select "SELinux Management" from Linux GUI to use tool after installing
+
+
+#### NEEDS MORE CONTENT FOR EXPLANATION ON POLICIES ####
+
+
+
+
 ----
 sftp
 ----
 
-# SFTP debug:
-sftp -vv account@server
+- Linux/UNIX - secure file transfer program
+
+
+#### Commands ####
+
+sftp -vv account@server   			# sftp to server and debug while connecting
 
 
 
@@ -5121,39 +5952,119 @@ smtp
 
 
 
+-----
+split
+-----
 
-------------------------------------------------------
-ssh public/private key generation for passwordless SSH
-------------------------------------------------------
+- Linux/UNIX - divide the contents of a file into multiple files
+
+
+#### Commands ####
+
+split -2 yum.conf splityum 				# split yum.conf into multiple files, 2 lines a file
+
+
+
+
+
+--------
+ssh/sshd
+--------
+
+- Linux/UNIX - ssh - program for logging into a remote machine and for executing commands on a remote machine
+- Linux/UNIX - sshd - OpenSSH server daemon - listens for connections from clients (logins)
+
+
+#### Commands ####
+
+rpm -qa | grep openssh  			# check if openssh package is installed
+yum install openssh   				# install it if required
+systemctl status sshd  				# check if service is running or not
+
+iptables -A INPUT -s 192.168.0.0/24 -p tcp --dport 22 -j ACCEPT 		# set rule for allowing incoming connections to port 22 from specific ip range
+
+
+
+#### Files and configs ####
+
+/etc/ssh/ssh_config  				# ssh client configuration
+/etc/ssh/sshd_config  				# configure ssh daemon settings such as:
+									# permitting root login, keys, max login retries, users and groups to allow, ListenAddress, etc
+
+
+
+#### ssh public/private key generation for passwordless SSH ####
 
 1) on the client side, create an ssh public/private key pair:
-	ssh-keygen -t rsa -b 4096
+	ssh-keygen -t rsa -b 4096       # can use dsa encryption as well
 	# do not enter a passphrase, just hit enter
 
-2) Copy the contents of id_rsa.pub and ssh to the target server, cd to the users .ssh folder, edit authorized_keys, and paste the pub key entry into the file and save. You should now be able to ssh from the client to the server without a password.
+2) Copy the contents of id_rsa.pub and ssh to the target server
 
-3) You can also try updating authorized_keys from the client like so:
+3) cd to the users .ssh folder, edit authorized_keys, and paste the pub key entry into the file and save. You should now be able to ssh from the client to the server without a password.
+
+4) You can also try updating authorized_keys from the client like so:
 	ssh-copy-id -i ~/.ssh/id_rsa.pub user@host
 	
+5) notes:
+	- ssh directory permissions - 700
+	- authorized_keys file permission - 600
 
-# SSH tunneling - requires SSH server to be set up on target machine
+
+
+
+#### SSH tunneling - requires SSH server to be set up on target machine ####
 # source: https://www.youtube.com/watch?v=AtuAdk4MwWw&list=WL&index=9
 
 # tunnel from local machine to a remote machine
 ssh -L <port_to_expose>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
 
 
-# create SOCKS proxy
+
+
+#### create SOCKS proxy ####
 ssh -D <any_port> <dest_user>@<destination_SSH_server_IP>
 
 	# after running the above, you can for example set this in your LAN settings in your browser, enter the details in the SOCKS proxy section, and any site you visit will be forwarded through the
 	# SSH tunnel to the destination specified
 
 
-# Set up a SSH tunnel from the target server for a "local" PC or server to access
+
+#### Set up a SSH tunnel from the target server for a "local" PC or server to access ####
 ssh -R <any_port>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
 
 	# enter the remote server's IP and any_port in your local browser via remote desktop and you'll be able to remote into the target machine
+
+
+#### Set up chroot jail ####
+
+- A chroot jail helps you to isolate a process and its children from the rest of the system
+- You can limit a process to run in its own confined space where the process does not have access to the remaining system
+- The root user, however, can break out of the chroot jail.
+
+
+1] Add a specific user to group_ID [whichever group you want to configure]:
+
+usermod -g plabFin -s /bin/false roger
+
+
+2] Edit /etc/ssh/sshd_config as follows:
+
+- change:
+	From: Subsystem sftp /usr/libexec/openssh/sftp-server
+	To: Subsystem sftp internal-sftp
+
+- Add to the end of file:
+	Match Group [group_ID]
+	X11Forwarding no
+	AllowTcpForwarding no
+	ChrootDirectory [choose_any_directory]
+	ForceCommand internal-sftp
+
+3] Restart sshd service
+
+systemctl restart sshd
+
 
 
 
@@ -5315,9 +6226,62 @@ swap
 - the primary function of swap space is to substitute disk space for RAM memory when real RAM fills up and more space is needed.
 
 
-# Commands
+#### Commands ####
 
-swapon -s       # shows swap info 
+swapon -s       			# shows swap info 
+swapoff -a && swapon -a  	# clear swap space
+
+
+
+----
+sync
+----
+
+- Linux/UNIX - synchronize data on disk with memory. Clears the filesystem buffer.
+
+
+#### Commands ####
+
+sync; echo 1 > /proc/sys/vm/drop_caches 			# clears the PageCache 
+sync; echo 2 > /proc/sys/vm/drop_caches  			# clears dentries and inodes
+sync; echo 3 > /proc/sys/vm/drop_caches 			# clears PageCache, dentries and inodes
+
+#### Notes ####
+
+- "echo 1" clears the PageCache
+- "echo 2" clears the dentries and inodes
+- Avoid using the "echo 3" command as it clears PageCache, dentries, and inodes.
+
+- dentry - [Linux] in-memory representation of a directory entry
+
+
+
+------
+sysctl
+------
+
+- Linux/UNIX - configure kernel parameters at runtime
+
+
+#### Commands ####
+
+# Set OOM killer
+sysctl vm.panic_on_oom=1
+sysctl kernel.panic=5
+echo "vm.panic_on_oom=1" >> /etc/sysctl.conf
+echo "kernel.panic=5" >> /etc/sysctl.conf
+
+	- The kernel.panic setting defines the number of seconds before the system can reboot.
+
+
+# Disable OOM
+sysctl vm.overcommit_memory=2
+echo "vm.overcommit_memory=2" >> /etc/sysctl.conf
+
+
+#### NEEDS ADDITIONAL EXPLANATION/CONTENT #####
+
+
 
 
 
@@ -5362,8 +6326,12 @@ logger System reboot 								# log System reboot message (for tracking of when s
 
 - journalctl - replacement for syslog
 
-journalctl 						# runs/views journal (hit q to go back to command prompt)
-journalctl -b 					# view boot messages only
+journalctl 						  # runs/views journal (hit q to go back to command prompt)
+
+journalctl -b 					  # view boot events/messages only
+journalctl --list-boots 		  # list details on previous boot(s)
+journalctl --boot=[boot_hash_id]  # list logs on specific boot
+
 journalctl -p crit 				# view the logs filtered based on priority
 journalctl --since=2018-12-01 	# view logs starting from a certain timestamp
 
@@ -5494,6 +6462,20 @@ ID			Name																	Description
 4				Not used/user-definable								For special purposes.
 5				Full mode															Same as runlevel 3 + display manager.
 6				Reboot																Reboots the device.
+
+
+
+
+----
+tail
+----
+
+- Linux/UNIX - view the last few lines of a file
+
+
+#### Commands ####
+
+tail -n10 yum.conf 			# view last 10 lines of yum.conf
 
 
 
@@ -5920,6 +6902,22 @@ az aks get-credentials -n aks-getting-started -g aks-getting-started
 
 
 
+----
+test
+----
+
+- Linux/UNIX - checks file types and compares values
+
+
+#### Commands ####
+
+test 100 -lt 99 && echo "Yes." || echo "No."  			# will print No because 100 is not less than 99
+test -e /etc/.bashrc  									# check if file exists
+	echo $?    											# check return code of last command (if file exists, will print 0, if not, will print 1)
+
+
+
+
 ------------
 thread dumps
 ------------
@@ -5986,8 +6984,23 @@ top
 top              # show real-time view of all running processes (updates every second)
 top -u root      # show for root user only
 	shift + P    # sort by CPU utilization
+	c  			 # display the absolute path of listed processes
+	d 			 # change refresh interval. NOTE: enter a number (in seconds)
+	k  			 # kill a process while top is running. NOTE: enter a PID
 
 
+
+
+--
+tr
+--
+
+- Linux/UNIX - translate the format of characters of a source file into a specified format of characters in a destination file
+
+
+#### Commands ####
+
+cat yum.conf | tr a-z A-Z 			# translate all lowercase to uppercase characters in yum.conf
 
 
 ----------
@@ -6087,6 +7100,42 @@ For both check:
 
 
 
+---
+tty
+---
+
+- Linux/UNIX - teletypewriter - prints the name of the terminal you’re using
+							  - commonly used to check if the output medium is a terminal
+
+
+# details
+
+- A user can toggle between the TTY consoles using the Ctrl+Alt+F[1-6] keys
+- Even though there are six TTY consoles, they are created on the fly
+- "systemd" process in CentOS and many other flavours of Linux manages the TTY consoles
+
+
+#### Commands ####
+
+tty 						# print current terminal being used [e.g. /dev/pts/0 could be the output]
+
+Ctrl+Alt+F3  				# start TTY 3
+Ctrl+Alt+F1 				# come back to original terminal
+ps -ft pts/0 				# find out the process ID of TTY consoles
+pkill -9 -t pts/0  			# force kill terminal process
+ps -ef | grep tty 			# check for running tty processes
+
+
+
+#### Files and configs ####
+
+/etc/systemd/logind.conf  			#  control the use of TTY consoles in this file
+	- "NAutoVTs" - Default setting is 6. You can set it to any number from 0 to 6. If set to 0, the automatic spawning of autovt services is disabled.
+	- "ReserveVT" - Requires a positive integer.
+
+
+
+
 ----
 type
 ----
@@ -6100,6 +7149,55 @@ type type             # show type for "type" command. Output: type is a shell bu
 type yum              # yum is /usr/bin/yum
 
 
+
+
+---
+UFW
+---
+
+- Linux - also known as "Uncomplicated Firewall" - the users who are not familiar with firewall concepts can still use it.
+ 		- originated from Ubuntu
+		- provides an interface to iptables, a host-based firewall. 
+
+
+
+#### Commands ####
+
+yum install epel-release -y  				# install epel-release on a RHEL OS
+yum install --enablerepo="epel" ufw -y   	# install ufw package
+
+ufw enable 									# enable ufw to start at system boot
+ufw status 									# check status of ufw and currently set policies
+ufw status verbose  						# provide more detail on status
+
+ufw allow http  							# allow http connections
+ufw allow 80   								# allow connections to port 80 (same as above)
+ufw allow 80/tcp  							# add in protocol, separate rule from above
+ufw deny 21   								# deny connections to port 21
+ufw delete deny 21  						# remove deny rule above
+
+ufw allow from 192.168.0.3  				# allow connections from target IP
+ufw allow from 192.168.0.0/24  				# allow from range of IPs
+ufw allow from 192.168.0.3 to any port 80 proto tcp 		# allow access from target IP to only port 80
+ufw deny from 192.168.0.3 to any port 80 proto tcp  		# deny access from target IP to only port 80
+
+ufw reset  									# reset back to default rules
+
+
+
+#### Files and configs ####
+
+/etc/ufw/before.rules   					# contains UFW rules to act on before acknowledging a request
+
+
+#### before.rules config detail ####
+	-A ufw-before-input -p icmp --icmp-type destination-unreachable -j ACCEPT
+	-A ufw-before-input -p icmp --icmp-type source-quench -j ACCEPT
+	-A ufw-before-input -p icmp --icmp-type time-exceeded -j ACCEPT
+	-A ufw-before-input -p icmp --icmp-type parameter-problem -j ACCEPT
+	-A ufw-before-input -p icmp --icmp-type echo-request -j ACCEPT
+
+		- commenting the above would make it impossible for outside sources to ping the server (or any ICMP requests)
 
 
 
@@ -6263,6 +7361,22 @@ dmesg | grep Linux     # also prints kernel information
 
 
 
+----
+uniq
+----
+
+- Linux/UNIX - only unique lines are displayed in the output and duplicate adjacent lines are deleted
+
+
+#### Commands ####
+
+uniq newfile.txt  				# show only unique lines in newfile.txt
+
+
+
+
+
+
 -----------
 update-rc.d
 -----------
@@ -6318,6 +7432,21 @@ touch /etc/nologin 					# Run this and only root will be able to login to the sy
 last               		# displays history of logins of all users on the system
 last [user_id]     		# displays history of logins of target user on the system
 last -F [user_id]  		# dispalys complete timing of login timing of target user
+last -f /var/log/wtmp   # retrieve last login data from wtmp file
+
+
+
+# lastlog command
+
+lastlog							 				# displays all users and their last logins
+lastlog -b 0 -t 100  							# displays users who have logged in the last 100 days 
+lastlog | grep Never | awk '{print $1}'         # users who have never logged in
+
+
+# sudoers file
+
+/etc/sudoers  						# usually a read-only file
+	john ALL=NOPASSWD: /bin/vi  	# example of entry you might add. Grant john sudo access without prompting for password when invoked.
 
 
 # w, who, whoami
@@ -6329,7 +7458,7 @@ who -r    		# show runlevel of the system
 who -a          # show complete detail of the logged-in user
 
 
-w               # show complete detail of the logged-in user (alternative to who)
+w               # show complete detail of the logged-in user (alternative to who). Who they are and what they are doing (processes they are running)
 w -s            # supress output for login time, JCPU and PCPU columns
 w [user_id] 	# show complete detail of the target user
 
@@ -6413,6 +7542,37 @@ Vagrant.configure(2) do |config|
 end
 
 # END VAGRANTFILE
+
+
+
+--------
+/var/log
+--------
+
+- Linux/UNIX - system wide log directory
+
+
+#### Key subdirectories and files ####
+
+/var/log/messages: contains general log messages
+/var/log/boot: contains system boot log messages
+/var/log/debug: contains debugging log messages
+/var/log/auth.log: contains user login and authentication logs messages
+/var/log/daemon.log: contains running services messages
+/var/log/dmesg: contains Linux kernel ring buffer log messages
+/var/log/dpkg.log: contains binary package log including package installation messages
+/var/log/faillog: contains failed login log messages
+/var/log/kern.log: contains kernel messages
+/var/log/lpr.log: contains printer messages
+/var/log/mail.*: contains mail server messages
+/var/log/mysql.*: contains MySQL server messages
+/var/log/user.log: contains userlevel logs messages
+/var/log/xorg.0.log: contains X.org messages
+/var/log/apache2/*: contains Apache Webserver messages
+/var/log/lighttpd/*: contains Lighttpd Webserver messages
+/var/log/fsck/*: contains fsck messages
+/var/log/apport.log: contains application crash report messages 
+
 
 
 --
@@ -6538,8 +7698,41 @@ vmstat
 #### Commands ####
 
 vmstat 						# generates reasonably good information for CPU. It generates information for CPU user time, system time, idle time, and wait time.
+vmstat -a 					# show active and inactive memory
+vmstat -f  					# show number of forks since last system boot
 vmstat -s 					# shows same info more comprehensively
+vmstat -m 					# show slab info - need root to run
 
+vmstat 2 					# print vmstat info every 2 seconds (Ctrl+C to exit out)
+vmstat 2 10 				# stop at 10 iterations
+vmstat -t 2 10  			# show timestamp for each print
+
+
+
+-----
+watch
+-----
+
+- Linux/UNIX - execute a program periodically, showing output fullscreen
+
+
+#### Commands ####
+ 
+watch free -g  				# watch memory usage (in GB), update every 2 seconds by default
+
+
+
+--
+wc
+--
+
+- Linux/UNIX - print newline, word, and byte counts for each file
+
+
+#### Commands ####
+
+wc /proc/cpuinfo  			# prints number of lines, number of words, and number of characters in cpuinfo file
+wc -l /proc/cpuinfo 		# prints only the number of lines
 
 
 
@@ -6662,11 +7855,19 @@ yum
 
 yum install httpd        # install via yum package manager (can use dnf on CentOS 8/RHEL 8 and up, Rocky Linux). Will also install its dependencies
 yum list httpd           # check httpd is installed, shows a little detail about the package
+yum update  			 # check for an install updates for all installed packages (including dependencies)
 yum update httpd         # check for and install updates to the http package
 yum remove httpd         # remove httpd package and all its dependenies
 yum info httpd           # show more details about httpd package
 yum deplist httpd        # show dependencies list for http package
 yum downloader squid     # download squid package RPM
+yum check-update 		 # check if any updates for all installed packages
+yum group list 			 # find the list of package groups on your system
+
+yum --showduplicates list firefox    # check for multiple versions of a specific package
+yum group info “System Management” 	 # find info about a specific group
+yum group install kde-desktop 		 # install a specific package group
+yum group update kde-desktop 		 # update a specific installed package group
 
 reqoquery --list httpd   # list all files in httpd package (NOTE: need yum-utils package to be able to run) 
 
@@ -6675,4 +7876,22 @@ reqoquery --list httpd   # list all files in httpd package (NOTE: need yum-utils
 
 cat /etc/yum.conf             # view current yum configurations
 ls -latr /etc/yum.repos.d     # this is where yum repo information is kept, also referenced by yum.conf
+
+
+# enable automatic security updates for yum packages
+
+1] yum install yum-cron -y  	  # install yum-cron package
+
+2] Edit /etc/yum/yum-cron.conf
+
+	- from: update_cmd = default
+	- to: update_cmd = security
+
+	- from: apply_updates = no
+	- to: apply_updates = yes
+
+	- add: emit_via = email
+
+	- add or edit: email_from = root@localhost
+	- add or edit: email_to = root
 
