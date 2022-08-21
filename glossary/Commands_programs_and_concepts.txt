@@ -529,6 +529,14 @@ certificates
 
 #### keytool and openssl ####
 
+- keytool - Java-based key and certificate management utility. It allows users to administer their own public/private key pairs 
+			and associated certificates for use in self-authentication (where the user authenticates himself/herself to other users/services)
+			or data integrity and authentication services, using digital signatures.
+	 	  - It also allows users to cache the public keys (in the form of certificates) of their communicating peers.
+
+- openssl - a robust, commercial-grade, full-featured toolkit for general-purpose cryptography and secure communication
+
+
 # Download and import website certs into JAVA store (eg. google's certs for dl.google.com/android repo):
 
 openssl s_client -connect google.com:443 -showcerts | openssl x509 -out certfile.txt
@@ -545,9 +553,35 @@ keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-8-o
 keytool -list -v -keystore /path/to/cacerts
 
 
+# view a JCE keystore
+
+keytool -list -v -keystore something.keystore -storetype jceks
+
+
 # Remove certificate entry from keystore - from https://docs.oracle.com/cd/E19798-01/821-1751/ghleq/index.html
 
 keytool -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file} -storepass ${keystore.pass}
+
+
+# Change private key password for a secretKey entry within a keystore (JCE keystore in this case)
+# Source: https://xacmlinfo.org/2014/05/26/how-to-keystore-changing-java-key-store-passwords/
+
+keytool -keypasswd -alias [alias_name] -keystore something.keystore -storetype jceks 			
+
+
+openssl x509 -inform der -in file.der -noout -text   					# view cert file in DER format
+openssl x509 -enddate -noout -in file.pem 								# check the expiry on a cert in PEM format
+cat /some/path/to/something.crt | openssl x509 -noout -enddate 			# check the expiry on a cert in CRT format
+
+openssl x509 -pubkey -noout -in cert.cer  > pubkey.pem      			# extract public key from a cer
+
+openssl x509 -inform der -in certificate.cer -out certificate.pem     	# convert cer/der/crt to pem format
+
+
+# Download and import website certs into JAVA store:
+
+openssl s_client -connect google.com:443 -showcerts | openssl x509 -out certfile.txt
+keytool -importcert -alias globalproxy -file certfile.txt -trustcacerts -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storetype JKS
 
 
 # Create a self-signed certificate
@@ -585,7 +619,6 @@ keytool -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file} -stor
 
 
 8] openssl x509 -in plab.csr -out something.crt -req -signkey something.key -days 3650  	# generate certificate file (CRT)
-
 
 
 
@@ -1179,11 +1212,35 @@ DNS
 
 - Domain Name Service - resolves names to numbers [domain names to IP addresses]
 
-
 - The "A record" maps a name to one or more IP addresses when the IP are known and stable.
 - The "CNAME" record maps a name to another name. It should only be used when there are no other records on that name.
 - The "ALIAS" record maps a name to another name, but can coexist with other records on that name.
 - The "URL record" redirects the name to the target name using the HTTP 301 status code.
+
+
+#### Domain Name Resolution process ####
+
+1] User types in URL in browser and hits Enter
+
+2] System first checks in-memory cache for IP address
+
+3] Request then goes out to "Resolver" server (i.e. your ISP)
+
+4a] If resolver cannot find it within its database, it will send the request to the "root" server: the top level of the DNS hierarchy
+
+4b] 13 sets of root servers placed around the world, operated by 12 different organizations. Each set has its own unique IP address
+
+5] Root server will not know what the IP address is, but will direct the request to the "Top Level Domain" server (or TLD) to resolve the IP address
+
+6] Top level domain server stores the address information for top level domains such as .com, .net. org, etc.
+
+7] Even the TLD server will not know, and will direct the resolver to the "Authoritative Name Servers"
+
+8] Authoritative Name Server knows everything about a specific domain (such as .com). They are the final authority.
+
+9] ANS -> Resolver -> computer
+
+10] Resolver will store the IP for that specific address in its in-memory cache
 
 
 
@@ -2236,8 +2293,12 @@ git bisect bad
 	Bisecting: 337 revisions left to test after this (roughly 9 steps)
 
 
-5] Keep repeating the process: compile the tree, test it, and depending on whether it is good or bad run git bisect good or git bisect bad to ask for the next commit that needs testing. Eventually
-there will be no more revisions left to inspect, and the command will print out a description of the first bad commit. The reference refs/bisect/bad will be left pointing at that commit.
+5] Keep repeating the process: 
+	- compile the tree
+	- test it
+	- depending on whether it is good or bad run "git bisect good" or "git bisect bad" to ask for the next commit that needs testing.
+	- Eventually, there will be no more revisions left to inspect, and the command will print out a description of the first bad commit.
+	- The reference refs/bisect/bad will be left pointing at that commit.
 
 
 
@@ -3455,6 +3516,14 @@ EOF
    #### INCOMPLETE ####
 
 
+
+----------
+ldapsearch
+----------
+
+# search for AD ID "ad_username" within active directory
+
+ldapsearch -vvv -x -H ldap://ad.example.com:389 -b "dc=ad,dc=example,dc=com" -D "ad_username@ad.example.com" -W "sAMAccountName=ad_username"
 
 
 
@@ -6932,6 +7001,16 @@ $JAVA_HOME/bin/jstack -l [PID]>thread-dump-$(date +%m-%d_%H%M%S)_`hostname`_`who
 
 
 
+# Using top and kill -3 in a for loop (example JIRA application running on Tomcat)
+
+1.	Identify the process ID (pid) of the tomcat process running JIRA by executing the following command: 
+2.	ps aux | grep jira
+3.	Execute the following command (be sure to replace both occurrences of $JIRA_PID with the pid you identified in the previous step): 
+4.	for i in $(seq 6); do top -b -H -p $JIRA_PID -n 1 > jira_cpu_usage.`date +%s`.txt; kill -3 $JIRA_PID; sleep 10; done
+5.	That script will run for one minute, during which it will generate top output of the process threads to six text files in the current directory.
+
+
+
 
 -----------
 timedatectl
@@ -7796,7 +7875,8 @@ Windows
 - location: C:\Users\Buildmaster\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets>
 	- from command prompt, cd to the above and then:
 
-		cp * D:/new_folder     						# or some other drive/location
+		cp * /d/new_folder     						# or some other drive/location
+		cd /d/new_folder
 		for i in $( ls ); do mv $i $i.jpg; done     # UNIX sh: rename all the files to jpg
 
 		OR
