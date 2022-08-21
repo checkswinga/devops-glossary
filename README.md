@@ -5,7 +5,7 @@ Check out the Commands Programs and Concepts text file for the beginnings of a h
 
 **My DevOps philosophy:**
 
-1) To be **Service Oriented** (difficult as it is).* My goal on any DevOps team would be to create and maintain a platform that provides services to different teams so they can do their job: delivering applications.
+1) To be **Service Oriented** (difficult as it is).* My goal on any DevOps team would be to create and maintain a platform that provides services to different teams so they can do their job: building and delivering applications.
 
 2) The **Current Big Picture**: understanding the big picture of an application’s delivery framework, including:
     - workflow of its delivery process
