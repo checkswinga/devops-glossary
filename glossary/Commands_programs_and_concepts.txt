@@ -1,3 +1,52 @@
+--------
+802.11ax
+--------
+
+# Sources:
+# Powercert Animated Videos: Wi-Fi 6 explained: https://www.youtube.com/watch?v=Y7OWUg_kmK4
+
+#### General ####
+- a.k.a. wi-fi 6
+- released in 2019
+- latest wireless standard used in wireless devices
+- successor to 802.11ac wireless standard (wi-fi 5)
+- is faster than wifi 5
+- main goal: make a wireless network perform better with multiple devices connecting to it
+
+
+#### Differences between Wi-fi 5 and 6 ####
+
+- Wi-Fi 5 vs. Wi-Fi 6
+
+	- speed: 3.5Gbps vs. 9.6Gbps (shared across multiple devices)
+		- "Orthogonal Frequency-Division Multiple Access" (OFDMA) - lowers latency and delivers data to multiple devices more efficiently
+		- "Multiple-user, multiple-input, multiple-output" (MU-MIMO) - a technology that allows multiple wireless devices to communicate w/ a wi-fi router at the same time
+			- breaks up bandwidth into individual streams and pushes it to the connected devices
+			- debuted in Wi-Fi 5 version 2, improved in Wi-Fi 6
+				- in Wi-Fi 5 version 2, MU-MIMO was
+					- only available in download (as opposed to both download and upload)
+					- can only support 4 simultaneous streams (as opposed to 12)
+			- previous technology was "Single-user, multiple-input, multiple-output" (SU-MIMO) - one device at a time
+
+	- beamforming: a technique that sends transmissions in a specific direction, which strengthens the signal
+		- Wi-Fi 5 does not have beamforming
+
+	- Wi-Fi 6 minimizes interference to nearby networks 
+		- Basic Service Set Colouring (BSS) - colours or marks the networks so it can distinguish another network from its own 
+
+	- security: WPA3 - provides cutting edge security protocols that enable a more robust authentication that will increase protection from password detection attempts
+		- Wi-Fi 6 devices must be WPA3 certified
+
+	- extended battery life
+		- Target Wake Time - a router or access point schedules a time with wi-fi devices on when data is supposed to be sent or received
+
+	- new frequency: 6Ghz band
+		- high performance
+		- low latency
+		- less interference
+		- greater capacity
+
+
 -------
 anacron
 -------
