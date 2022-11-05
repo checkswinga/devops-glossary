@@ -1,0 +1,349 @@
+# Source: boson.com CISSP 2021 curriculum (viewable online only via single user licence - $69 USD to buy the digital copy thru the site)
+
+# Notes - these are limited based on content I felt needed to be re-emphasized for the exam. The rest of the content should be easier to absorb just going through digital copy online,
+# but I will try to document more of the content that should be highlighted here.
+
+- CISSP - Certified Information Systems Security Professional
+- ISC² - International Information Systems Security Certification Consortium
+
+- the ISC² Code of Ethics
+
+	- Preamble
+
+		1] The safety and welfare of society and the common good, duty to our principals, and to each other, requires that we adhere, and are seen
+		to adhere, to the highest ethical standards of behaviour.
+
+		2] Therefore, strict adherence to this Code is a condition of certification
+
+
+	- The Four Canons of Ethics [in order of importance]
+
+		1] Protect society, the common good, necessary public trust and confidence, and the infrastructure
+
+		2] Act honourably, honestly, justly, responsibly, and legally
+
+		3] Provide diligent and competent service to principals
+
+		4] Advance and protect the profession
+
+
+		- note: if theres ever a conflict between canons, the one that ranks the highest is the one to adhere to first
+
+
+# ISC² CISSP Exam Prep Notes
+
+- expect approx. 15% of the questions to be about security and risk management
+
+
+# EU GDPR [2016]
+
+- provisions
+	- companies must inform authorities of major data breaches within 24 to 72 hours, depending on country 
+	- each EU member nation must create a centralized data protection authority
+	- individuals must have access to their own data
+	- information regarding an individual must be transferrable to another service provider at the individuals request
+	- individuals retain the "right to be forgotten" and have their information deleted if it is no longer required
+
+
+# Import/Export Law
+
+- ITAR - International Traffic in Arms Regulations - limits the export of military and defense items, including information regarding these items.
+- EAR - Export Administration Regulations - applies to civilian goods and services that could have military or information security applications.
+
+
+# Intellectual Property
+
+- IP rights were first recognized by 2 treaties:
+	- Paris Convention for the Protection of Industrial Property [1883]
+	- Berne Convention for the Protection of Literary and Artistic Works [1886]
+
+- IP protections are managed by World Intellectual Property Organization [WIPO]
+	- established 1967, an agency of the U.N.
+
+- Digital Millenium Copyright Act [DMCA], passed in 1998 by U.S. Congress to comply with WIPO treaties
+	- prohibits the circumvention of copyright protections on digital media
+
+
+# Intellectual Property Protections
+
+- patents - protects the holders exclusive right to use, create and sell an invention.
+		  - terms are typically 20 years
+
+- trademarks - typically protect brandings, logos, slogans, anything that creates a distinction between one product and a similar product
+
+- copyrights - protect art, music, literature, source code created by an individual or organization
+			 - infringement is when the above is used without the permission of the owner
+			 - copyright usually includes the year the work was copyrighted
+			 - licenses enable a copyright owner to grant specific uses of the material to others 
+
+- trade secrets - the protection of confidential information about how a product is created.
+
+
+# Intellectual Property Attacks 
+
+
+
+##### CISSP Module 2: Security and Risk Management #####
+
+Pg. 26 – Security Roles
+ 
+- Senior Manager
+	- Principally in charge of an organization’s security
+	- Delegate security solutions to security professionals
+ 
+
+- Security Professional
+	- Experienced security, network and system engineers who perform the tasks delegated by the senior manager such as designing and implementing security solutions based on the org’s security policy
+	- Write security policies but typically do not make policy decisions
+	- May sometimes share duties with system admins in smaller environments
+	- Dedicated to security tasks such as reviewing server audit data
+ 
+
+- Data Owner
+	- Responsible for classifying sensitive data
+ 
+
+- Data Custodian
+	- Responsible for managing and securing data within an organization
+	- Also responsible for performing backups, monitoring data integrity, and managing storage
+ 
+
+- End User
+	- Anyone who has access to secure data
+	- Responsible for following the organization’s security policy and procedures
+	- Privileges and permissions are based on principle of least privilege (i.e. the required access to perform their tasks)
+ 
+- Auditors
+	- Responsible for verifying that an organization’s security policy is sufficient and is being implemented correctly.
+	- Will produce reports that should be reviewed by the senior manager
+ 
+
+ 
+
+Pg. 54 – Qualitative Risk Equation
+ 
+
+- Risk = Thread x Vulnerability x Impact
+ 
+ 
+
+Pg. 57 – Quantitative Risk Equation
+ 
+- ARO x SLE = ALE
+	- Annualized Rate of Occurrence x Single Loss Expectancy = Annualized Loss Expectancy
+ 
+
+- AV x EF = SLE
+	- Asset Value x Exposure Factor = Single Loss Expectancy
+ 
+
+ALE - The average yearly cost of the risk
+ARO – the frequency at which a risk event occurs
+E.g. a printer breaks twice a year, the ARO is 2. If a flood is estimated to occur once every 100 years, the ARO is 0.01
+SLE – the cost of a single loss, including the cost of materials, the technical service hours required, and loss of productivity that is experienced because of the loss
+	- $500 to buy a workstation, $100 to hire a technician to install it, $200 in lost productivity for employee who needs it, SLE is $800
+AV – Asset Value – the value of the asset, including any data stored on the asset
+EF – Exposure Factor – the percentage of value that is lost when a risk event occurs
+Failure of a laptop’s display, EF = 10%
+Theft of a laptop, EF = 100%
+ 
+
+ 
+
+Pg 59-60 – Responses to Risk
+ 
+Risk acceptance – company chooses to leave an asset unprotected rather than undergo time/expense to protect it
+Risk avoidance – eliminates use of a technology/service altogether rather than be exposed to the risks that could be incurred by implementing the technology or service
+Risk mitigation – lowers chance that a risk event occurs or lowers damage that a risk event causes
+Risk elimination – completely remove the chance for a risk event to occur
+Risk transfer – shifts the risk to another party, such as an insurance company
+Risk denial – not an acceptable method of handling risk. If a company believes a risk does not exist or insignificant, it should accept the risk.
+ 
+
+ 
+
+Pg. 61-67 – Threat Modeling
+
+
+Methodologies to assess threat modeling
+DREAD
+STRIDE
+Process for Attack Simulation and Threat Analysis (PASTA)
+Trike
+Security Content Automation Protocol (SCAP)
+ 
+
+ 
+
+DREAD – classification methodology that is used to rank threats numerically
+	Damage – How much damage will be caused?
+		- 0 = no damange
+		- 10 = complete destruction
+	Reproducibility – How easy is it to reproduce?
+		- 0 = impossible
+		- 10 = easy and without authentication
+	Exploitability – What is needed to exploit the threat?
+		- 0 = advanced knowledge and tools
+		- 10 = a web browser
+	Affected Users – How many users will be affected?
+		- 0 = none
+		- 10 = all
+	Discoverability – How easy is it to discover the threat?
+		- 0 = nearly impossible and source code or administrator access is required
+		- 10 = visible in a web browser address bar or in a form
+ 
+
+Sum of the 5 ratings divided by 5 to calculate final risk from 0 to 10. The higher the risk score, the greater the risk.
+ 
+
+
+STRIDE – an aggregated threat-modeling methodology that was developed by Microsoft to characterize known threats.
+Spoofing – Gaining access by using a false identity
+Tampering – Modifying data in transit or in storage
+Repudiation – Denying that an action was performed by an individual
+Information Disclosure – Revealing or distributing information to unauthorized individuals
+DoS – Preventing authorized use of a resource
+Elevation of privilege – Gaining unauthorized access, rights, or privileges
+ 
+
+ 
+PASTA – a platform-agnostic, risk-based, threat-modeling methodology that focuses more on the attacker than the target.
+Stage I – Definition of the Objectives (DO) for the Analysis of Risks
+Stage II – Definition of the Technical Scope (DTS)
+Stage III – Application Decomposition and Analysis (ADA)
+Stage IV – Threat Analysis (TA)
+Stage V – Weakness and Vulnerability Analysis (WVA)
+Stage VI – Attack Modeling & Simulation (AMS)
+Stage VII – Risk Analysis & Management (RAM)
+ 
+
+Trike
+	- uses data flow diagrams to allow security audits to be performed consistently, reliably, and repeatably
+	- assigns an acceptable risk level to each class of asset
+	- helps to determine the appropriate risk response
+ 
+
+SCAP – National Institute of Standards and Technology (NIST) standard protocol that provides common sets of criteria for defining and assessing security vulnerabilities (that applications can also use to scan and score systems, hardware or software that it needs or would like to use).
+	- data maintained in   NVD – National Vulnerability Databases
+ 
+Common Vulnerabilities and Exposures (CVE) – defines naming system for describing vulnerabilities
+Common Vulnerabilities Scoring System (CVSS) – defines a standard scoring system for vulnerability severity
+Common Configuration Enumeration (CCE) – defines a naming system for system configuration problems
+Common Platform Enumeration (CPE) - defines a naming system for applications, devices and operating systems
+Extensible Configuration Checklist Description Format (XCCDF) – defines a language format for security checklists
+Open Vulnerability and Assessment Language (OVAL) - defines a language format for security testing procedures
+ 
+ 
+-------------
+Pg. 68 – CVSS
+-------------
+
+Definition: an open standard that helps to indicate the severity of vulnerabilities and to prioritize responses to those vulnerabilities
+
+Scoring: influence by three metrics groups:
+
+	Base
+		indicate the severity of the vulnerability
+		established by the vendor or originator
+		have the largest influence over the final CVSS score
+
+	Temporal
+		indicate the urgency of the vulnerability
+		established by the vendor or originator
+		can change over time
+
+	Environmental
+		indicate how much an environment or end-user organization is affected by the vulnerability (optional)
+ 
+
+ 
+--------------------------------------------
+Pg. 69 – Other Risk Assessment Methodologies
+--------------------------------------------
+
+	Operationally Critical Threat, Asset, and Vulnerability Evaluation (OCTAVE)
+		- Establishes a four-phase framework for evaluating risk
+ 
+
+	PUSH
+		Mathematically associates the impact of a risk event with the likelihood that the risk event will occur
+ 
+	NIST SP 800-30
+		Establishes a nine-step method for assessing risk
+ 
+	NIST SP 800-66
+		Similar to 800-30 but specific for health care organizations that must comply with HIPAA
+ 
+	CCTA Risk Analysis and Management Method (CRAMM)
+		Establishes a three-stage approach to risk evaluation that analyzes technical as well as non-technical security aspects
+ 
+
+	Facilitated Risk Analysis Process (FRAP)
+		A low-cost method of evaluating risk for one system or process at a time
+ 
+
+	Security Officers Management and Analysis Project (SOMAP)
+		An open-source method for evaluating and managing risk
+ 
+	
+	Spanning Tree Analysis
+		Creates a tree of all possible threats and prunes branches that do not apply to an asset
+ 
+	Value at Risk (VAR)
+		Identifies a profile of acceptable risk for a company in order to determine the most cost-effective risk mitigation method
+ 
+
+------------------------------------------------------------------
+Pg. 70 – Other Security Best Practices and IT Ethics Methodologies
+------------------------------------------------------------------
+
+Security Management Best Practices
+ 
+	IT Infrastructure Library (ITIL)
+		methodology created by the UK government focused on improving IT service management processes
+ 
+
+	Control Objectives for Information and Related Technology (COBIT) – an Information Systems Audit and Control Association (ISACA) framework that establishes 34 processes and 214 control objectives to assist in developing an IT security management plan.
+ 
+
+	International Organization for Standard (ISO) 27000 – establishes a framework for developing security management standards
+ 
+
+	NIST SP 800-37 Risk Management Framework (RMF) – a security compliance framework for government entities
+ 
+
+ 
+
+Baselines for IT Ethics
+
+	Code of Fair Information Practices – establishes a baseline for the ethical handling of personal information
+ 
+	Internet Activities Board (IAB) – establishes standards for unethical behaviour on the Internet
+ 
+	Computer Ethics Institute (CEI) – created the Ten Commandments of Computer Ethics
+		Thou shalt not use a computer to harm other people.
+		Thou shalt not interfere with other people's computer work.
+		Thou shalt not snoop around in other people's computer files.
+		Thou shalt not use a computer to steal.
+		Thou shalt not use a computer to bear false witness.
+		Thou shalt not copy or use proprietary software for which you have not paid (without permission).
+		Thou shalt not use other people's computer resources without authorization or proper compensation.
+		Thou shalt not appropriate other people's intellectual output.
+		Thou shalt think about the social consequences of the program you are writing or the system you are designing.
+		Thou shalt always use a computer in ways that ensure consideration and respect for other humans
+	
+	National Conference on Computing and Values (NCCV) – proposed four values for computing security
+	
+	Working Group on Computer Ethics – created the End User’s Basic Tenets of Responsible Computing
+	
+	National Computer Ethics and Responsibilities Campaign (NCERC) – promotes awareness of computer ethics programs
+	
+	International Information Systems Security Certification Consortium (ISC)² Code of Ethics – creates an ethical standard for certified professionals to follow
+ 
+
+ 
+----------------
+Pg. 71 - Summary
+----------------
+ 
+Carefully balancing the CIA triad must be the central focus (confidentiality, integrity and availability)
