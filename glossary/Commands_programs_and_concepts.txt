@@ -445,6 +445,7 @@ bash
 	- the bash_profile executes the bashrc file.
 	- if .bash_profile does not exist, .bash_login is read. If .bash_login does not exist, .profile is read instead.
 
+
 #### profiles ####
 
 /etc/profile           # shows contents of system level settings and attributes for any user's profile e.g. PS1 setting, default size of command history to display, umask settings, etc.
@@ -461,9 +462,11 @@ OR
 ~/.bash_logout - triggered when the user is logging off
 					   
 
+
 #### login order of execution ####
 
 ~/.bash_profile, ~/.bash_login, ~/.profile - however, if one script, let’s say ~/bash_profile is not found, the next one is executed.
+
 
 
 #### .bash_logout ####
@@ -491,10 +494,13 @@ bash ./some_script.sh     # one method used to execute a bash shell script
 
 
 
-#### commands ####
+#### shell commands ####
 
 . ~/.bashrc 			  # source env variables from bashrc
 source ~/.bashrc 		  # source env variables from bashrc
+
+CTRL+r 					  # perform reverse search of previously entered commands (type in a few letters afterwards to see historical commands autocomplete)
+![history_number] 		  # from "history" command, typing ! with the history number will run that command
 
 
 
@@ -502,6 +508,12 @@ source ~/.bashrc 		  # source env variables from bashrc
 
 - flags and other stuff - https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
 
+
+# Check if a directory does not exist
+
+if [ ! -d "$DIR" ]; then
+	# statements
+fi
 
 
 
@@ -782,88 +794,30 @@ Group 8: For the love of God, do not use these: (Do Not Include. This is deviati
 CISSP
 -----
 
-# Source: boson.com CISSP 2021 curriculum (viewable online only via single user licence - $69 USD to buy the digital copy thru the site)
-
-# Notes - these are limited based on content I felt needed to be re-emphasized for the exam. The rest of the content should be easier to absorb just going through digital copy online,
-# but I will try to document more of the content that should be highlighted here.
-
-- CISSP - Certified Information Systems Security Professional
-- ISC² - International Information Systems Security Certification Consortium
-
-- the ISC² Code of Ethics
-
-	- Preamble
-
-		1] The safety and welfare of society and the common good, duty to our principals, and to each other, requires that we adhere, and are seen
-		to adhere, to the highest ethical standards of behaviour.
-
-		2] Therefore, strict adherence to this Code is a condition of certification
+##### See CISSP_2021_curriculum_notes.txt #####
 
 
-	- The Four Canons of Ethics [in order of importance]
 
-		1] Protect society, the common good, necessary public trust and confidence, and the infrastructure
+---------------
+cloud - general
+---------------
 
-		2] Act honourably, honestly, justly, responsibly, and legally
+- IaaS vs. PaaS vs. SaaS
 
-		3] Provide diligent and competent service to principals
+	- IaaS
+		- You provide: Applications, Data, Operating System, Middleware, Runtime
+		- Cloud provider provides: Servers, storage, virtualization, networking
+			- egs. online data backup services (iDrive, carbonite)
 
-		4] Advance and protect the profession
+	- PaaS
+		- You provide: Applications, Data
+		- Cloud provider provides: Servers, storage, virtualization, networking, operating system, middleware, runtime
 
+	- SaaS
+		- You provide: nothing
+		- Cloud provider provides: Servers, storage, virtualization, networking, operating system, middleware, runtime, applications, data
+			- eg. Google Docs
 
-		- note: if theres ever a conflict between canons, the one that ranks the highest is the one to adhere to first
-
-
-# ISC² CISSP Exam Prep Notes
-
-- expect approx. 15% of the questions to be about security and risk management
-
-
-# EU GDPR [2016]
-
-- provisions
-	- companies must inform authorities of major data breaches within 24 to 72 hours, depending on country 
-	- each EU member nation must create a centralized data protection authority
-	- individuals must have access to their own data
-	- information regarding an individual must be transferrable to another service provider at the individuals request
-	- individuals retain the "right to be forgotten" and have their information deleted if it is no longer required
-
-
-# Import/Export Law
-
-- ITAR - International Traffic in Arms Regulations - limits the export of military and defense items, including information regarding these items.
-- EAR - Export Administration Regulations - applies to civilian goods and services that could have military or information security applications.
-
-
-# Intellectual Property
-
-- IP rights were first recognized by 2 treaties:
-	- Paris Convention for the Protection of Industrial Property [1883]
-	- Berne Convention for the Protection of Literary and Artistic Works [1886]
-
-- IP protections are managed by World Intellectual Property Organization [WIPO]
-	- established 1967, an agency of the U.N.
-
-- Digital Millenium Copyright Act [DMCA], passed in 1998 by U.S. Congress to comply with WIPO treaties
-	- prohibits the circumvention of copyright protections on digital media
-
-
-# Intellectual Property Protections
-
-- patents - protects the holders exclusive right to use, create and sell an invention.
-		  - terms are typically 20 years
-
-- trademarks - typically protect brandings, logos, slogans, anything that creates a distinction between one product and a similar product
-
-- copyrights - protect art, music, literature, source code created by an individual or organization
-			 - infringement is when the above is used without the permission of the owner
-			 - copyright usually includes the year the work was copyrighted
-			 - licenses enable a copyright owner to grant specific uses of the material to others 
-
-- trade secrets - the protection of confidential information about how a product is created.
-
-
-# Intellectual Property Attacks 
 
 
 
@@ -1145,6 +1099,63 @@ date                		# default format: Tue Oct 10 22:55:01 PDT 2017
 date "+%Y-%m-%d"    		# format displays as "YY-MM-DD". Good for putting into filenames.
 date +%D -s 2019-12-20		# set the date to Dec 20 2019
 date +%T -s 23:00:00 -u     # set the time to 11pm, using UTC format (-u flag)
+
+
+
+
+------
+datree
+------
+
+# Sources
+# https://www.datree.io/
+# https://hub.datree.io/
+# Github repo - https://github.com/datreeio/datree
+
+- Kubernetes - program used to prevent misconfigurations by blocking resources that do not meet your policy
+			 
+- main features - get insights on the status of your cluster and enforce your desired policies on new resources.
+			 	- scans Kubernetes resources against a centrally managed policy, and blocks those that violate your desired policies.
+			 	- comes with multiple pre-built policies covering various use-cases, such as:
+			 	- workload security
+			 	- high availability
+			 	- ArgoCD best practices
+			 	- NSA hardening guide
+			 	- and many more.
+
+- Additional features
+	Monitoring - Datree is first installed in monitoring mode that reports on policy violations, rather than block their deployments.
+	CLI - Help your developers find misconfigurations in their configs before deploying them, by integrating Datree into their CI.
+	Misconfiguration prioritization - Datree makes it easy to improve the quality of your cluster by prioritizing the misconfigurations to be fixed.
+	Cluster score - Rank the stability of your cluster based on the number of detected misconfigurations.
+
+
+#### Quick Start ####
+
+- Pre-requisites:
+	- helm cli (v3)
+	- kubernetes cluster
+
+1] Add the Datree Helm repository
+
+helm repo add datree-webhook https://datreeio.github.io/admission-webhook-datree
+helm repo update
+
+
+2] Install Datree on your cluster
+
+# Replace <DATREE_TOKEN> with the token from your dashboard, and run the following command in your terminal:
+
+helm install -n datree datree-webhook datree-webhook/datree-admission-webhook --debug \
+--create-namespace \
+--set datree.token=<DATREE_TOKEN> \
+--set datree.clusterName=$(kubectl config current-context)
+
+	- this will create a new namespace (datree), where Datree’s services and application resources will reside.
+	- datree.token is used to connect your dashboard to your cluster. Note that the installation can take up to 5 minutes.
+
+
+#### NEEDS MORE MEAT ####
 
 
 
@@ -1692,6 +1703,20 @@ systemctl enable fail2ban
 systemctl restart fail2ban
 fail2ban-client status
 fail2ban-client status sshd
+
+
+
+--
+fc
+--
+
+- Linux/UNIX - lists, edits and reexecutes commands previously entered to an interactive shell
+
+fc  							# Edits the last command executed.
+	> Edit last command as needed and exit 
+
+fc -l                			# list previous command history (similar to history command)
+fc -s 1001  					# list command that was run from index 1000
 
 
 
@@ -2842,6 +2867,18 @@ cat /etc/hostname   # you can see the hostname configured here
 hostnamectl         # view detailed info about the host/hostname
 
 hostnamectl set-hostname plablinux2 			# change the hostname to plablinux2. Requires reboot of system
+
+
+
+
+----
+htop
+----
+
+# Sources:
+# https://htop.dev/
+
+- Linux/UNIX - a more advanced version of top command, an interactive process viewer
 
 
 
@@ -5614,7 +5651,7 @@ References
 - https://www.shellcheck.net/    # shell scripting syntax checker
 - https://explainshell.com/      # check what individual CLI lines mean [help text]
 - https://groovy-lang.org        # official site for learning the Groovy programming language
-
+- https://coolermaster.com/us/en-us/power-supply-calculator 		# CoolerMaster Power Supply Calculator - add components to find out necessary wattage
 
 # Training
 - boson.com - highly recommended by NetworkChuck [YT] for CCNA, CCNP, etc. certification
@@ -5661,6 +5698,12 @@ Legend:
 	Special
 		\n      newline
 		\t      tab
+
+
+# Pattern for Jenkins roles: including what jobs you want a specific group to be able to see
+# e.g. jobs which start with Gemfire_DEV, have Akamai somewhere in the name, and start with Gemfire_Recycle_
+
+"Gemfire_DEV.*|.*Akamai.*|Gemfire_Recycle_.*"
 
 
 
@@ -5778,6 +5821,18 @@ sar -f plab.file 							  # view report
 -------
 secrets
 -------
+
+##### Password managers ######
+
+- Dashlane - https://www.dashlane.com
+		   - manage your website passwords in one place
+		   - paid subscription includes monitoring the dark web to see if any of your passwords have been compromised
+		   - can generate new, stronger passwords for you
+		   - tells you how many times you are re-using a password
+
+- Roboform - https://www.roboform.com
+		   - similar/alternative to Dashlane
+
 
 # General levels of keeping secrets
 # Source: DevOps Directive [Sid Palas] - https://www.youtube.com/watch?v=7NTFZoDpzbQ
@@ -5985,10 +6040,23 @@ SELinux
 #### policies ####
 
 - When a user is mapped to "unconfined_u", SELinux does not block access for the user.
-
+- "semanage" command is used to manage SELinux rules
 
 
 #### Commands ####
+
+dnf provides */semanage 			# check if semanage package is installed
+dnf install policycoreutils-python-utils  		# install semanage package (Rocky Linux)
+
+semanage boolean –l  		# see full list of available rule settings
+	- -a - adds an object
+	- -d - deletes an object
+	- -m - modifies an object 
+
+semanage port -a -t http_port_t -p tcp 81  			# allow port 81 for httpd domain processes
+
+setsebool -P httpd_can_sendmail on  		   	# allow apache server to be able to send emails
+	- -P means keep the setting even after reboot
 
 getenforce 			# check current status of SELinux policies enforcement
 sestatus 			# get an overview of the SELinux configuration
@@ -5996,14 +6064,14 @@ setenforce 0 		# set SELinux to permissive mode [1 = Enforcing]
 semanage login -l	# view a list of mappings between SELinux and Linux user accounts
 
 ls -Z [file] 				# check SELinux security context of file
-ps -eZ | grep something  	# check SELinux security context for a process
+ps -eZ | grep some_process 	# check SELinux security context for a process
 id -Z  						# check SELinux security context for current user
 
 
 #### Files and configs ####
 
 /etc/selinux/config  		# config file for SELinux
-
+/etc/sysconfig/selinux  	# symlink for the above
 
 
 #### supporting tools ####

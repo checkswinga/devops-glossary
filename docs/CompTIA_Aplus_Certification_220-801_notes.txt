@@ -2,8 +2,8 @@
 CompTIA A+ Certifcation 220-801
 -------------------------------
 
-# Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=pgJEhzIRfMY
-
+# Main source: PowerCert Animated Videos - https://www.youtube.com/watch?v=pgJEhzIRfMY
+# Additional source: Powercert Animated Videos - Power Supply, Connectors and 80 Plus rating explained - https://www.youtube.com/watch?v=ZW1wcoERoDU
 
 # 1) Storage device types
 
@@ -102,30 +102,91 @@ CompTIA A+ Certifcation 220-801
 
 # 2) Power Supply
 
+
 - supplies power to the computer
-= square metal box emerging from one end, fits inside computer case at the top or bottom at the back
+- square metal box emerging from one end, fits inside computer case at the top or bottom at the back
 - converts 110V AC current into specific voltages the computer needs
 - ATX - most common form factor a power supply comes in
 
 - connectors
 		- P1 - main power connector
-				 - connects directly to the motherboard to provide it with power
-				 - 20 or 24 pins
+				- connects directly to the motherboard to provide it with power
+				- 20 or 24 pins
 
 		- P4 - 4 pin connector
-				 - connects to the motherboard
-				 - provides power to the CPU
-				 - used in modern motherboards
+				- connects to the motherboard
+				- provides power to the CPU
+				- used in modern motherboards
 
 		- MOLEX - 4 pin connector
-						- connecting hard drives and optical drives
+				- connecting hard drives and optical drives
+				- for older hard drives (e.g. PATA) and optical drives
+				- largely replaced by SATA connectors
+				- today can still be used to power cooling fans
+				- a PAIN to work with because of lining up the pins to plug them in
 
 		- SATA - 15 pin connector
-					 - used to connect disk drives that have a SATA plug
+				- used to connect disk drives that have a SATA plug
+				- also plugs into SATA SSDs, hard drives, optical drives, case fans, 
 
 		- 4 PIN BERG [mini connector] - floppy drive connector
 
 		- 6 PIN - used to supply power to certain PCI-E video cards
+
+		- P8 (EPS) - 8 pin connector
+			- plugs directly into the motherboard
+			- supplies even more power to newer CPUs
+				
+	  	- 6 and 8 pin PCI-Express power connectors
+	  		- supplies power to high-end PCI-E video cards
+	  		- may use both 6 and 8 pin power connectors at the same time, or even 3 connectors at the same time, because of add. power requirements
+
+
+- wattages
+	- an avg computer (as of 2022) needs 500-600W
+	- a gaming PC needs around 1000W
+	- CoolerMaster Power Supply Calculator - https://coolermaster.com/us/en-us/power-supply-calculator - add components to find out necessary wattage
+
+
+- types
+	- non-modular
+		- all the connector cables are permanently attached to the power supply
+		- cables cannot be detached
+		- susceptible to poor cable management and higher temperatures
+
+	- fully modular
+		- all the connector cables can be manually attached or detached if needed
+		- better cable management
+		- better airflow
+		- lower temperatures overall
+
+	- semi-modular
+		- only the necessary cables are permanently attached (e.g. the cables needed for the PC to turn on)
+
+- 80 plus
+	- a certification given to power supplies that have at least an 80% energy efficiency
+		- at 20%, 50% and 100% load
+	- electricity: power supply pulls A/C power in, D/C power out
+		- power loss during this process
+		- e.g. 600W power supply at 100% load
+			- in order to be 80 plus certified, it would need to be pulling in 750W A/C in to output 600W
+				- 750 - 600 = 150
+				- 150 / 750 = 80%
+		- e.g. 600W power supply at 50% load
+			- output = 300W
+			- max A/C in must be 375W or lower
+
+	- efficiency levels		  20 50 100  % load	
+		- 80% plus 			- 80 80 80
+		- 80% plus bronze 	- 82 85 82
+		- 80% plus silver   - 85 88 85
+		- 80% plus gold     - 87 90 87
+		- 80% plus platinum - 90 92 89
+		- 80% plus titanium - 92 94 90 (Titanium adds a 10% load with a rating of 90%)
+
+
+- *****IMPORTANT: do NOT buy a cheap power supply*******
+
 
 
 # 3) Motherboard form factor
