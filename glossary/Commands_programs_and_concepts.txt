@@ -446,28 +446,6 @@ bash
 	- if .bash_profile does not exist, .bash_login is read. If .bash_login does not exist, .profile is read instead.
 
 
-#### profiles ####
-
-/etc/profile           # shows contents of system level settings and attributes for any user's profile e.g. PS1 setting, default size of command history to display, umask settings, etc.
-					   # Note: bash reads /etc/profile if invoked interactively using --login option, or invoked as sh.
-					   # applies to all shells, including bash
-
-/etc/bashrc        	   # contains system-wide definitions for shell functionns and aliases, similar to /etc/profile. Applies only to bash whereas profile applies to ALL shells
-OR
-/etc/bash.bashrc
-
-~/.bash_profile   	  	# user configuration file in which the user environment can be configured. By default, some configuration is already defined, 
-					    # but it can be changed or altered as per requirements.
-
-~/.bash_logout - triggered when the user is logging off
-					   
-
-
-#### login order of execution ####
-
-~/.bash_profile, ~/.bash_login, ~/.profile - however, if one script, let’s say ~/bash_profile is not found, the next one is executed.
-
-
 
 #### .bash_logout ####
 
@@ -487,23 +465,6 @@ You can use the vi ~/.bash_logout command to create the .bash_logout file.
 
 
 
-#### scripts - light notes ####
-
-bash ./some_script.sh     # one method used to execute a bash shell script
-./some_script.sh          # another method to execute a bash shell script
-
-
-
-#### shell commands ####
-
-. ~/.bashrc 			  # source env variables from bashrc
-source ~/.bashrc 		  # source env variables from bashrc
-
-CTRL+r 					  # perform reverse search of previously entered commands (type in a few letters afterwards to see historical commands autocomplete)
-![history_number] 		  # from "history" command, typing ! with the history number will run that command
-
-
-
 #### if ####
 
 - flags and other stuff - https://tldp.org/LDP/Bash-Beginners-Guide/html/sect_07_01.html
@@ -514,6 +475,7 @@ CTRL+r 					  # perform reverse search of previously entered commands (type in a
 if [ ! -d "$DIR" ]; then
 	# statements
 fi
+
 
 
 
@@ -535,6 +497,73 @@ ls -l /etc;
 temp
 
 3] You should see the function execute the "echo" and "ls" statements
+
+
+
+
+#### login order of execution ####
+
+~/.bash_profile, ~/.bash_login, ~/.profile - however, if one script, let’s say ~/bash_profile is not found, the next one is executed.
+
+
+
+
+
+#### profiles ####
+
+/etc/profile           # shows contents of system level settings and attributes for any user's profile e.g. PS1 setting, default size of command history to display, umask settings, etc.
+					   # Note: bash reads /etc/profile if invoked interactively using --login option, or invoked as sh.
+					   # applies to all shells, including bash
+
+/etc/bashrc        	   # contains system-wide definitions for shell functionns and aliases, similar to /etc/profile. Applies only to bash whereas profile applies to ALL shells
+OR
+/etc/bash.bashrc
+
+~/.bash_profile   	  	# user configuration file in which the user environment can be configured. By default, some configuration is already defined, 
+					    # but it can be changed or altered as per requirements.
+
+~/.bash_logout - triggered when the user is logging off
+
+
+
+
+#### PS1 settings ####
+
+# Sources:
+# Bash PS1 customization examples - https://linuxhint.com/bash-ps1-customization/
+
+
+export PS1="[ \u@\d \t ] $ " 				# command prompt will show 'user@date+time $ '
+
+export PS1="[\d]\n\u@\h: $ " 				# will display date first, and 'user@hostname: $ ' on the next line
+
+export PS1="\e[45m\u@\h :\w$ \e[m" 			# change background colouring the prompt purple (see source for more colours)
+
+export PS1="\e[0;37m\u@\h :\w$ \e[m" 		# change foreground colouring to white
+
+
+
+
+
+
+
+
+#### scripts - light notes ####
+
+bash ./some_script.sh     # one method used to execute a bash shell script
+./some_script.sh          # another method to execute a bash shell script
+
+
+
+#### shell commands ####
+
+. ~/.bashrc 			  # source env variables from bashrc
+source ~/.bashrc 		  # source env variables from bashrc
+
+CTRL+r 					  # perform reverse search of previously entered commands (type in a few letters afterwards to see historical commands autocomplete)
+![history_number] 		  # from "history" command, typing ! with the history number will run that command
+
+
 
 
 
@@ -3001,6 +3030,43 @@ else
 fi
 
 
+
+-----
+iftop
+-----
+
+# Sources:
+# iftop command in Linux with Examples - https://www.geeksforgeeks.org/iftop-command-in-linux-with-examples/
+
+- Linux - a network analyzing tool used by system administrators to view the bandwidth related stats
+		- shows a quick overview of the networking activities on an interface
+		- stands from Interface TOP and the top is derived from op command in Linux
+		- acts as a diagnostics to diagnose which program is causing the problem to the network
+
+
+#### Installation ####
+yum install epel-release 				# install pre-requisite epel-release repo
+yum install iftop 						# for RHEL-based systems
+OR
+apt-get install iftop   				# for Ubuntu/Debian based. Must be superuser.
+
+
+
+#### Commands ####
+
+iftop  					# display basic bandwidth usage of the default interface
+iftop -i eth0 			# display bandwidth details of a specific router
+iftop -n -i eth0 		# stop hostname lookup
+iftop -N -i eth0 		# stop the conversion of port number to services
+iftop -b 				# stop bargraph display
+iftop -t 				# stop text interface without ncurses (i.e. without the special text screen, will print the text to the terminal directly instead)
+iftop -o source 		# sort output by source address
+iftop -o destination  	# sort output by destination address
+iftop -L 2 -i eth0 		# specify number of lines to be printed
+iftop -h 				# display help
+
+
+
 -------
 ingress
 -------
@@ -3047,6 +3113,50 @@ iostat
 
 iostat                     # display the CPU and input/output statistics for devices and partitions
 iostat -c 			       # display only CPU utilization
+
+
+
+
+-----
+iotop
+-----
+
+# Sources:
+# iotop Command in Linux with Examples - https://www.geeksforgeeks.org/iotop-command-in-linux-with-examples/
+
+- Linux - used to display and monitor the disk IO usage details
+		- gets a table of existing IO utilization by the process
+		- designed in Python, needs kernel modules for execution
+		- used by system administrators to trace the specific process that may be causing a high disk I/O read/writes
+		- requires a python interpreter for its execution
+		- produces output similar to that of top command
+		- usually requires root privileges for its execution.
+
+
+#### Installation ####
+
+yum install iotop 				# on RHEL-based Linux
+OR
+apt-get install iotop 			# on Ubuntu/Debian-based. Must be root for both.
+
+
+
+#### Commands ####
+
+# Note: will usually require root to execute
+
+iotop 				# To get the list of processes and their current disk IO usage.
+iotop -o 			# show processes that are actually doing IO
+iotop --version   	# get iotop version
+iotop -h 			# display help section
+iotop -b 			# display output in non interactive mode
+iotop -n 3 			# change the number of iterations or updations
+iotop -p 10989 		# display a specific process
+iotop -a 			# show accumulated output
+iotop -t 			# add a time stamp to each line
+iotop -q 			# suppress some lines of header
+
+
 
 
 
@@ -4399,6 +4509,58 @@ nc -vv 127.0.0.1 1234
 # then type in terminal
 
 
+
+
+-------
+nethogs
+-------
+
+# Sources
+# Nethogs – Monitor Linux Network Traffic Usage Per Process
+# https://www.tecmint.com/nethogs-monitor-per-process-network-bandwidth-usage-in-real-time/#:~:text=What%20is%20NetHogs%3F,process%20or%20application%20in%20Linux.
+
+- Linux - an open-source command-line program [similar to top command] that is used to monitor real-time network traffic bandwidth used by each process or application.
+		- a small ‘net top’ tool. Instead of breaking the traffic down per protocol or per subnet, as most tools do, it groups bandwidth by process.
+		- does not rely on a special kernel module to be loaded
+		- if there’s suddenly a lot of network traffic, you can fire up NetHogs and immediately see which PID is causing this.
+			- makes it easy to identify programs that have gone wild and are suddenly taking up your bandwidth.
+
+
+
+#### Installation RHEL-based Linux ####
+
+yum install epel-release  				# install pre-requisite epel-release repo first
+
+yum install nethogs 					# yum install
+OR
+dnf install nethogs 					# dnf for Rocky Linux or Fedora
+OR
+apt-get install nethogs 				# for Ubuntu, Debian, Mint
+
+
+
+#### Commands ####
+
+nethogs 				# default launch of nethogs program, will see list of processes sorted by highest network consumption
+nethogs -d 5 			# lookup refresh every 5 seconds
+nethogs eth0 eth1		# monitor specific device/network interface[s]
+
+
+#### Flags/Options ####
+
+-d – delay for refresh rate.
+-h – list available commands usage.
+-p – sniff in promiscuous mode (not recommended).
+-t – tracemode.
+-V – show version info.
+
+
+#### Keyboard shortcuts ####
+
+-m – Change the units displayed for the bandwidth in units like KB/sec -> KB -> B-> MB.
+-r – Sort by the magnitude of respective traffic.
+-s – Sort by the magnitude of sent traffic.
+-q – Hit quit to the shell prompt.
 
 
 
