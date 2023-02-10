@@ -1426,6 +1426,80 @@ DMZ
 docker
 ------
 
+- Linux/Windows/Mac - a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called "containers"
+					- used to automate the deployment of application in lightweight containers so that application can work efficiently in different environments.
+
+
+
+#### Installation - Rocky Linux ####
+
+1] Add docker repo
+
+sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo
+
+
+2] Update repos to ensure latest packages are available
+
+sudo dnf update
+
+
+3] Install docker packages
+	- Note:
+		- "docker-ce" is the main package.
+		- "docker-ce-cli" provides the command-line interface.
+		- "containerd.io" installs the containerd container runtime.
+
+- Install the above packages with the following command:
+
+	sudo dnf install docker-ce docker-ce-cli containerd.io
+
+
+4] Start docker
+
+	sudo systemctl enable docker
+
+
+5] Update rc.local permissions (Rocky Linux only)
+
+	- If below message appears:
+
+	/etc/rc.d/rc.local is not marked executable, skipping.
+
+  
+   - Execute the following command:
+
+   sudo chmod +x /etc/rc.d/rc.local
+
+
+   - Try starting docker again:
+
+   systemctl start docker
+
+   systemctl status docker
+
+
+6] Enable non-root user access
+
+sudo usermod -aG docker $USER 				# add $USER to docker group
+
+id $USER 									# verify user is in docker group
+
+systemctl restart docker
+
+systemctl status docker
+
+
+7] Verification
+
+docker ps 					# check for running docker processes. There should be none.
+
+docker pull busybox 		# pull busybox image from docker hub
+
+docker images 				# check local docker registry to see if busybox image is available
+
+
+
+
 # sharing namespaces: https://www.guidodiepen.nl/2017/04/accessing-container-contents-from-another-container/
 
 # exposing docker port with bobrik/socat container (e.g. to make accessible from Jenkins)
@@ -1725,11 +1799,28 @@ To install on CentOS [for Rocky Linux, you would use dnf, but need to test it]:
 
 yum install epel-release
 yum install fail2ban
+
+- Edit /etc/fail2ban/jail.local (see jail.local.txt in this repo for details or see content below)
+vi /etc/fail2ban/jail.local
+
+### CONTENT TO ADD - START ###
+
+[DEFAULT]
+# Ban hosts for one hour:
+bantime = 360000
+ignoreip = 127.0.0.1/8 76.68.78.155/8 174.88.74.105/8
+maxretry = 1
+
+# Override /etc/fail2ban/jail.d/00-firewalld.conf:
+banaction = iptables-multiport
+
+[sshd]
+enabled = true
+
+#### CONTENT TO ADD - END ####
+
 systemctl enable fail2ban
-
-- Edit /etc/fail2ban/jail.local (see jail.local.txt in this repo for details)
-
-systemctl restart fail2ban
+systemctl start fail2ban
 fail2ban-client status
 fail2ban-client status sshd
 
