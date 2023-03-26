@@ -47,6 +47,24 @@
 		- greater capacity
 
 
+
+---
+alt
+---
+
+#### General ####
+
+- info section on things related to the Alt key
+
+
+#### References ####
+
+- Alt Codes cheat sheet - https://www.posterpresentations.com/alt-code-cheatsheet.html
+
+
+
+
+
 -------
 anacron
 -------
@@ -76,6 +94,25 @@ grep START /etc/anacrontab  	# view start timings allowed for all jobs regardles
 
 grep RANDOM /etc/anacrontab   	# view random delay setting for anacrontab for all jobs (used to prevent overload if anacrontab has several
 								  jobs configured to run at the same time)
+
+
+
+
+---
+and
+---
+
+- Linux - used to combine execution of commands together. The execution of the subsequent command depends on the success of the first
+
+
+#### Example ####
+
+command 1 && command 2       # execute command 2 if command 1 succeeds
+							 # unlike "command 1; command2", which will execute command2 regardless of command1 failure]
+
+
+
+
 
 
 
@@ -167,20 +204,79 @@ Ansible
 
 
 -----------------
-Apache web server
+Apache Web Server
 -----------------
 
-# Install and run on CentOS Linux
+# Install and run on Rocky Linux
+# Source: https://docs.rockylinux.org/guides/web/apache-sites-enabled/
+# Note: More of a starter guide
 
-yum install -y httpd           # update httpd yum package
-systemctl start httpd
-systemctl status httpd
-systemctl enable httpd
-firewall-cmd --zone=public --permanent --add-service=http
-firewall-cmd --zone=public --permanent --add-service=https
+dnf install -y httpd php           # install httpd and php packages
+								   # note: php-bcmath and php-mysqlind may be required
+mkdir /etc/httpd/sites-available
+mkdir /etc/httpd/sites-enabled     # create directories to keep track of sites available and enabled for this server instance
+
+cd /etc/httpd/sites-available      
+vi /etc/httpd/sites-available/com.site.www      # Create configuration for a site
+
+# File content
+<VirtualHost *:80>
+        ServerName your-server-hostname
+        ServerAdmin username@rockylinux.org
+        Redirect / https://your-server-hostname/
+</VirtualHost>
+<Virtual Host *:443>
+        ServerName your-server-hostname
+        ServerAdmin username@rockylinux.org
+        DocumentRoot /var/www/sub-domains/your-server-hostname/html
+        DirectoryIndex index.php index.htm index.html
+        Alias /icons/ /var/www/icons/
+        # ScriptAlias /cgi-bin/ /var/www/sub-domains/your-server-hostname/cgi-bin/
+
+    CustomLog "/var/log/httpd/your-server-hostname-access_log" combined
+    ErrorLog  "/var/log/httpd/your-server-hostname-error_log"
+
+        SSLEngine on
+        SSLProtocol all -SSLv2 -SSLv3 -TLSv1
+        SSLHonorCipherOrder on
+        SSLCipherSuite EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384
+:EECDH+aRSA+SHA256:EECDH+aRSA+RC4:EECDH:EDH+aRSA:RC4:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS
+
+        SSLCertificateFile /var/www/sub-domains/your-server-hostname/ssl/ssl.crt/com.wiki.www.crt
+        SSLCertificateKeyFile /var/www/sub-domains/your-server-hostname/ssl/ssl.key/com.wiki.www.key
+        SSLCertificateChainFile /var/www/sub-domains/your-server-hostname/ssl/ssl.crt/your_providers_intermediate_certificate.crt
+
+        <Directory /var/www/sub-domains/your-server-hostname/html>
+                Options -ExecCGI -Indexes
+                AllowOverride None
+
+                Order deny,allow
+                Deny from all
+                Allow from all
+
+                Satisfy all
+        </Directory>
+</VirtualHost>
+### END CONTENT ###
+
+- Notes on above
+	- SSLEngine on - simply says to use SSL
+	- SSLProtocol all -SSLv2 -SSLv3 -TLSv1 - says to use all available protocols, except those that have been found to have vulnerabilities. You should research periodically which protocols are currently acceptable for use.
+	- SSLHonorCipherOrder on - this deals with the next line that regarding the cipher suites, and says to deal with them in the order that they are given. This is another area where you should review the cipher suites that you want to include periodically
+	- SSLCertificateFile - is exactly what it sounds like, the newly purchased and applied certificate file and its location
+	- SSLCertificateKeyFile - the key you generated when creating your certificate signing request
+	- SSLCertificateChainFile - the certificate from your certificate provider, often referred to as the intermediate certificate.
+
+mkdir -p /var/www/sub-domains/your-server-hostname/html      # Create directory where the site files/content will be stored
+
+cp /root/com.site.www.key /var/www/sub-domains/your-server-hostname/ssl/ssl.key/       # Copy key and ssl certs into ssl dir
+cp /root/com.site.www.csr /var/www/sub-domains/your-server-hostname/ssl/ssl.csr/
+cp /root/com.site.www.crt /var/www/sub-domains/your-server-hostname/ssl/ssl.crt/
 
 
-### needs minor updates ###
+ln -s /etc/httpd/sites-available/your-server-hostname /etc/httpd/sites-enabled/        # soft link to enable the site
+
+systemctl start httpd             # start server
 
 
 
@@ -565,6 +661,44 @@ CTRL+r 					  # perform reverse search of previously entered commands (type in a
 
 
 
+---
+bat
+---
+
+# source: Tech Craft - https://www.youtube.com/watch?v=2OHrTQVlRMg
+# Github repo - https://github.com/sharkdp/bat
+
+- Linux - alternative to cat
+		- provides content-aware highlighting and line numbers
+
+
+#### Commands ####
+
+bat filename.js
+bat -p filename.js 		# behave more like cat for file output
+
+
+
+
+----
+btop
+----
+
+# source: Tech Craft - https://www.youtube.com/watch?v=szehPBOwqlI
+
+- Linux - monitoring tool similar to top and htop
+
+	- benefits:
+		- very pretty looking
+		- also shows disk and network usage
+		- very customizable
+
+
+#### Commands ####
+
+btop  		# can toggle the view with number keys
+
+
 
 
 ------
@@ -643,6 +777,11 @@ keytool -importcert -file proxy.crt -alias proxy -keystore /usr/lib/jvm/java-8-o
 keytool -list -v -keystore /path/to/cacerts
 
 
+# Convert CRT to PEM
+
+openssl x509 -in mycert.crt -out mycert.pem -outform PEM
+
+
 # view a JCE keystore
 
 keytool -list -v -keystore something.keystore -storetype jceks
@@ -653,7 +792,7 @@ keytool -list -v -keystore something.keystore -storetype jceks
 keytool -delete -noprompt -alias ${cert.alias}  -keystore ${keystore.file} -storepass ${keystore.pass}
 
 
-# Change private key password for a secretKey entry within a keystore (JCE keystore in this case)
+#### Change private key password for a secretKey entry within a keystore (JCE keystore in this case) ####
 # Source: https://xacmlinfo.org/2014/05/26/how-to-keystore-changing-java-key-store-passwords/
 
 keytool -keypasswd -alias [alias_name] -keystore something.keystore -storetype jceks 			
@@ -711,6 +850,28 @@ keytool -importcert -alias globalproxy -file certfile.txt -trustcacerts -keystor
 8] openssl x509 -in plab.csr -out something.crt -req -signkey something.key -days 3650  	# generate certificate file (CRT)
 
 
+#### Resources ####
+
+- Certificate transparency - https://certificate.transparency.dev/
+	- Explains how CT logging works and why we use it.
+
+- Online certificate search and log tracker tool - https://crt.sh/
+
+- PKIX progress tracker - https://datatracker.ietf.org/wg/pkix/about/
+	- Describes the PKI X initiative with a progress tracker for different items.
+
+- Bad certificate errors glossary - https://badssl.com [do not navigate to internally]
+
+
+
+
+# Update cert store on Rocky Linux
+
+1] Copy PEM into /etc/pki/ca-trust/source/anchors/
+
+2] Run: sudo update-ca-trust
+
+
 
 
 -------------
@@ -757,7 +918,7 @@ chkconfig --level 4 netconsole on       # configure "netconsole" at run level 4
 chmod/chgrp/chown
 -----------------
 
-- Linux/UNIX - change file mode bits (permissions), group ownership and user ownership
+- Linux/UNIX - change file mode bits (permissions), group ownership and user ownership management
 
 
 #### Commands ####
@@ -775,6 +936,8 @@ chmod g+ws [file_or_dir]  # set sticky bit at group level (sgid) for file or dir
 chgrp adm file1.txt 	  # change group for file1.txt to adm
 chown adm file1.txt 	  # change owner for file1.txt to adm
 
+chown adm:admgrp file1.txt 	  	# change owner and group for file1.txt. Must be superuser to perform.
+chown -R adm:admgrp [dir] 	  	# change owner and group for directory and all subdirs and files under dir. Must be superuser to perform
 
 #### NEEDS MORE INFO ####
 
@@ -860,12 +1023,94 @@ cntlm
 						   - various alternatives available: squid, charles proxy (for MacOS)
 
 
-#### Commands ####
+# Installing via package manager and configuring
+# Source: https://medium.com/hacker-toolbelt/cntlm-how-to-9709cde8dd02
+# Manual: https://cntlm.sourceforge.net/cntlm_manual.pdf
 
-cntlm -H -u username -d domainname          # generate hash for password to put into cntlm.conf/cntlm.ini
+
+1) Install
+sudo apt-get install cntlm 				# install on Ubuntu/Debian
+    OR
+git clone https://aur.archlinux.org/cntlm.git
+cd cntlm
+makepkg -si 							# install on Arch Linux
+	OR
+You can install manually from sourceforge
 
 
-#### NEEDS UPDATES ####
+2) Configure
+sudo nano /etc/cntlm.conf 				# Edit cntlm configurations below
+	Username: active_directory_domain_username
+	Domain: active_directory_domain
+	Proxy: upstream NTLM HTTP Proxy IP and port (xxx.xxx.xxx.xxx:yyyy)
+	Listen: local port for cntlm proxy (default is 3128)
+
+sudo cntlm -u username -d active_directory_domain -H   			# Generate hash for your AD password and copy/paste output into password fields
+
+sudo ufw allow 3128 					# Run only if using ufw or other firewall
+
+
+3) Run
+
+sudo service cntlm restart 						# Restart cntlm service
+
+OR
+
+cd $CNTLM_HOME/bin
+./cntlm -f -c $CNTLM_HOME/etc/cntlm.conf   		# Run cntlm in foreground. Add -v flag for verbose output/troubleshooting
+
+export http_proxy=http://127.0.0.1:3128
+export https_proxy=https://127.0.0.1:3128  		# export proxy env variables so outbound http/https connections will go through cntlm proxy
+
+- Notes:
+	- uncomment "Gateway yes" if you want to allow other machines to use the target machine for proxying
+
+
+
+
+------
+coding
+------
+
+##### Code Quality #####
+
+# Source - Engineer Man - https://www.youtube.com/watch?v=MQM_BpZ1gOM
+
+- plan and map out high level your code before you write it
+	- use diagrams, jot notes, high level goals or steps
+
+- use helpful comments in your code
+
+- stick to a standard
+	- consistency of how you write it
+		- design patterns
+		- variable naming
+		- function naming
+		- level of abstraction
+
+- code clearly/avoid "clever" code
+	- avoid using obscure syntax
+	- hard to understand
+	- fewer number of lines if possible
+	- avoid OOP if possible
+
+- introduce automated testing/test driven development
+	- especially for critical code
+
+- limit heavily abstracted and tightly coupled code
+	- hard to extend
+	- hard to maintain
+	- hard to test
+
+
+
+##### General Concepts #####
+
+# Source: Engineer Man - https://www.youtube.com/watch?v=loGWCJGmv7Q
+
+- Recursion - a function that calls itself within the body of that function
+			-
+
 
 
 
@@ -1098,6 +1343,7 @@ time curl <URL>
 #### References and tools ####
 
 https://reqbin.com/curl - excellent site for testing different curl commands (e.g. with POST, GET, POST JSON, PUT, DELETE, etc)
+https://everything.curl.dev/ - an extensive guide for all things curl
 
 
 
@@ -1499,6 +1745,58 @@ docker images 				# check local docker registry to see if busybox image is avail
 
 
 
+#### Docker Bench Security for host and container scanning ####
+# Source Github repo: https://github.com/docker/docker-bench-security
+# Image: docker/docker-bench-security:latest
+
+1) Pull down the docker bench security image from docker hub
+2) Run it according to the documentation in the Github repo:
+
+	On MacOSX:
+		docker run --rm --net host --pid host --userns host --cap-add
+		audit_control \
+		-e DOCKER_CONTENT_TRUST=$DOCKER_CONTENT_TRUST \
+		-v /etc:/etc \
+		-v /var/lib:/var/lib:ro \
+		-v /var/run/docker.sock:/var/run/docker.sock:ro \
+		--label docker_bench_security \
+		docker/docker-bench-security
+
+	On Redhat Linux:
+		docker run --rm --net host --pid host --userns host --cap-add
+		audit_control \
+		-e DOCKER_CONTENT_TRUST=$DOCKER_CONTENT_TRUST \
+		-v /etc:/etc:ro \
+		-v /usr/bin/containerd:/usr/bin/containerd:ro \
+		-v /usr/bin/runc:/usr/bin/runc:ro \
+		-v /usr/lib/systemd:/usr/lib/systemd:ro \
+		-v /var/lib:/var/lib:ro \
+		-v /var/run/docker.sock:/var/run/docker.sock:ro \
+		--label docker_bench_security \
+		docker/docker-bench-security
+
+- It will scan the host and all the containers running on the host
+- At the end, you will see the number of checks it ran + the score
+- The higher the score the better – scoring is:
+	- Warn Scored -1
+	- Pass Scored +1
+	- Note Score -0
+
+
+#### Dockscan ####
+
+- dockscan - https://github.com/kost/dockscan
+	- needs ruby 2.0
+	- installation via gem install
+
+
+# Docker for Windows config location
+C:/Users/Username/.docker/machine/default/config.json
+
+
+# docker run example (ssl scan of a domain)
+docker run --rm -it shamelesscookie/sslscan:latest yourURLminushttporhttps
+
 
 # sharing namespaces: https://www.guidodiepen.nl/2017/04/accessing-container-contents-from-another-container/
 
@@ -1535,16 +1833,6 @@ docker run -it -v /var/lib/docker:/var/lib/docker <image_ID> bash - check /var/l
 
 # persistent container, ensure auto restarts if machine goes down
 docker update --restart=always <container_id>
-
-
-# security scan tools
-
-- docker bench security - ### needs updating from internal Confluence ###
-
-- dockscan - https://github.com/kost/dockscan
-	- needs ruby 2.0
-	- installation via gem install
-
 
 
 # sidecar pattern - https://www.magalix.com/blog/the-sidecar-pattern
@@ -1641,6 +1929,11 @@ ENTRYPOINT [ "python", "-m"]
 - to build the primary image:
   docker build -t primary:<version> --target=primary .
 
+
+
+#### References ####
+
+https://docker-curriculum.com/ - beginner/starter guide on Docker
 
 
 
@@ -1747,6 +2040,24 @@ docker compose up          # will run all of the container images that were buil
 
 
 
+----
+entr
+----
+
+# source: Tech Craft - https://www.youtube.com/watch?v=2OHrTQVlRMg
+
+- Linux - watch files, when they change it will execute them
+
+
+#### Commands ####
+
+entr ruby main.rb
+		OR
+entr some_shell_script.sh 		# if shell script is updated, entr will execute it immediately in the terminal you ran entr in
+
+
+
+
 ---------------------
 environment variables
 ---------------------
@@ -1771,6 +2082,25 @@ export PATH=$PATH:/usr/local/bin 		# add a path to PATH in order to easily find 
 echo $VAR 			# show the value of a variable
 
 source ~/.bashrc    # set environment variables configured in .bashrc
+
+
+
+
+---
+exa
+---
+
+# source: Tech Craft - https://www.youtube.com/watch?v=2OHrTQVlRMg
+
+- Linux - a nicer alternative to ls command
+
+
+#### Commands ####
+
+exa - list files in current directory
+exa -lah - list files in current directory with more detail
+exa --tree - list files in current directory and subdirectories
+exa --tree --long - list files in current directory and subdirectories with more detail
 
 
 
@@ -2344,6 +2674,26 @@ fuser -v ./ 			# with more detail
 
 
 
+---
+fzf
+---
+
+# source: Tech Craft - https://www.youtube.com/watch?v=2OHrTQVlRMg
+
+- aka fuzzy finder
+- Linux - searches for files when the name is not quite known
+
+
+#### Commands ####
+
+fzf             
+   ipad product awes keyb       # searches for a file called boost-your-ipad-productivity-with-these-awesome-keyboard-shortcuts.mov   
+								# the keywords (which don't have to be complete) help narrow down the filename
+   ctrl+r (with fzf installed)  # does fuzzy matching on command history
+
+
+
+
 ---------------
 getfacl/setfacl
 ---------------
@@ -2623,11 +2973,12 @@ yum install git
 Github
 ------
 
-# Commands
+#### Commands ####
 
-- sudo reboot - reboot Linux server [which will ultimately reboot the Github service - note needs updating]
-- sudo systemctl start elasticsearch - restart search service
-- sudo systemctl status elasticsearch - check search services status
+curl -v -H "Authorization: token <your token>" https://github.cibcdevops.com/api/v3/repos/org/repo/issues     # Example of REST API call, pulling all issues for target repo
+sudo reboot - reboot Linux server [which will ultimately reboot the Github service - note needs updating]
+sudo systemctl start elasticsearch - restart search service
+sudo systemctl status elasticsearch - check search services status
 
 
 # Cool Stuff
@@ -2637,6 +2988,17 @@ Github
 	- you can use a terminal if you set up Github codespace, option can be found within the VSCode browser editor
 
 
+
+
+
+
+------
+GitOps
+------
+
+#### References ####
+
+Tech Talk: ArgoCD + Tekton = Better GitOps - https://www.youtube.com/watch?v=nOtxRNQAKXA
 
 
 
@@ -2964,6 +3326,20 @@ folder/
 	crds/								# Custom Resource Definitions
 	templates/					# A dir of templates when combined with values generate valid K8s manifest files
 	templates/NOTES.txt # OPTIONAL: plan text file containing short usage notes  
+
+
+
+-------
+history
+-------
+
+- history
+	- ![history_number] - run the command based on the number from the 'history' listing
+	- HISTTIMEFORMAT="%Y-%m-%d %T "
+		- history command will now show the date and time of previous command executions
+		- does not work on ksh
+
+- Ctrl+r - open reverse search. Start to type in command and it will autocomplete if it can find a previous command in the history
 
 
 
@@ -3423,10 +3799,50 @@ join
 
 #### Commands ####
 
-join -j2 file1.txt file2.txt 			# join common fields from two files together
+cat file1.txt 			# displaying the contents of first file
+1 AAYUSH
+2 APAAR
+3 HEMANT
+4 KARTIK
+5 DEEPAK
+
+cat file2.txt 			# displaying contents of second file
+1 101
+2 102
+3 103
+4 104
+
+join file1.txt file2.txt   # join the two files together
+1 AAYUSH 101
+2 APAAR 102
+3 HEMANT 103
+4 KARTIK 104
 
 
-##### NEEDS MORE EXPLANATION/CONTENT #####
+join file1.txt file2.txt -a 1   # print unpairable lines from the first file (put 2 for the second file)
+
+output:
+1 AAYUSH 101
+2 APAAR 102
+3 HEMANT 103
+4 KARTIK 104
+5 DEEPAK
+
+join file1.txt file2.txt -v 1    # print ONLY unpairable lines
+
+output:
+5 DEEPAK
+
+
+join -1 1 -2 1 file1.txt file2.txt      
+OR
+join -j1 file1.txt file2.txt 			# join file1 and file2 based on their common field (in this case, column 1)
+
+output:
+1 AAYUSH 101
+2 AAPAR 102
+3 HEMANT 103
+4 KARTIK 104
 
 
 
@@ -4515,6 +4931,24 @@ mpstat -P ALL  		 # shows consolidated + individual cpu usage
 
 
 
+----
+ncdu
+----
+
+# source: Tech Craft - https://www.youtube.com/watch?v=szehPBOwqlI
+
+- Linux - a tool for checking disk usage in a more efficient and consolidated way than du
+
+
+#### Commands ####
+
+ncdu
+	# scans the directory you launched it from [and all subdirectories]
+	# provides you with a breakdown of where all your storage is being spent [sorted from largest to smallest]
+	# you can drill down and immediately see the largest subdirectories/files
+	# hit 'd' to select deleting whatever is highlighted, followed by yes to delete
+
+
 
 
 --------
@@ -4687,7 +5121,7 @@ networking - general
 - An example LAN [NetworkChucks setup]: PC -> Switch -> Router -> Firewall -> Modem -> Fiber optic -> Internet
 
 
-# ARP - Address Resolution Protocol
+#### ARP - Address Resolution Protocol ####
 # Source: Powercert Animated Videos - https://www.youtube.com/watch?v=cn8Zxh9bPio
 
 - definition - used to resolve IP addresses to MAC addresses [the physical address of a device, eg. 00-04-5A-63-AI-66]
@@ -4723,7 +5157,7 @@ networking - general
 
 
 
-# Bluetooth vs. Wi-Fi
+#### Bluetooth vs. Wi-Fi ####
 # Source: Powercert Animated Videos - https://www.youtube.com/watch?v=mPMGRILsOVk&list=WL&index=1
 
 - both are radio frequency technlogies for wirelessly connecting electronic devices
@@ -4855,6 +5289,73 @@ ip route        # find routing table of server
 
 - default gateway - IP address of your router or modem/router combo that your computer connects to
 - subnet mask - defines which parts of the IP address refers to the network and host
+
+
+
+##### Subnet vs VLANs #####
+
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=6_giEv20En0
+
+- both are used to separate or break down a network into smaller networks
+	- improves performance
+	- security
+	- manageability
+
+- main difference:
+	- subnets separate networks physically
+	- VLANs separate networks virtually
+
+- subnet aka subnetwork
+	- a smaller network within a larger network
+	- creating subnets will separate and physically breakdown a network into smaller networks (with routers)
+		- will alleviate excess traffic because of broadcasts, which do not go past routers
+		- broadcasts from different devices will stay only within the subnet they are a part of
+		- security: different subnets wont be able to see each other''s data
+
+- VLAN - Virtual Local Area Network
+	- break down and separate a network virtually
+	- created on a VLAN-enabled switch
+	- ports on a VLAN switch can be configured to separate network traffic WITHOUT using routers
+	- e.g. VLAN switch configure a few ports to be part of one VLAN, configure a few others to be part of another VLAN, etc.
+		- you will have separate netowrks with separate broadcast domains, just like with subnetting
+		- no need to add routers, firewalls, etc.
+	- VLAN router e.g. - Netgear GS308E 8-Port Gigabit Ethernet Smart Managed Plus Switch
+
+
+
+##### Ports ######
+
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=g2fT-g9PX9o
+
+- definition: a logical connection that is used by programs and services to exchange information
+  - NOT a physical connection
+- specifically determines which program or service on a computer or server taht is going to be used
+- will have unique number that identifies them [0 - 65535]
+	- eg.
+		- 80, 443 - Web pages [http, https]
+		- 21 - FTP [file transfer protocol]
+		- 25 - email [SMTP]
+- port number is always associated with an IP address
+- IP:port work together to exchange data on a network
+- port numbers are assigned by IANA (Internet assigned Numbers Authority)
+
+- broken down into 3 categories
+	- 0-1023 - System or Well-Known ports
+		- egs. 80, 443, 25, 21
+	- 1024-49151 - User or Registered ports
+		- can be registered by companies and developers for a particular services
+			- egs.
+				- 1102 - Adobe Server
+				- 1433 - Microsoft SQL server
+				- 1416 - Novell
+				- 1527 - Oracle
+	- 49152-65535 - Dynamic or Private ports
+		- client-side ports that are free to use
+		- your computer assigns temporarily during a sesssion, e.g. when viewing a webpage
+
+	- the first two are server-side, the third is client-side
+
+
 
 
 
@@ -5055,6 +5556,39 @@ npm config set strict-ssl false
 
 # Remove all node_modules folders on an FS in multiple locations
 npx npkill
+
+
+
+----
+ntfy
+----
+
+# source: Tech Craft - https://www.youtube.com/watch?v=szehPBOwqlI
+# Installation - https://docs.ntfy.sh/install/
+# Integration https://ntfy.readthedocs.io/en/v2.0.1/#pushover-pushover
+
+
+- Linux - send notifications directly from the terminal
+
+
+
+#### Commands ####
+
+ntfy send hello   			# see config details below
+rm foo && ntfy send success || ntfy send failure
+
+
+
+#### Configuration ####
+
+- example config (ntfy.yml), using pushbullet as the app to notify
+		---
+		backends:
+		  - pushover
+		  - darwin
+		pushover:
+			user_key: apsodjapsodjkapjdpasojd
+
 
 
 
@@ -5369,6 +5903,73 @@ Identify bottlenecks:
 
 
 
+
+
+##### performance testing CLI tools #####
+# source: Tech Craft - https://www.youtube.com/watch?v=gbVNQHSpKeI
+
+- speedtest-cli - tests the speed of your internet connection
+
+	- usage:
+		speedtest-cli    		  # will generate a report of your upload and download speed (using multiple connections by default for max results)
+		speedtest-cli --single    # more useful for testing file upload and download speeds
+
+
+
+- 7z - a file compression tool which also has a great set of CPU benchmarks built in
+
+	- usage:
+		7z b    			  # runs a basic CPU benchmark (how many CPU cores + frequencies)
+							  # 4 other tests:
+								# speed: how fast data can be compressed or decompressed
+								# usage percentage (total of all cores)
+								# rating (MIPS - million instructions per second)
+								# normalized rating - (MIPS / usage)
+
+		7z b -mm='*'          # a more comprehensive CPU benchmark check (different algorithm)
+
+
+
+- iozone - benchmark tool for storage devices
+
+	- usage
+		iozone -a -I -b results.xls      # writes the results to excel
+											# 1st column: size of file that was processed (in KB)
+											# 1st row: record size in KB (how large are individual reads and writes in each test)
+											# each cell: test result in Kbps
+
+
+- iperf3 - testing speed of local network
+	
+	- usage (need two machines)
+		iperf3 -s      				 # on server side
+		iperf3 -c local.hostname     # run on client against the server hostname
+									 # will print out results for connection speed
+
+	- applications
+		- good for testing wifi speeds (where a device will get the best or worst speeds)
+
+
+
+- sysbench - flexible benchmarking tool for memory
+
+	- usage
+		sysbench memory run          # default test runs for 10 seconds, shows read/write speed of RAM
+
+
+- stress-ng - stress tests a machine in various ways
+
+	- usage
+		stress-ng --cpu 0 --cpu-load 50 --io 1 --malloc 1 -t 10
+			# runs for 10 seconds
+			# cpu 0 means stress test all cores
+			# test at 50% load
+			# io 1 - single io stressor
+			# malloc 1 - single memory allocation stressor
+
+
+
+
 ----
 perl
 ----
@@ -5431,6 +6032,26 @@ pr
 #### Commands ####
 
 pr -d /etc/yum.conf 			# add double space between lines
+
+
+
+
+-----
+proxy
+-----
+
+# Configuration on Rocky Linux
+
+1] In /etc/dnf/dnf.conf, add:
+
+proxy=URL:port
+proxy_username=username
+proxy_password=secretePasswordHere
+
+
+#### NEEDS UPDATES ####
+
+
 
 
 ---------
@@ -5537,6 +6158,20 @@ Multiprocessing:
 - Memory is not shared between processes
 - Mutexes not necessary (unless threading in the new process)
 - One GIL (Global Interpreter Lock) for each process
+
+
+
+------
+qualys
+------
+
+# Source: https://www.ssllabs.com/ssltest/
+
+- a tool to check external facing certificates
+- will tell you which certs are installed
+- usage
+	- go to the site above and type in a domain name to run an SSL scan on the target site.
+	- you will get back a grade on the quality of the SSL configuration a site has
 
 
 
@@ -5831,6 +6466,36 @@ Raspberry Pi
 
 
 
+------
+rclone
+------
+
+# source: Tech Craft - https://www.youtube.com/watch?v=szehPBOwqlI
+
+- Linux - similar to rsync, but does support syncing to cloud provider storage mediums
+
+
+#### Commands ####
+
+cat ~/.config/rclone/rclone.conf 		# create configuration
+
+- populate config with storage destination details
+- e.g.
+
+#### START ####
+[b2test]
+type = b2
+account = 00XXXXXXXXXXXXXXXXXd1234ds00000000004
+key = <insert_key_here>
+hard_delete = true
+####END
+
+rclone config 							# verify configuration
+rclone sync -P . b2test:[bucket_name]   # run sync with rclone
+										# will sync your local current working dir up to the destination bucket
+
+
+
 ---
 RDP
 ---
@@ -5899,20 +6564,31 @@ References
 ----------
 
 # Technical
-- https://crontab.guru/          # service to figure out any crontab entry
 - https://bundlephobia.com/      # check cost of adding select NPM packages
-- https://www.shellcheck.net/    # shell scripting syntax checker
+- https://coolermaster.com/us/en-us/power-supply-calculator 		# CoolerMaster Power Supply Calculator - add components to find out necessary wattage
+- https://crontab.guru/          # service to figure out any crontab entry
+- https://crt.sh/  				 # online certificate search and log tracker tool
+- https://everything.curl.dev/   # an extensive guide for all things curl
 - https://explainshell.com/      # check what individual CLI lines mean [help text]
 - https://groovy-lang.org        # official site for learning the Groovy programming language
-- https://coolermaster.com/us/en-us/power-supply-calculator 		# CoolerMaster Power Supply Calculator - add components to find out necessary wattage
+- https://reqbin.com/curl        # excellent site for testing different curl commands (e.g. with POST, GET, POST JSON, PUT, DELETE, etc)
+- https://www.shellcheck.net/    # shell scripting syntax checker
+
 
 # Training
-- boson.com - highly recommended by NetworkChuck [YT] for CCNA, CCNP, etc. certification
-- https://www.youtube.com/watch?v=uEVmD6n8Il0 - NodeJS deployment strategies [Fireship]
+- boson.com  					 					# highly recommended by NetworkChuck [YT] for CCNA, CCNP, etc. certification
+- https://www.youtube.com/watch?v=uEVmD6n8Il0  		# NodeJS deployment strategies [Fireship]
+- https://docker-curriculum.com/ 					# Docker beginner/starter guide
 
 
 # Info
+- https://badssl.com   		# DO NOT navigate to on an internal/corporate network. Bad certificate errors glossary 
+- https://certificate.transparency.dev/    # certificate transparency. Explains how CT logging works and why we use it
+- https://datatracker.ietf.org/wg/pkix/about/    # PKIX progress tracker. Describes the PKI X initiative with a progress tracker for different items.
+- https://www.youtube.com/watch?v=nOtxRNQAKXA    # Tech Talk: ArgoCD + Tekton = Better GitOps
 - https://serverfault.com/questions/660160/openssh-difference-between-internal-sftp-and-sftp-server  # Explanation on diff between internal-sftp and sftp-server
+
+
 
 
 
@@ -6024,6 +6700,47 @@ chmod 755 /etc/cron.daily/updaterepos
 
 
 
+
+------------
+ripgrep (rg)
+------------
+
+# source: Tech Craft - https://www.youtube.com/watch?v=2OHrTQVlRMg
+
+- Linux - searching your files for specific text or patterns (regex)
+
+
+#### Commands ####
+
+rg sometext 			      			# search for sometext in all files in current and subdirs
+rg -e '[0-9]{2}:[0-9]{2}'    			# use -e for special patterns that contain dashes, colons (in this case, searching for timestamps)
+rg --glob 'some_dir/*.txt' sometext     # search for sometext in *.txt only in the some_dir directory using --glob flag
+rg --glob 'some_dir/**/*.txt' sometext  # same as above except search all sub dirs under some_dir which contain txt file extension
+
+
+
+
+------
+rmlint
+------
+
+# source: Tech Craft - https://www.youtube.com/watch?v=szehPBOwqlI
+# documentation: https://rmlint.readthedocs.io/en/latest
+
+- finds and removes duplicate files, empty files, broken symlinks
+	- usage
+		- from root of dir you want to clean, run:
+
+		rmlint
+			# will first generate a report of files that will be kept [the originals] and files that will be cleaned up
+			# will create a shell script and json for you to run to perform the actual cleanup (based on the report)
+		
+		- from root of dir you want to clean, run:
+
+		rmlint * // pictures          # this will designate "pictures" directory as the one that contains the originals
+
+
+
 ---
 rpm
 ---
@@ -6048,6 +6765,31 @@ rpm -q --scripts [installed_package_name]	   # check scriptlets of an installed 
 
 rpm2cpio squid-3.5.20-12.el7.x86_64.rpm | cpio -idmv     # converts squid rpm to cpio archive
 
+
+
+-----
+rsync
+-----
+
+# source: Tech Craft - https://www.youtube.com/watch?v=szehPBOwqlI
+
+- Linux - a fast file copying tool that can quickly sync the contents of 2 directories (including across different machines)
+
+- benefits
+	- more reliable than running from the GUI
+	- faster
+	- can run incrementally
+- downsides
+	- only supports local and rsync targets [i.e. can't send to cloud provider storage apps like Google Drive, Dropbox, etc.]
+
+#### Commands ####
+
+rsync -av --progress /external/volume/to/contents_dir .
+	# where -a is archive mode, -v is verbose output, --progress shows syncing progress
+	# -a copies directories recursively, copies timestamps, file permissions, ownership [if you're superuser]
+
+rsync -av --progress . someuser@example.com:/volume1/dest_dir
+	# sync from local to a remote (server)
 
 
 
@@ -6274,6 +7016,7 @@ SELinux
 
 - Linux/UNIX - provides general support for the enforcement of many kinds of mandatory access control policies, 
 			   including those based on the concepts of Type Enforcement (reg trademark), Role-Based Access Control, and Multi-Level Security
+			 - aka "Security Enhanced Linux"
 
 - three different modes
 	Enforcing: If an event occurs against the defined policy of SELinux, then the event is blocked and logged.
@@ -6290,10 +7033,19 @@ SELinux
 		-rw------- root root system_u:object_r:admin_home_t:s0 file.txt
 
 
-#### policies ####
+##### Policies #####
+
+- defines "types" for file objects and "domains" for processes
 
 - When a user is mapped to "unconfined_u", SELinux does not block access for the user.
+
 - "semanage" command is used to manage SELinux rules
+
+- There are two components to the policy:
+	- the binary tree - provided by the selinux-policy-<policyname> package and supplies the binary policy file.
+					  - Alternatively, the binary policy can be built from source when the "selinux-policy-devel" package is installed.
+	- the source tree
+
 
 
 #### Commands ####
@@ -6323,8 +7075,25 @@ id -Z  						# check SELinux security context for current user
 
 #### Files and configs ####
 
-/etc/selinux/config  		# config file for SELinux
-/etc/sysconfig/selinux  	# symlink for the above
+/etc/selinux/config  							# config file for SELinux
+/etc/sysconfig/selinux  						# symlink for the above
+
+/etc/selinux/targeted/  	    				# this is the root directory for the targeted policy, and contains the binary tree.
+
+/etc/selinux/targeted/policy/ 					# this is the location of the the binary policy file policy.<xx>
+
+/etc/selinux/targeted/contexts/ 				# this is the location of the security context information and configuration files
+												# which are used during runtime by various applications.
+
+/etc/selinux/targeted/contexts/files/ 			# contains the default contexts for the entire file system.
+												# This is referenced by restorecon when perfoming relabeling operations.
+
+/etc/selinux/targeted/contexts/users/ 			# in the targeted policy, only the root file is in this directory
+												# These files are used for determining context when a user logs in
+												# For example, for the root user, the context is user_u:system_r:unconfined_t.
+
+/etc/selinux/targeted/modules/active/booleans*  # this is where the runtime Booleans are configured.
+
 
 
 #### supporting tools ####
@@ -6402,6 +7171,32 @@ split
 
 split -2 yum.conf splityum 				# split yum.conf into multiple files, 2 lines a file
 
+
+
+
+---
+sql
+---
+
+##### SQL injection - quick intro #####
+
+# Sources: NetworkChuck - https://www.youtube.com/watch?v=2OPVViV-GQk
+		   Wikipedia
+
+- sql injection - a code injection technique used to attack data-driven applications, in which malicious SQL statements are inserted into an entry field for execution
+				- e.g. to dump the database contents to the attacker
+
+- Dashlane - dashlane.com/networkchuck50 (use code networkchuck50 to get 50% off)
+		   - an online tool used to monitor the dark web to see if your usernames and passwords are for sale *******
+		   - will generate and store your updated passwords for you all in one place
+		   - will also support MFA for logging into different sites
+
+- reasons sql injections can be easily executed: companies or devs can be lazy with their coding.
+
+- security measures to protect
+	- use prepared statements with parameterized queries
+	- use allowliist input validation
+	- escape user input before putting it in a query
 
 
 
@@ -7340,6 +8135,17 @@ az aks get-credentials -n aks-getting-started -g aks-getting-started
 
 
 
+-------------
+terminal/tty?
+-------------
+
+- Ctrl and + together - increase screen size
+- Ctrl and - together - decrease screen size
+
+#### NEEDS UPDATES ####
+
+
+
 
 ----
 test
@@ -7546,6 +8352,15 @@ For both check:
 
 - in Chrome or whichever browser, open the console and check the performance tab, see if memory usage and see if it keeps climbing
 - go to memory tab and take a snapshot of the memory values of each page or call
+
+
+
+--------
+truncate
+--------
+
+- truncate -s 0 something.txt 			# truncate target file, in this case, to 0 size, removing all content
+
 
 
 
@@ -8097,12 +8912,11 @@ o opens up a new line after the current line
 O opens up a new line previous to the current line
 ^V <ctrl>V  To quote a character (insert a non-printing character)
 
-To delete text:
+# To delete text:
 x deletes a single character (at the cursor)
 d<unit> deletes curent textual unit, taken from above. So,
 dw deletes word, up to punctuation
 dW deletes word, ignoring punctuation
-
 D$           # deletes from cursor to end of line
 dd or D      # delete a line
 S            # delete a line and go into insert mode in the deleted line
@@ -8115,11 +8929,10 @@ y[unit]     # copy
 yy          # copy (or yank) current line to buffer
 yw          # copy (or yank) word
 Y copy to end of line (or y$)
-
 p paste, following the cursor.
 P paste, preceding the cursor.
 
-To change text:
+# To change text:
 c<unit> marks unit for overwrite, puts you in insert mode. So,
 cw change current word
 C change to end of line
@@ -8133,6 +8946,46 @@ n reexecutes last search
 N same thing, but other direction
 ?<string> searches backward for <string>
 ^L <ctrl>L refreshes the screen
+
+
+
+--------------
+virtualization
+--------------
+
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=UBVVq-xz5i0
+
+- definition: the process of simulating hardware and software in a virtual (software) environment
+
+- usage: the traditional way a business operates is by having one machine for one application
+	- can consolidate them on a single server (e.g. run 3 virtual machines, running 3 different OS, each running different applications)
+
+- hypervisor - a software that creates and runs the virtualization 
+			 - it allocates and controls the sharing of a machine's resources (storage, CPU, memory)
+
+- hypervisor types
+	- Type 1: installed on empty, bare metal hardware (i.e. no existing OS or software installed)
+	 	- egs. VMWare ESXi, Citrix XenServer, Microsoft Hyper-V
+
+	- High-level setup steps
+		1) Install virtualization software
+		2) Allocate the server's hardware resources
+	 	3) Install operating systems on each VM
+	 	4) Install applications on each VM
+	
+	- Type 2: installed on top of an existing operating system
+		- typically used on personal computers
+			- to test new software
+			- to try out different operating systems
+		- egs. Oracle VM VirtualBox, Microsoft Virtual PC, VMWare Workstation
+
+- benefits
+	- saves money on hardware and electricity
+	- saves money on floor space
+	- saves money on maintenance and management
+	- portability (can transfer a VM from one server to another)
+	- takes advantage of full computing capability of a machine
+	- disaster and recovery (easy to recover a VM when VM file is spread across other machines as a backup)
 
 
 
@@ -8240,7 +9093,57 @@ whois [domain_name]   # will return comprehensive information about that URL/dom
 Windows
 -------
 
-# Windows Spotlight images retrieval
+##### Windows Commands #####
+
+# Sources:
+# NetworkChuck - https://www.youtube.com/watch?v=Jfvg3CS1X3A
+
+# Ensure you are in Administrator mode before executing the below
+
+assoc 														# will tell you which file type is associated with what program
+assoc .mp4=VLC.vlc 											# will associate mp4 files with VLC media player
+chkdsk /f 													# will go through your disk and see if any errors (and fix them)
+chkdsk /r 													# will go through your disk and check for physical sector errors (and fix them). May require reboot of machine
+cls 														# wipes screen
+DISM  /Online /Cleanup-Image /ScanHealth 					# Deployment Service Imaging and Management - will fix your system image if needed
+DISM  /Online /Cleanup-Image /RestoreHealth  				# will restore system health if there are issues from the scan (run sfc command after to run another health check)
+getmac /v 													# get MAC/physical address of machine
+ipconfig 													# find your machine's IP address
+ipconfig /all 												# includes MAC address, DNS server info
+ipconfig /release 											# release your machine's IP address
+ipconfig /renew												# reaches out to DHCP to assign a new IP to your machine
+ipconfig /displaydns 										# displays all the sites your machine knows about (in your local DNS cache)
+ipconfig /displaydns | clip     							# will copy the output to Clipboard so you can copy it into Notepad, Word, etc.
+ipconfig /flushdns 											# will flush your DNS resolver cache and removing any old/state DNS entries
+nslookup somedns.com 										# tells you which dns server you're using along with giving you the IP associated with the target address
+nslookup somedns.com 8.8.8.8 								# same lookup except using a target DNS server (in this case, Google's DNS server)
+nslookup -type=txt somedns.com  							# lookup other types of DNS records
+netsh wlan show wlanreport									# generates pretty HTML report on your wireless network status
+netsh interface show interface 								# show your network interfaces
+netsh interface ip show address | findstr "IP Address" 		# show all IP addresses on your network
+netsh interface ip show dnsservers 							# show all available DNS servers
+netsh advfirewall set allprofiles state off 				# turn off Windows Defender firewall (wont work if youre running BitDefender)
+netstat 													# check what connections are opened locally and to other servers/sites
+netstat -af 												# check what ports you have opened
+netstat -o													# check pids for each connection
+netstat -e -t 5 											# show interface statisticss (e.g. bytes sent and received)
+ping somedns.com 											# check to see if a site is up or down
+ping -t somedns.com 										# keep continually pinging site
+powercfg /energy 											# check if any power issues with your machine
+powercfg /batteryreport 									# report to you in HTML format the state of your battery
+route print  												# show routing table (routes your connections will take outbound from your machine)
+route add <IP> mask <mask> <gateway_IP> 					# add a route
+route delete <IP> 											# delete a route
+shutdown /r /fw /f /t 0										# shutdown your PC and restart into BIOS
+sfc /scannow 												# system file checker - will fix/replace system files if they are bad
+tasklist | findstr <process> 								# print your task list (like Task Manager), narrow down results piping to findstr
+taskkill /f /pid <PID> 										# force kill target process
+tracert somedns.com 										# trace path to destination + show how long each hop towards the site took
+tracert -d somedns.com 										# ignore resolving domain names
+
+
+
+#### Windows Spotlight images retrieval ####
 
 - location: C:\Users\Buildmaster\AppData\Local\Packages\Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy\LocalState\Assets>
 	- from command prompt, cd to the above and then:
@@ -8252,7 +9155,6 @@ Windows
 		OR
 
 		ren * *.jpg  								# rename all files to jpg files with Powershell
-
 
 
 
@@ -8345,3 +9247,20 @@ ls -latr /etc/yum.repos.d     # this is where yum repo information is kept, also
 	- add or edit: email_from = root@localhost
 	- add or edit: email_to = root
 
+
+
+
+------
+zoxide
+------
+
+# source: Tech Craft - https://www.youtube.com/watch?v=2OHrTQVlRMg
+
+- Linux - alternative to cd command
+
+
+#### Commands ####
+
+z ~/some_dir         # change dir to ~/some_dir
+
+		#### NEEDS UPDATING ####
