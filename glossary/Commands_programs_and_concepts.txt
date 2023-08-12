@@ -31,13 +31,13 @@
 	- beamforming: a technique that sends transmissions in a specific direction, which strengthens the signal
 		- Wi-Fi 5 does not have beamforming
 
-	- Wi-Fi 6 minimizes interference to nearby networks 
+	- Wi-Fi 6 minimizes interference to nearby networks:
 		- Basic Service Set Colouring (BSS) - colours or marks the networks so it can distinguish another network from its own 
 
 	- security: WPA3 - provides cutting edge security protocols that enable a more robust authentication that will increase protection from password detection attempts
 		- Wi-Fi 6 devices must be WPA3 certified
 
-	- extended battery life
+	- extended battery life:
 		- Target Wake Time - a router or access point schedules a time with wi-fi devices on when data is supposed to be sent or received
 
 	- new frequency: 6Ghz band
@@ -45,6 +45,48 @@
 		- low latency
 		- less interference
 		- greater capacity
+
+
+
+--
+AI
+--
+
+#### AI vs. Machine Learning ####
+
+# Source: IBM Cloud - https://www.youtube.com/watch?v=4RixMPF4xis
+
+- AI
+	- simple definition - AI is basically exceeding or matching the capabilities/intelligence of a human
+		- ability to discover, find out new information
+		- ability to infer, to read in information from other sources that maybe has not been explicitly stated
+		- ability to reason, to figure things out
+
+	- mimicking human abilities
+		- natural language processing (NLP)
+		- vision - a system thats able to see/hear
+		- text to speech
+		- motion
+
+- ML
+	- a subset of AI
+	- involves predictions or decisions based on data
+	- sophisiticated form of statistical analysis
+	- the more we feed into the system, the more its able to give us accurate predictions and decisions based on data
+
+	- supervised machine learning
+		- more human oversight
+		- looking at training of the data
+		- use labels superimposed on the data
+
+	- unsupervised machine learning
+		- more able to run and find things not explicitly stated
+
+- DL (deep learning)
+	- a subset of ML
+	- neural networks - nodes, statistical relationships between nodes to model the way our minds work
+	- multiple layers of neural networks to make it "deep"
+
 
 
 
@@ -407,6 +449,21 @@ AWS
 
 # Another bonus 
 - App Engine Standard - for hosting NodeJS applications, easily scalable
+
+
+
+-----
+azure
+-----
+
+#### Service Health Alerts ####
+
+# Source: John Savill's Technical Training - https://www.youtube.com/watch?v=KwQBBvyOblk
+
+- https://github.com/checkswinga/devops-glossary/azure/snaps/azure_service_health_alerts
+	- high level picture of service health alert setup, configurations, process for how to manage them
+
+
 
 
 
@@ -1340,6 +1397,10 @@ time curl <URL>
 	- system or "sys" - amount of CPU time spent in kernel mode.
 
 
+# curl down artifact from Artifactory with authentication
+curl -o helm_3.11.1.tar -H 'X-JFrog-Art-Api:<your_api_key>' "https://artifactory.somewhere.com/artifactory/local-generic-repo/some_folder/some_tar.tar"
+
+
 #### References and tools ####
 
 https://reqbin.com/curl - excellent site for testing different curl commands (e.g. with POST, GET, POST JSON, PUT, DELETE, etc)
@@ -1674,7 +1735,7 @@ docker
 
 - Linux/Windows/Mac - a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called "containers"
 					- used to automate the deployment of application in lightweight containers so that application can work efficiently in different environments.
-
+					- ***containers are just Linux processes***
 
 
 #### Installation - Rocky Linux ####
@@ -1742,6 +1803,21 @@ docker ps 					# check for running docker processes. There should be none.
 docker pull busybox 		# pull busybox image from docker hub
 
 docker images 				# check local docker registry to see if busybox image is available
+
+
+
+
+#### Commands ####
+
+docker run -d image_tag:version  									# Run specified image as a container (-d for detach so you dont login to container automatically)
+
+docker images --filter=reference='*/*/image_name/*/*:4.1.4' -q 		# get image id by filter
+
+docker rmi $(docker images --filter=reference="*:stuff_*" -q) 		# Remove images by id, only works if this id does not have multiple tags
+
+docker rmi -f fd484f19954f 											# Forcefully delete image (by ID) and all its associated tags
+
+dockerd --debug  													# Debug docker service (useful for startup issues)
 
 
 
@@ -1934,6 +2010,10 @@ ENTRYPOINT [ "python", "-m"]
 #### References ####
 
 https://docker-curriculum.com/ - beginner/starter guide on Docker
+https://blog.jessfraz.com/post/docker-containers-on-the-desktop - Jess Frazelle''s blog about creating containers for Windows desktop applications
+https://github.com/jessfraz/dockerfiles - Jess Frazelle''s GIT repo with all her dockerfiles :D
+https://github.com/marcel-dempers/my-desktop - Marcel Dempers'' Docker Desktop setup repo
+
 
 
 
@@ -2521,6 +2601,20 @@ find . -printf “%M %m %f\n”
 
 
 
+--------
+firewall
+--------
+
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=a8pyWnBRVV8
+
+- a system that is designed to prevent unauthorized access from entering a private network
+	- filters the information that comes in by the rules in its "access control list" (determined by network administrator)
+	- blocks unwanted traffic
+
+- purpose is to create a safety barrier between a private network and public internet
+
+
+
 ---------------------------
 firewalld (on CentOS/RHEL7)
 ---------------------------
@@ -2888,10 +2982,31 @@ git config --global credential.helper store
 
 
 
-# Hooks - tell GIT to do stuff upon certain CLI actions
 
-- in local repo, look under .git/hooks folder, you can create shell scripts for different things like pre-commit actions, post-commit actions, etc.
+#### Hooks - tell GIT to do stuff upon certain CLI actions ####
+
+- in local repo, look under ".git/hooks" folder, you can create shell scripts for different things like pre-commit actions, post-commit actions, etc.
 - husky - an npm package that makes implementing GIT hooks easier [go to Github repo and "npm install husky -D" locally to find out more]
+
+#### Example ####
+
+# Source: https://blog.mrhaki.com/2012/10/groovy-goodness-using-groovy-for-git.html
+
+1] In your GIT bash terminal, create a file in your GIT repo:
+
+	cd <your_local_repo>/.git/hooks
+	touch post-commit
+
+2] Copy and paste the code from https://github.com/checkswinga/devops-glossary/groovy/post-commit.groovy into your post-commit file
+	- implements a hook to send a notification via Growl
+	- code needs a bit of editing to change local references
+
+3] Create another file in your hooks directory called "commit-msg"
+
+4] Copy and paste the code from https://github.com/checkswinga/devops-glossary/groovy/commit-msg.groovy into your commit-msg file
+	- implements a hook to stop a commit to the remote if the commit msg is empty
+
+
 
 
 # Log - an advanced command for an easier look at git commit history locally
@@ -3326,6 +3441,34 @@ folder/
 	crds/								# Custom Resource Definitions
 	templates/					# A dir of templates when combined with values generate valid K8s manifest files
 	templates/NOTES.txt # OPTIONAL: plan text file containing short usage notes  
+
+
+#### NEEDS UPDATES ####
+
+# Reference: https://www.youtube.com/watch?v=WugC_mbbiWU
+
+- Items to update
+	- Chart.yaml details
+	- values.yaml details
+	- requirements.yaml
+	- templates folder details
+	- NOTES.txt - for post deployment output (e.g. of instructions, what to do next, etc.)
+	- helm create
+	- helm create starter templates (helm create --starter)
+	- configmap updates
+	- custom config maps
+	- helm hooks (e.g. post-install)
+	- helm hook types
+		- install
+		- delete
+		- upgrade
+		- rollback
+	- allow reuse of existing PVC for data
+	- ingress config
+	- helm test
+	- namespacing helper templates
+	- dependencies and conditional dependencies 
+	- toYaml
 
 
 
@@ -6762,6 +6905,8 @@ rpm -ev pkg_name --dbpath /path/to/rpm_db      # uninstall rpm
 rpm -qlpv [rpm_name.rpm]                       # list files in an RPM
 rpm -ql [installed_package_name]  			   # list files in an installed RPM package
 rpm -q --scripts [installed_package_name]	   # check scriptlets of an installed package
+rpm -qpR mediawiki-1.4rc1-4.i586.rpm  		   # show list of dependencies for an rpm
+rpm -ivh mediawiki-1.4rc1-4.i586.rpm 		   # another way of showing dependencies for an rpm except through installation attempt
 
 rpm2cpio squid-3.5.20-12.el7.x86_64.rpm | cpio -idmv     # converts squid rpm to cpio archive
 
@@ -7160,6 +7305,60 @@ smtp
 
 
 
+--------
+software
+--------
+
+# How Major Parts of Modern Software Fit Together (05/08/22)
+# Source: Engineer Man - https://www.youtube.com/watch?v=2XDhad47Sjk
+
+major pieces:
+	operating systems:
+		- linux
+		- windows server
+	backends:
+		- apis
+		- web servers
+		- logic layer
+	frontends:
+		- frameworks
+		desktop:
+			- electron
+			- qt/winforms/cocoa
+			- swing
+			- terminal
+		web:
+			- html/css/javascript
+		mobile:
+			- native
+			- hybrid (e.g. react native)
+	databases:
+		- sql (rigid)
+		- nosql/schemaless
+	console tasks:
+		- on demand scripts
+	cronjobs:
+		- scheduled routines
+	worker/job-queue:
+		- processing/fully offloading
+		- fully asynchronous
+	transport:
+		- tcp/udp
+		- http/https
+		- websockets
+	devops:
+		- test suites
+		- quality assurance
+		- automated deployments
+		- continuous integration
+	scale concerns:
+		- content delivery networks (cdns)
+		- database clustering
+		- server load balancing
+
+
+
+
 -----
 split
 -----
@@ -7205,8 +7404,17 @@ sql
 ssh/sshd
 --------
 
+# Sources:
+# Powercert Animated Videos - https://www.youtube.com/watch?v=tZop-zjYkrU
+# Various/misc/experience
+
 - Linux/UNIX - ssh - program for logging into a remote machine and for executing commands on a remote machine
+				   - aka Secure Shell
+				   - protects the data from being attacked or stoled as its being transferred over a network
+				   - provides password and public key authentication
+
 - Linux/UNIX - sshd - OpenSSH server daemon - listens for connections from clients (logins)
+
 
 
 #### Commands ####
@@ -7248,7 +7456,7 @@ iptables -A INPUT -s 192.168.0.0/24 -p tcp --dport 22 -j ACCEPT 		# set rule for
 
 
 #### SSH tunneling - requires SSH server to be set up on target machine ####
-# source: https://www.youtube.com/watch?v=AtuAdk4MwWw&list=WL&index=9
+# source: Tinkernut - https://www.youtube.com/watch?v=AtuAdk4MwWw
 
 # tunnel from local machine to a remote machine
 ssh -L <port_to_expose>:<destination_IP>:<port_to_forward> <dest_user>@<destination_IP>
@@ -7396,7 +7604,7 @@ Change: 2019-11-06 09:52:17.971979713 +0100
 
 
 -------
-Storage
+storage
 -------
 
 # Block vs File Storage: very traditional vs. the newer storage types
@@ -7726,6 +7934,49 @@ tee
 df -h | tee disk_usage.txt                       # df -h output gets written into disk_usage.txt
 command | tee file1.out file2.out file3.out      # write command output to multiple files
 
+
+
+
+------
+telnet
+------
+
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=tZop-zjYkrU
+
+- Linux/MacOS/Windows/UNIX - aka "Teletype Network"
+						   - developed in 1969
+						   	  - all commands are in cleartext
+						   	  - no encryption
+						   	  - not to be used over the internet
+						   - a terminal emulation program that is used to access remote servers
+						   - a simple command-line tool that will allow you to send commands remotely to a server and administer that server just as if you
+	  						 were sitting in front of it
+
+
+#### Usage (high-level) ####
+	- remotely run programs, delete files, create folders, stop/start services, etc. on the target machine
+	- manage and configure other network devices such as routers and switches
+	- check if ports are open or closed on a server (common) 
+
+
+#### Setup - Windows 10 ####
+
+1] Click on Start Menu -> Windows System -> Control Panel
+
+2] Click on "Turn Windows Features on or off"
+
+3] Check the box next to "Telnet Client" and save
+
+
+
+#### Fun Commands ####
+
+telnet towel.blinkenlights.nl  			# shows ASCII version of Star Wars
+telnet freechess.org 					# play telnet version of chess
+telnet rainmaker.wunderground.com 		# Enter city code and you'll get the weather for that city
+
+
+##### NEEDS UPDATES/MORE COMMANDS #####
 
 
 
@@ -9097,6 +9348,7 @@ Windows
 
 # Sources:
 # NetworkChuck - https://www.youtube.com/watch?v=Jfvg3CS1X3A
+# NetworkChuck - https://www.youtube.com/watch?v=prVHU1fLR20
 
 # Ensure you are in Administrator mode before executing the below
 
@@ -9142,6 +9394,28 @@ tracert somedns.com 										# trace path to destination + show how long each h
 tracert -d somedns.com 										# ignore resolving domain names
 
 
+attrib +h +s +r foldername 									# hide foldername from view
+attrib -h -s -r foldername 									# show or make foldername visible again
+copy /b image.extension+folder.zip image.extension  		# hide a zip archive inside of an image file, e.g. copy /b untitled.jpg+myarchive.zip new_untitled.jpg
+cipher /E 													# in the folder you're in, encrypt all files and directories
+netsh wlan show profile 									# show every wifi network you've ever connected to
+netsh wlan show profile wifinetwork key=clear				# show wifi network details AND the password to it
+wmic path softwareLicensingService get OA3xOriginalProductKey 		# show original Windows product key (may not work on a system which has upgraded or re-installed Windows with a new version)
+
+# Show wifi passwords for all wifi networks this PC has logged into
+for /f "skip=9 tokens=1,2 delims=:" %i in ('netsh wlan show profiles') do @if "%j" NEQ "" (echo SSID: %j & netsh wlan show profiles %j key=clear | findstr "Key Content") >> wifipassword.txt
+
+
+# Run Windows CMD as Administrator by default
+
+1] Go to Start Menu -> search for "cmd" -> right click "Command Prompt" -> Open File Location
+
+2] Right click Command Prompt shortcut -> Properties -> Advanced
+
+3] Click checkbox next to "Run as administrator" and click Ok -> Apply -> Ok
+
+
+
 
 #### Windows Spotlight images retrieval ####
 
@@ -9155,6 +9429,35 @@ tracert -d somedns.com 										# ignore resolving domain names
 		OR
 
 		ren * *.jpg  								# rename all files to jpg files with Powershell
+
+
+
+
+------
+winget
+------
+
+# Sources:
+# John Savill's Technical Training - https://www.youtube.com/watch?v=15fg5-I3CI4&pp=ygUndXNpbmcgd2luZ2V0IHBhY2thZ2UgbWFuYWdlciBpbiB3aW5kb3dz
+# Github repo - https://github.com/microsoft/winget-pkgs
+
+
+- Windows - package manager CLI tool, used to install programs into Windows environments
+
+#### Commands ####
+
+winget --info		 				# shows winget version plus configuration details
+winget source list 					# show all remote sources for package installations (aside from list, options include add, remove, 										# update)
+winget features 					# shows configuration features available/enabled/disabled for winget
+winget settings 					# opens json file settings file
+winget list 						# lists all installed programs (not necessarily installed by winget). Can use winget list <string> 										# to narrow the search
+winget search -q code 				# search locally and in all soures for packages that include the word 'code'
+winget show "microsoft powertoys" 	# shows all info about Microsoft PowerToys app
+winget show "discord" --versions 	# show all avaialble versions of discord
+winget install discord -v 1.0.9004  # install specified version of discord
+winget upgrade 						# shows packages that have available newer versions to upgrade to
+winget upgrade discord 				# downloads and upgrades the locally installed version of discord to the latest version 
+
 
 
 
