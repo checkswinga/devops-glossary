@@ -1,0 +1,49 @@
+DevOps Ground Philosophy
+------------------------
+
+# Supporting sources
+	# Continuous Delivery - https://www.youtube.com/watch?v=DSCWSWME8G4 (with Gojko Adzic)
+	# Accelerate - Dr. Nicole Forsgren, Jez Humble, Gene Kim
+
+#### Solutioning ####
+- define the problem statement
+- define the effort required to manually execute on dealing with the problem without trying to workout a better solution
+- define the change in behaviour we want to see with the implementation of something new
+- finding a route towards the solution
+	- discarding steps that don't work towards it
+- identifying the right things to measure when it comes to value
+- MOST IMPORTANT: getting the protocol right (how things will talk to each other)
+
+- abstracting away the complexities for clients
+	- e.g. Github Actions, Openshift
+
+
+#### Continuous Delivery ####
+
+- limit WIP items
+
+
+
+#### Post-implementation ####
+
+- measuring the outcome vs the effort to implement (though in some cases, effort to implement can and should be validated)
+
+
+#### Monitoring ####
+
+- removing stuff that is no longer useful, needs to be removed
+- what is worth keeping
+- what is delivering value
+- getting feedback
+
+
+#### Management ####
+
+(Retrieve list from work text)
+
+
+
+#### Dealing with Negatives ####
+
+- it's tough to stop bad ideas
+	- try to gracefully ask and find out what is the projected goal of the idea and the vision behind it
