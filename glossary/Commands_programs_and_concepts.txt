@@ -727,13 +727,15 @@ bat
 
 - Linux - alternative to cat
 		- provides content-aware highlighting and line numbers
+		- installation: download binary from Github repo
+
 
 
 #### Commands ####
 
 bat filename.js
 bat -p filename.js 		# behave more like cat for file output
-
+bat filename.yaml --paging=never  	   # print the whole file [like cat would do] instead of one pager [like less]
 
 
 
@@ -801,6 +803,22 @@ Source: PowerCert Animated Videos - https://www.youtube.com/watch?v=_NX99ad2FUA
 		- CAT6a - 10 Gbps - Augmented
 		- CAT7 - 10 Gbps - Added shielding to the wires (shielded twisted pair version of CAT6a)
 		- CAT8 - 40 Gbps - ultimate copper cable, shielded (4 times faster than CA6a/CAT7)
+
+
+---
+cal
+---
+
+- Linux/UNIX - displays calendar in ASCII format, of the given month and year
+
+
+#### Commands ####
+
+cal  			# prints current month and year [may also highlight the current day]
+cal -3  		# shows the previous, current and next month
+cal 2023 		# prints all months and days in 2023
+cal 5 2014 		# prints month of May in 2014
+
 
 
 ------------
@@ -1067,6 +1085,31 @@ cloud - general
 		- Cloud provider provides: Servers, storage, virtualization, networking, operating system, middleware, runtime, applications, data
 			- eg. Google Docs
 
+
+
+---
+cmp
+---
+
+# Source: https://www.geeksforgeeks.org/cmp-command-in-linux-with-examples/
+
+
+- Linux/UNIX - compare two files byte by byte to find out whether the files are identical or not
+
+
+#### Commands ####
+
+cmp file1.txt file2.txt 						# _ indicating that the files are identical
+$ _
+
+cmp file1.txt file2.txt
+file1.txt file2.txt differ: byte 9, line 2  	# indicating that the first mismatch found in two files at byte 20 in second line
+
+cmp -b file1.txt file2.txt
+file1.txt file2.txt differ: 12 byte, line 2 is 154 l 151 i  	# indicating that the difference is in the 12th byte
+
+$cmp -i 10 file1.txt file2.txt 					
+$_ 												# indicating that both files are identical after 10 bytes skipped from both the files
 
 
 
@@ -3990,6 +4033,20 @@ output:
 
 
 
+---
+k9s
+---
+
+# Github repo: https://github.com/derailed/k9s
+# Learning sources: Marcel Dempers - That DevOps Guy: https://www.youtube.com/watch?v=qqR0c-qcILI
+
+- an enhanced kubernetes CLI tool
+- provides a terminal UI to interact with your Kubernetes clusters 
+
+
+
+
+
 -----
 kafka
 -----
@@ -4416,6 +4473,19 @@ cat file | tee -a log | cat > /dev/null
 
 # bonus: exit terminal but leave all processes running
 disown -a && exit
+
+
+
+#### Disadvantages (which are all manageable/solvable of Linux ####
+
+# Source: The Linux Experiment - 6 Things I HATE about using LINUX: https://www.youtube.com/watch?v=pCPDWQ5yGFQ
+
+- Different packaging formats
+- limited hardware support + expense
+- Linux Desktop seen as a niche market [and not very popular in general]
+- Bad battery life on Linux laptops
+
+
 
 
 
@@ -5074,6 +5144,21 @@ mpstat -P ALL  		 # shows consolidated + individual cpu usage
 
 
 
+
+----
+nano
+----
+
+# Sources:
+# nano documentation - https://www.nano-editor.org/docs.php
+
+- Linux/UNIX - a text editor [licensed under GNU]
+
+
+
+
+
+
 ----
 ncdu
 ----
@@ -5245,7 +5330,7 @@ netstat --tcp -n  # display the active TCP connections
 
 -n - show only numbers, not names [i.e. DNS names, which takes time to calculate when not using the -n switch]
 -a - show active connections, where TCP and UDP are listening
--b - show which program is creating the connection [e.g. you'll see something like chrome.exe]
+-b - show which program is creating the connection [e.g. you will see something like chrome.exe]
 -f - shows FQDN in foreign address column
 -s - show protocol statistics (usage for tcp, udp, etc.)
 -t - show active TCP connections
@@ -5734,6 +5819,21 @@ rm foo && ntfy send success || ntfy send failure
 
 
 
+----
+nvim
+----
+
+# Sources:
+# Main site - https://neovim.io/
+# Github - https://github.com/neovim/neovim
+# Fireship, NVim in 100 seconds - https://youtu.be/c4OyfL5o7DU
+
+
+- Linux/UNIX - a refactor of the Vim text editor
+			 - aka Neovim
+
+
+
 
 --
 od
@@ -6177,6 +6277,79 @@ pr
 pr -d /etc/yum.conf 			# add double space between lines
 
 
+
+
+----------
+processors
+----------
+
+# Sources
+# Fireship - CPU vs GPU vs TPU vs DPU vs QPU - https://www.youtube.com/watch?v=r5NQecwZs1A
+# https://cpu.land/ - breaks down how CPU executes programs (excellent resource, written by high schoolers!)
+
+- CPU
+	- Central Processing Unit
+	- the "brain" of the computer
+	- executes instructions of a computer program, such as arithmetic, logic, controlling, and input/output [I/O] operations
+	- also runs the operating system, manages hardware, has access to the systems RAM
+	- optimized for sequential computation
+	- have multiple cores, allows for work in parallel
+	- can handle complex logic and branching
+	- 24 cores are the biggest [as of 09/05/2023] - Apple M2 ultra, Intel i9
+	- CPU processing among the biggest expenses in a data center
+
+	- types of CPUs [architecture]:
+		- x86_64
+	  		- on most modern desktops
+	  	- arm
+	  		- mobile devices
+	  		- more simplified instruction set
+	  		- better power efficiency
+	  		- apple silicon
+	  			- proving that arm architecture can also work for high-performance computing on laptops and desktops
+	  		- Project Voltera - Microsoft project for making Windows work with arm
+	  		- becoming more popular with cloud providers [2023]
+	  			- neoverse chip
+	  			- Amazon Graviton 3
+	  				- allows for more processing with less power usage
+	  	- amd
+	  	- risc-v
+	  	- mips
+	  	- powerpc
+
+- GPU
+	- Graphical Processing Unit
+	- highly optimized for parallel computing
+	- has far more [though smaller and less powerful] cores than a CPU [e.g. 16 CPU cores vs almost 10,000 cuda cores]
+	- can perform a lot of linear algebra to render graphics instantly [e.g. in video games every time you push a button]
+	- also essential for training deep learning models
+		- perform tons of matrix multiplication on large data sets
+	- designed for simple computation
+ 	- 
+
+
+- TPU
+	- Tensor Processing Unit
+	- similar to GPUs, designed specifically for tensor operations [e.g. matrix multiplication for deep learning, but without needing to access registers or shared memory like GPUs]
+	- developed by Google in 2016
+
+- DPU
+	- Data Processing Unit
+	- "The Third Pillar" of major computing [CEO of NVidia]
+	- designed specifically for big data centers
+	- like a CPU, based on ARM, but optimized for moving data around
+		- networking functions like packet processing, routing, security
+		- storage: compression and encryption 
+	- main goal: relieve the CPU from any data processing jobs
+
+- QPU
+	- Quantum Processing Unit
+	- theoretical - does not currently exist physically
+	- deals with Qubits
+		- quantum bits - can exists in superposition of multiple states simultaneously
+	- collapses into the most possible/probable state
+	- subject to quantum entanglement - state of one is directly related to another, no matter the distance between them
+	- quantum gates - like logic gates in regular computers 
 
 
 -----
@@ -6725,8 +6898,9 @@ References
 
 
 # Info
-- https://badssl.com   		# DO NOT navigate to on an internal/corporate network. Bad certificate errors glossary 
-- https://certificate.transparency.dev/    # certificate transparency. Explains how CT logging works and why we use it
+- https://badssl.com   							 # DO NOT navigate to on an internal/corporate network. Bad certificate errors glossary 
+- https://certificate.transparency.dev/    		 # certificate transparency. Explains how CT logging works and why we use it
+- https://cpu.land/         					 # breaks down how CPU executes programs (excellent resource, written by high schoolers!)
 - https://datatracker.ietf.org/wg/pkix/about/    # PKIX progress tracker. Describes the PKI X initiative with a progress tracker for different items.
 - https://www.youtube.com/watch?v=nOtxRNQAKXA    # Tech Talk: ArgoCD + Tekton = Better GitOps
 - https://serverfault.com/questions/660160/openssh-difference-between-internal-sftp-and-sftp-server  # Explanation on diff between internal-sftp and sftp-server
@@ -9200,6 +9374,97 @@ N same thing, but other direction
 
 
 
+---
+vim
+---
+
+# Sources:
+# Vi vs Vim - https://www.shell-tips.com/linux/vi-vs-vim/#gsc.tab=0
+# Full Vi vs Vim differences - https://vimhelp.org/vi_diff.txt.html#vi-differences
+# Vim Macros - https://learnbyexample.github.io/vim_reference/Macro.html
+
+
+- aka "Vi IMproved"
+
+- Linux/UNIX - an implementation of vi with many additions
+			 - aka "Vi IMproved"
+
+
+
+#### List of additions to standard Vi ####
+
+- Multi-level undo
+	- undo multiple times [just like in Windows]
+	- undo cache - up to 1000 actions 
+
+- Tabs, Multiple windows and buffers
+	- display files in separate windows and tabs
+
+- Flexible insert mode
+	- allowing you to use the arrow keys to move around in a file while in insert mode
+
+- Macros
+	- record a series of commands and repeat them any number of times
+
+- Visual mode
+	- Once a section is highlighted, you can perform operations on this section only
+
+- Horizontal Scrolling
+	- When the wrap option is turned off (:set nowrap), long lines of text can be scrolled horizontally
+
+- Unicode and internationalization improvements
+	- support for Unicode encoding and uses internally an utf-8 encoding. you can set encoding on a file using set encoding=utf8
+	- can also display text right to left (RTL) for languages that require it using :set rightleft. You can reverse a text using :%!rev
+
+- Advanced features for Power-users - heavily increase your velocity, improve your development workflow, and your ability to customize Vim.
+
+		Text formatting
+		Completion in Insert mode
+		Jump tags
+		Automatic commands
+		Viminfo
+		Mouse support
+		Graphical User Interface (GUI)
+		Scripting language
+		Plugins
+		Syntax highlighting for many programming languages
+		Extended regular expressions
+		Integrated Spell checking
+		Diff mode
+		Encryption using the blowfish algorithm
+		Extensive customizable
+		Packages
+		Edit-compile-edit speedup
+		Indenting for many programming languages
+		Searching for words in include files
+		Advanced text objects
+		Folding
+		ctags and cscope integration
+		Integration of several programming languages
+		Asynchronous I/O support
+		Timers
+
+
+- Command-line editing and history [improved in Vim]
+	- search through your previous commands, repeat them, or edit them before executing them again
+
+- Command-line completion [improved in Vim]
+ 	- allows you to use the Tab key to complete commands, options, and filenames as needed.
+
+
+
+
+#### Commands ####
+
+vim -O file1.txt file2.txt 			# open both files in separate windows 
+vim -p filename  					# open each file in separate tabs
+
+# while editing in vim
+:help  								# full help system on Vim. Navigate between sections by positioning the cursor on a |tag| and hitting Ctrl+]
+:help complex-repeat  				# info on macros
+
+
+
 --------------
 virtualization
 --------------
@@ -9212,7 +9477,7 @@ virtualization
 	- can consolidate them on a single server (e.g. run 3 virtual machines, running 3 different OS, each running different applications)
 
 - hypervisor - a software that creates and runs the virtualization 
-			 - it allocates and controls the sharing of a machine's resources (storage, CPU, memory)
+			 - it allocates and controls the sharing of a machines resources (storage, CPU, memory)
 
 - hypervisor types
 	- Type 1: installed on empty, bare metal hardware (i.e. no existing OS or software installed)
@@ -9220,7 +9485,7 @@ virtualization
 
 	- High-level setup steps
 		1) Install virtualization software
-		2) Allocate the server's hardware resources
+		2) Allocate the servers hardware resources
 	 	3) Install operating systems on each VM
 	 	4) Install applications on each VM
 	
@@ -9259,6 +9524,29 @@ vmstat -m 					# show slab info - need root to run
 vmstat 2 					# print vmstat info every 2 seconds (Ctrl+C to exit out)
 vmstat 2 10 				# stop at 10 iterations
 vmstat -t 2 10  			# show timestamp for each print
+
+
+
+---
+VPN
+---
+
+# Sources
+# Powercert Animated Videos - https://www.youtube.com/watch?v=R-JUOpCgTZc
+
+- Virtual Private Network - Establishes a secure and reliable network connection over an unsecure network such as the internet.
+						  - protects your internet activity and disguises your identity on the internet
+						  - disguises your identity by hiding your IP address 
+						  - will encrypt and protect your internet data
+						  - "tunneling" - encapsulates the data with an extra layer of protection
+						  - enables you to access restricted internet content (e.g. in certain regions where you would normally be blocked)
+						  - provides a secure connection for remote workers
+						  	- coule be done using a leased [private] line
+						  		- can be expensive depending on the distance
+
+
+
+
 
 
 
