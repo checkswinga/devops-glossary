@@ -1,0 +1,33 @@
+AWS Network components
+----------------------
+
+API Gateway - The Application Programming Interface (API) gateway is used to build, deploy and manage different API’s on the AWS Cloud Platform.
+
+
+AWS App Mesh - AWS App Mesh provides an application-level virtual network on the AWS Cloud platform to enable communication between different computing infrastructures, ensuring 
+high application availability.
+
+
+AWS Cloud Map - The AWS Cloud Map service is used to discover and define custom names for application resources and maintain these resources' locations.
+
+
+Amazon CloudFront - Dynamic and static web content can be easily distributed to customers using the Amazon CloudFront service. The service is used to distribute web content to datacenters worldwide, also referred to as edge locations.
+
+
+AWS Direct Connect - The AWS Direct Connect service is used to directly connect an on-premise infrastructure to AWS Cloud resources bypassing Internet Service Providers (ISP’s).
+
+
+AWS Global Accelerator - To ensure that users get the best experience when accessing AWS Web Services, AWS Global Accelerator can be used to direct web traffic on the least congested route to ensure that jitter, packet loss and latency are kept to the minimum.
+
+
+AWS Route 53
+	- Amazon Route 53 is a highly scalable Domain Name Service (DNS) available on the AWS Cloud Platform that can consist of three core functions:
+		- Domain registrations
+		- DNS Routing
+		- Resources Health Checking
+
+
+Amazon Virtual Private Cloud (VPC) - The Amazon Virtual Private Cloud (VPC) service is used to create virtual networks on the AWS Cloud platform to facilitate network communication between cloud resources.
+
+
+Amazon VPC IP Address Manager - The Virtual Private Cloud IP Address Manager is used on the AWS Cloud platform to automatically manage and monitor the IP address utilization. The VPC IP Address Manager ensures the correct allocation and management of the IP addresses.
