@@ -730,6 +730,10 @@ bat
 		- installation: download binary from Github repo
 
 
+#### Quick install ####
+
+- if you dont have root on a Linux machine, you can get the tar.gz here: https://github.com/sharkdp/bat/releases/tag/v0.24.0
+
 
 #### Commands ####
 
@@ -996,7 +1000,7 @@ chmod/chgrp/chown
 - Linux/UNIX - change file mode bits (permissions), group ownership and user ownership management
 
 
-#### Commands ####
+#### Basic usage to get started ####
 
 chmod 750 [file]          # change permissions for file (read/write/execute for user, read/execute for group, no perms for other)
 chmod -R 750 [dir]		  # change perms for directory recursively
@@ -1013,8 +1017,6 @@ chown adm file1.txt 	  # change owner for file1.txt to adm
 
 chown adm:admgrp file1.txt 	  	# change owner and group for file1.txt. Must be superuser to perform.
 chown -R adm:admgrp [dir] 	  	# change owner and group for directory and all subdirs and files under dir. Must be superuser to perform
-
-#### NEEDS MORE INFO ####
 
 
 
@@ -1087,9 +1089,19 @@ cloud - general
 
 
 
+
 ---
 cmp
 ---
+
+#### Purpose ####
+Compares two files byte by byte and reports the first mismatch or confirms they are identical. Useful for verifying file integrity or spotting minor differences.
+
+#### Commands ####
+- `cmp file1.txt file2.txt`: Checks if two files differ and outputs the byte/line of the first difference.
+- `cmp -b file1.txt file2.txt`: Displays differing bytes in octal and their ASCII representation.
+- `cmp -i 5 file1.txt file2.txt`: Skips the first 5 bytes before comparison.
+
 
 # Source: https://www.geeksforgeeks.org/cmp-command-in-linux-with-examples/
 
@@ -1113,9 +1125,19 @@ $_ 												# indicating that both files are identical after 10 bytes skipped
 
 
 
+--
 -----
 cntlm
 -----
+
+#### Purpose ####
+Acts as a proxy client for environments requiring NTLM authentication, forwarding requests to upstream proxies.
+
+#### Commands ####
+- `cntlm -c /etc/cntlm.conf -f`: Runs cntlm with the specified configuration file in the foreground.
+- `sudo service cntlm start`: Starts cntlm as a service.
+- `export http_proxy=http://127.0.0.1:3128`: Sets up proxy for outbound connections.
+--
 
 - Linux/UNIX/MacOS/Windows - a proxy client mainly used to connect to a proxy server in order to allow connectivity not directly allowed
 						   - authenticating HTTP(S) proxy with TCP/IP tunneling and acceleration (man pages)
@@ -1482,9 +1504,18 @@ date +%T -s 23:00:00 -u     # set the time to 11pm, using UTC format (-u flag)
 
 
 
+---
 ------
 datree
 ------
+
+#### Purpose ####
+Scans Kubernetes configurations to prevent misconfigurations and enforce policy compliance. Helps improve cluster security and reliability.
+
+#### Commands ####
+- `helm install -n datree datree-webhook/datree-admission-webhook --set datree.token=<TOKEN>`: Installs Datree to a Kubernetes cluster.
+- `datree test <config.yaml>`: Runs the CLI to scan a configuration file locally.
+---
 
 # Sources
 # https://www.datree.io/
@@ -1772,9 +1803,19 @@ DMZ
 	- in the computing world, a DMZ is where firewall protection is forbidden
 
 
+---
 ------
 docker
 ------
+
+#### Purpose ####
+Provides OS-level virtualization to package and deploy applications in containers. Containers ensure consistency across different environments.
+
+#### Commands ####
+- `docker run -d -p 8080:80 nginx`: Runs an Nginx container and maps port 80 inside the container to port 8080 on the host.
+- `docker ps`: Lists all running containers.
+- `docker build -t myapp:latest .`: Builds a Docker image from a `Dockerfile` in the current directory.
+---
 
 - Linux/Windows/Mac - a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called "containers"
 					- used to automate the deployment of application in lightweight containers so that application can work efficiently in different environments.
@@ -2640,6 +2681,19 @@ find / -perm -4000 -o -perm -2000 -print
 # print the symbolic and octal values of all files/dirs within current working dir
 
 find . -printf “%M %m %f\n”
+
+
+
+-------
+finger
+-------
+
+#### Purpose ####
+Displays detailed information about system users, such as login time, shell, and home directory. Mainly useful in multi-user systems.
+
+#### Commands ####
+- `finger`: Lists all logged-in users.
+- `finger username`: Displays detailed information about a specific user.
 
 
 
@@ -4096,7 +4150,7 @@ kubernetes
 ----------
 
 
-# General
+####### General #######
 
 - control nodes and control plane - the administrative node[s] of a cluster which instruct and manage the worker nodes which run workloads
 
@@ -4109,6 +4163,13 @@ kubernetes
 	- daemonset - ensures that all or some nodes run a copy of a pod [e.g. kube-proxy daemonset would ensure kube-proxy pod runs on every available node in the cluster]
 
 
+#### Affinity ####
+
+- Node Affinity - Allows you to specify rules for scheduling pods onto particular nodes based on node labels. This ensures that pods are placed on nodes that meet specific criteria, such as hardware capabilities or geographic location.
+
+- Pod Affinity and Anti-Affinity - These features enable you to define rules for placing pods relative to other pods. Pod affinity ensures that certain pods are scheduled together, which is beneficial for applications that require low-latency communication. Conversely, pod anti-affinity prevents certain pods from being scheduled on the same node, enhancing fault tolerance by distributing replicas across different nodes.
+
+
 
 # Installing a Kubernetes cluster using kubeadm [Centos7]
 # Source: Just Me And Opensource - https://www.youtube.com/watch?v=v6Jh2sZClDY
@@ -4116,7 +4177,7 @@ kubernetes
 # 								 - https://github.com/justmeandopensource/kubernetes/blob/master/docs/install-cluster-ubuntu-20.md [for install on Ubuntu 20.04]         
 
 
-For Centos 7 install:
+# Centos 7 install
 
 On both master and worker,
 
@@ -4213,6 +4274,7 @@ kubectl get cs         # get component status
 
 
 ####### kind - a software for running kubernetes clusters within docker containers ########
+
 # Sources
 - https://www.youtube.com/watch?v=m-IlbCgSzkc&list=WL&index=1
 
@@ -4303,9 +4365,6 @@ kubectl get pods | grep Evicted | awk '{print $1}' | xargs kubectl delete pod  #
 
 - the kURL tool helps you to create a Kubernetes cluster which can be customized off the bat with different tools that are more typical/standard that are not provided out of the box right away
 	with a vanilla K8s installation such as monitoring tools [Prometheus], cluster backup and restore mechanism [Velero], certificate management [CertManager], and more. See kurl.sh for more details.
-
-
-
 
 
 
@@ -8109,6 +8168,21 @@ df -h | tee disk_usage.txt                       # df -h output gets written int
 command | tee file1.out file2.out file3.out      # write command output to multiple files
 
 
+---------
+telemetry
+---------
+
+# Sources:
+	# IBM Cloud - Hybrid Cloud Monitoring: https://www.youtube.com/watch?v=hLvwoow3XTk
+
+- telemetry is used to collect data for monitoring and analyzing hybrid applications, including collecting and analyzing telemetry data, metrics, and traces
+
+- practical example would be to monitor different parts of an application's infrastructure (e.g. a web layer, a load balancer layer, application layer, database layer) in order to check on things like:
+	- performance bottlenecks
+	- where a transaction failed
+
+- the above can help operations teams identify issues much quicker
+
 
 
 ------
@@ -9855,3 +9929,4 @@ zoxide
 z ~/some_dir         # change dir to ~/some_dir
 
 		#### NEEDS UPDATING ####
+
