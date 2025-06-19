@@ -4881,6 +4881,18 @@ systemctl reboot        # Reboots via systemctl
 shutdown -r 			# -r flag denotes reboot
 
 
+--
+ll
+--
+
+- Lists directory contents in long format, showing details like permissions, ownership, size, and modification date
+
+
+#### Commands ####
+
+ll /proc/<PID> 																		# find service name corresponding to PID of the most CPU-intensive process (see ps)
+
+
 
 ---------
 localtime 
@@ -5428,8 +5440,9 @@ netstat
 -------
 
 netstat -tupln    # display network connections, tcp and udp, show which processes are using which sockets (need root for p option), -l is for listening sockets
-netstat -npl 	  # check both internet connections and processes running on ports not connecting externally
-netstat --tcp -n  # display the active TCP connections
+netstat -npl 	  														# check both internet connections and processes running on ports not connecting externally
+netstat --tcp -n  														# display the active TCP connections
+netstat -lap | fgrep <PID> 												# check connection status of a specific port
 
 
 #### flags ####
@@ -6505,7 +6518,10 @@ ps -fu root 					# check processes for specific user (root in this case)
 ps -eo pcpu,pid,user | sort -k 1 -r | head -10  		# show top 10 processes using the most CPU on a system
 ps -eo comm,etime,user | grep [proc_command] 			# display the execution time of a process
 
-ps -l 							# show detailed info about running processes, including priority
+ps H -eo pid,pcpu | sort +nk2 | tail 					# view processes consuming the most CPU
+ps aux | fgrep <PID> 									# find service name corresponding to PID of the most CPU-intensive process
+
+ps -l 													# show detailed info about running processes, including priority
 
 ps -p 15457 -o pid,ppid,fgroup  						# show pid, ppid and FS group for a specific process
 
