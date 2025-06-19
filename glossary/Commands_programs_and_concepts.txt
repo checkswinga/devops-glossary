@@ -825,6 +825,27 @@ cal 5 2014 		# prints month of May in 2014
 
 
 
+---
+CDN
+---
+
+# Source: Powercert Animated Videos - https://www.youtube.com/watch?v=nhhfSBm6v4A
+
+- Content Delivery Network - to make websites load faster by bringing the website content closer to the user (example provider: Akamai)
+
+- technical setup
+	- works by establishing POP [point of presence]
+	- above is made up of Edge servers, which caches the content of the origin web server
+
+- benefits
+	- also reduces network bandwidth cost
+	- provides content avaiability and redundancy
+	- improves on security [e.g. protecting against DDOS]
+
+
+
+
+
 ------------
 certificates
 ------------
@@ -1808,14 +1829,40 @@ DMZ
 docker
 ------
 
+# Sources:
+# 	https://blog.stackademic.com/10-hidden-docker-gems-that-99-of-users-dont-know-about-2025-edition-6fa030335b8f
+
 #### Purpose ####
 Provides OS-level virtualization to package and deploy applications in containers. Containers ensure consistency across different environments.
 
 #### Commands ####
-- `docker run -d -p 8080:80 nginx`: Runs an Nginx container and maps port 80 inside the container to port 8080 on the host.
-- `docker ps`: Lists all running containers.
-- `docker build -t myapp:latest .`: Builds a Docker image from a `Dockerfile` in the current directory.
----
+
+docker images 								# lists all images stored in the local image registry cache on the VM
+docker run -d -p 8080:80 nginx 				# Runs an Nginx container and maps port 80 inside the container to port 8080 on the host.
+docker ps   								# Lists all running containers.
+docker build -t myapp:latest .   			# Builds a Docker image from a `Dockerfile` in the current directory.
+docker run --init nginx 					# injects a lightweight init system (tini) as PID 1, ensuring proper signal handling and zombie process reaping.
+docker system df -v  						# provides a detailed breakdown of disk usage, including images, containers, volumes and build cache
+docker diff <container> 					# Lists all files added (A), modified (C), or deleted (D) in a container compared to its base image.
+docker build --secret id=aws_key,src=~/.aws/credentials .    # allows injecting secrets during builds without storing them in the final image or layer history
+docker build --squash  						# Merges all layers into one, reducing image size by eliminating intermediate build artifacts.
+	Trade-offs
+		 Pros: Smaller final images (~30% reduction).
+		 Cons: Breaks layer caching (slower rebuilds).
+
+	When to Use It
+		 Final production builds (not during development).
+		 Distributing minimal images (e.g., security scanners).
+docker stats --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}"   # Customizes docker stats output using Go templates for scripting or dashboards
+docker pause/unpause  						# Freezes a container’s processes (using cgroups) without stopping it.
+docker checkpoint 							# Saves a container’s memory and process state for later restoration (like VM snapshots).
+	- Requirements
+		Enable --experimental in dockerd.
+		Install CRIU (apt-get install criu).
+docker buildx build --platform linux/amd64,linux/arm64 -t my_app    # Builds images for multiple platforms (amd64, arm64) on a single machine
+curl --unix-socket /var/run/docker.sock "http://localhost/containers/json"  		# Interact with Docker’s API directly via /var/run/docker.sock.
+
+
 
 - Linux/Windows/Mac - a set of platform as a service (PaaS) products that use OS-level virtualization to deliver software in packages called "containers"
 					- used to automate the deployment of application in lightweight containers so that application can work efficiently in different environments.
@@ -7328,6 +7375,94 @@ type: Opaque
 kubectl delete secret mysecret     # deletes secret - the only way to "edit" an immutable secret
 
 
+
+------------------
+security - general
+------------------
+
+
+#### Security roles ####
+
+# Sources:
+	- ChatGPT-generated
+	- Medium article - https://cybernoweducation.medium.com/cybersecurity-career-paths-exploring-various-roles-b0eab0c75274
+
+
+1. Security Architect
+
+	- Primary Focus: Designing the overarching security framework and blueprints for an organization.
+
+	- Key Responsibilities:
+		- Defining security requirements, controls, and system/infrastructure design.
+		- Ensuring solutions align with business objectives and compliance mandates.
+		- Collaborating with stakeholders (IT, business units, executives) to integrate security at every layer of enterprise architecture.
+
+	- CISSP Relevance: Draws heavily on CISSP’s Security Architecture and Engineering domain (Domain 3), emphasizing secure design principles and conceptualizing end-to-end solutions.
+
+
+2. Security Engineer
+
+	- Primary Focus: Building, implementing, and maintaining security solutions as defined by the security architect.
+
+	- Key Responsibilities:
+		- Configuring and deploying security technologies (firewalls, intrusion detection/prevention systems, etc.).
+		- Performing system hardening, patching, and troubleshooting.
+		- Conducting technical evaluations of new security tools.
+
+	- CISSP Relevance: Bridges security architecture (Domain 3) with operational security (Domain 7), focusing on hands-on execution of security measures and technologies.
+
+
+3. Forensic Analyst
+
+	- Primary Focus: Gathering and analyzing digital evidence following a suspected breach or security incident.
+
+	- Key Responsibilities:
+		- Performing digital investigations, including system imaging, memory analysis, and log correlation.
+		- Preserving evidence with proper chain-of-custody procedures.
+		- Generating detailed reports suitable for legal or regulatory scrutiny.
+
+	- CISSP Relevance: Ties into the Investigation domain (Domain 8: Software Development Security has some overlap, but forensic techniques are also part of Security Operations in Domain 7), emphasizing evidence collection, legal/regulatory considerations, and investigative best practices.
+
+
+4. Incident Responder
+
+	- Primary Focus: Rapidly detecting, containing, and mitigating security incidents.
+
+	- Key Responsibilities:
+		- Monitoring for indicators of compromise (IoCs) and confirming breaches.
+		- Coordinating containment, eradication, and recovery efforts across teams.
+		- Performing post-incident analysis to refine response plans and controls.
+
+	- CISSP Relevance: Strongly associated with Incident Response procedures in the Security Operations domain (Domain 7), which includes developing and testing incident response plans and coordinating responses.
+
+
+5. DFIR Teams (Digital Forensics and Incident Response Teams)
+
+	- Primary Focus: Handling both the reactive investigation (forensics) and the active response (incident handling) aspects of cybersecurity events.
+
+	- Key Responsibilities:
+		- Investigating breaches to determine root cause, scope, and impact.
+		- Coordinating response activities, containment, and remediation.
+		- Providing technical and procedural guidance to recover from attacks and prevent future incidents.
+
+	- CISSP Relevance: A convergence of Forensic Analysis and Incident Response, spanning multiple CISSP domains—primarily Security Operations (Domain 7) for incident handling and some overlap with Legal, Regulations, Investigations, and Compliance (Domain 8).
+
+
+6. SOC Analyst (Security Operations Center Analyst)
+
+	- Primary Focus: Real-time monitoring and analysis of security events and alerts.
+
+	- Key Responsibilities:
+		- Using SIEM (Security Information and Event Management) tools to detect anomalies and potential threats.
+		- Investigating alerts to validate or rule out malicious activity.
+		- Collaborating with incident response teams to escalate confirmed incidents and provide contextual data.
+
+	- CISSP Relevance: Aligns with Security Operations (Domain 7) and partially with Software Development Security (Domain 8) for automation and tooling. Emphasizes continuous monitoring, detection, and initial triage.
+
+
+
+
+
 ---
 sed
 ---
@@ -9930,3 +10065,180 @@ z ~/some_dir         # change dir to ~/some_dir
 
 		#### NEEDS UPDATING ####
 
+
+---
+rsync
+---
+
+#### Purpose ####
+A utility for efficiently transferring and synchronizing files across computer systems.
+
+#### Commands ####
+- `rsync -avz source/ user@remote:/destination/`: Syncs files from `source` to `destination` using SSH with verbose and compressed transfer.
+- `rsync -av --delete source/ destination/`: Mirrors a directory, deleting files in the destination that are no longer in the source.
+- `rsync -n --dry-run source/ destination/`: Simulates a sync without making changes, useful for verifying what will happen.
+
+---
+
+mkpasswd
+---
+
+#### Purpose ####
+Generates encrypted passwords, useful for creating password hashes.
+
+#### Commands ####
+- `mkpasswd --method=SHA-512 --salt=xyz password`: Generates a SHA-512 hashed password using a specified salt.
+- `mkpasswd password`: Uses the default encryption method to hash a password.
+
+---
+
+nc (Netcat)
+---
+
+#### Purpose ####
+A versatile networking tool for debugging and testing network connections.
+
+#### Commands ####
+- `nc -zv hostname port`: Scans a specific port to check if it is open.
+- `nc -l 12345`: Listens on port 12345 for incoming connections.
+- `echo "Hello" | nc hostname 12345`: Sends a message to a host on a specific port.
+
+---
+
+pv
+---
+
+#### Purpose ####
+Monitors the progress of data through a pipeline.
+
+#### Commands ####
+- `pv file | tar xz`: Displays the progress of extracting a tar.gz file.
+- `dd if=/dev/zero | pv | dd of=/dev/null`: Monitors data transfer between input and output streams.
+
+---
+
+ss
+---
+
+#### Purpose ####
+Displays detailed socket statistics.
+
+#### Commands ####
+- `ss -tuln`: Lists listening sockets with protocol, address, and port.
+- `ss -s`: Displays summary statistics for each protocol.
+- `ss -at`: Lists all TCP sockets.
+
+---
+
+dstat
+---
+
+#### Purpose ####
+A resource monitoring tool combining multiple system usage statistics.
+
+#### Commands ####
+- `dstat -cdl`: Shows CPU, disk, and load statistics in real-time.
+- `dstat --output file.csv`: Logs statistics to a CSV file for analysis.
+
+---
+
+htop
+---
+
+#### Purpose ####
+An interactive process viewer offering a real-time view of running processes.
+
+#### Commands ####
+- `htop`: Launches the interface showing processes and resource usage.
+- F3: Search for a specific process.
+- F9: Kill a selected process.
+
+---
+
+ncdu
+---
+
+#### Purpose ####
+A disk usage analyzer with an ncurses interface.
+
+#### Commands ####
+- `ncdu`: Scans the current directory and displays a navigable disk usage report.
+- `ncdu /path/to/dir`: Analyzes disk usage for a specified directory.
+- `ncdu -x`: Excludes other filesystems while scanning.
+
+---
+
+iotop
+---
+
+#### Purpose ####
+Displays real-time disk I/O usage by processes.
+
+#### Commands ####
+- `iotop`: Lists processes and their disk I/O in real-time.
+- `iotop -o`: Shows only processes currently performing I/O.
+- `iotop -P`: Aggregates thread I/O to parent processes.
+
+---
+
+glances
+---
+
+#### Purpose ####
+A cross-platform system monitoring tool providing an overview of CPU, memory, and network activity.
+
+#### Commands ####
+- `glances`: Launches the interface showing system resource usage.
+- `glances -s`: Starts a server mode for remote monitoring.
+- `glances -t 2`: Updates the display every 2 seconds.
+
+---
+
+nmap
+---
+
+#### Purpose ####
+A network scanning tool used to discover hosts and services.
+
+#### Commands ####
+- `nmap 192.168.1.1`: Scans a single IP.
+- `nmap -sV 192.168.1.0/24`: Detects versions of services running on hosts in a subnet.
+- `nmap -A target`: Performs a detailed scan with OS detection and script scanning.
+
+---
+
+bashtop
+---
+
+#### Purpose ####
+A resource monitoring tool similar to `htop`, but more visually appealing and customizable.
+
+#### Commands ####
+- `bashtop`: Launches the interface showing real-time system resource usage.
+- Arrow keys: Navigate between processes.
+- `q`: Quit the interface.
+
+---
+
+timewarrior
+---
+
+#### Purpose ####
+A time tracking utility that tracks the time spent on tasks automatically.
+
+#### Commands ####
+- `timew start TaskName`: Starts tracking time for a task named `TaskName`.
+- `timew stop`: Stops tracking the current task.
+- `timew summary`: Displays a summary of time spent on all tasks.
+- `timew track 09:00-12:00 TaskName`: Manually adds time for a task, specifying a time range.
+- `timew tags add TaskName NewTag`: Adds a tag to an existing task.
+
+#### Example Workflow ####
+1. Start tracking: `timew start Writing`
+2. Pause for a break: `timew stop`
+3. Resume tracking: `timew start Writing`
+4. Check total time: `timew summary`
+
+#### Notes ####
+- Automatically integrates with Taskwarrior if installed.
+- Logs are stored locally for privacy and can be exported if needed.
