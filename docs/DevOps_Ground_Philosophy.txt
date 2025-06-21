@@ -18,6 +18,16 @@ DevOps Ground Philosophy
 	- e.g. Github Actions, Openshift
 
 
+#### Team building ####
+
+Pick the right time to talk
+Cultivate a team mindset
+Make the invisible visible
+Identify tasks you can delegate
+
+
+
+
 #### Continuous Delivery ####
 
 - limit WIP items
