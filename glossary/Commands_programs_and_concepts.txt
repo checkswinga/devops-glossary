@@ -361,6 +361,8 @@ at -d 2 				 # delete job #2 in the at queue
 atq 					 # similar to at -l
 atrm 3 					 # delete job #3 in at queue (similar to at -d)
 
+echo "shutdown -h now" | at 11:00 PM       # will set shutdown of the system at 11pm
+
 
 #### Files ####
 
@@ -740,6 +742,20 @@ bat
 bat filename.js
 bat -p filename.js 		# behave more like cat for file output
 bat filename.yaml --paging=never  	   # print the whole file [like cat would do] instead of one pager [like less]
+
+
+
+-----
+batch
+-----
+
+- Linux - used to read commands from standard input or a specified file and execute them when system load levels permit i.e. when the load average drops below 1.5
+		- NOTE: does not accept any parameters
+
+#### Commands ####
+
+echo "updatedb" | batch               # Runs "updatedb" command when CPU load is under 1.5
+
 
 
 
@@ -6381,6 +6397,32 @@ Piston
 
 
 ### To be filled in with more details at a later date if a useful place to apply it is found ###
+
+
+
+--------
+platform
+--------
+
+Source: Modern Software Engineering - Gregor Hohpe Reveals The Best Platform Strategies For Success! - https://www.youtube.com/watch?v=fLZRk5vzMWY
+
+- platforms are ways to standardize some aspects of your system in a way that it boosts innovation and diversity
+
+- platforms are abstractions that actually work in a practical sense (e.g. my bad example: Openshift abstracting away the kubernetes CLI)
+
+- good platforms
+	- remove work (or as I would say removes "heaviness" of work, unnecessary work especially)
+	- change vocabulary used (as I would say, especially common vocabulary)
+	- you need very skilled devs to build a good platform
+	- reduce cognitive load
+
+- focus on the problem, not the tech
+
+- keep options open through architecture
+
+- using platforms to "join the dots" so to speak
+
+
 
 
 
